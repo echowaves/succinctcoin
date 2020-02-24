@@ -6,9 +6,8 @@
   "scripts": {
     "test": "jest --watchAll",
     "start": "yarn run build-client & node index.js",
-    "dev": "yarn run dev-client & npm run start-redis && cross-env ENV='development' nodemon index.js",
+    "dev": "yarn run dev-client && cross-env ENV='development' nodemon index.js",
     "dev-peer": "cross-env GENERATE_PEER_PORT='true' ENV='development' nodemon index.js",
-    "start-redis": "redis-server --daemonize yes",
     "build-client": "yarn run clean && parcel build client/src/index.html --out-dir client/dist",
     "dev-client": "yarn run clean && parcel client/src/index.html --out-dir client/dist",
     "clean": "rm -rf .cache client/dist"
@@ -35,13 +34,19 @@
     "express": "^4.16.3",
     "hex-to-binary": "^1.0.1",
     "history": "^4.7.2",
+    "libp2p": "^0.27.3",
+    "libp2p-gossipsub": "^0.2.4",
+    "libp2p-mdns": "^0.13.3",
+    "libp2p-mplex": "^0.9.4",
+    "libp2p-pubsub": "^0.4.3",
+    "libp2p-secio": "^0.12.3",
+    "libp2p-tcp": "^0.14.3",
+    "libp2p-websockets": "^0.13.4",
     "parcel-bundler": "^1.10.3",
-    "pubnub": "^4.21.6",
     "react": "^16.6.0",
     "react-bootstrap": "^0.32.4",
     "react-dom": "^16.6.0",
     "react-router-dom": "^4.3.1",
-    "redis": "^2.8.0",
     "request": "^2.88.0",
     "uuid": "^3.3.2"
   }
