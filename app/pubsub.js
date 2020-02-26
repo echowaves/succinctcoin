@@ -16,25 +16,25 @@ const CHANNELS = {
 };
 
 class PubSub {
-  constructor({ blockchain, transactionPool }) {
+  constructor({ blockchain, transactionPool, wallet}) {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
+    this.wallet = wallet;
 
     // this.publisher = redis.createClient(redisUrl);
     // this.subscriber = redis.createClient(redisUrl);
 
+
     this.discoverPeers()
-
-    // this.subscribeToChannels();
-
-    // this.subscriber.on(
-    //   'message',
-    //   (channel, message) => this.handleMessage(channel, message)
-    // );
+    .then( () => {
+      // this.subscribeToChannels();
+    })
   }
 
   async discoverPeers() {
-    const node = await Libp2p.create({
+    // create a node, assign to the class variable, discover peers,
+    // and have the node establish connections to the peers
+    this.node = await Libp2p.create({
       modules: {
         transport: [ TCP ],
         streamMuxer: [ MPLEX ],
@@ -52,17 +52,17 @@ class PubSub {
         }
       }
     })
-    node.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0')
+    this.node.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0')
 
-    node.on('peer:discovery', (peer) => {
+    this.node.on('peer:discovery', (peer) => {
       console.log('Discovered:', peer.id.toB58String())
     })
-    node.on('peer:connect', (peer) => {
+    this.node.on('peer:connect', (peer) => {
       console.log('Connected to %s', peer.id.toB58String()) // Log connected peer
     })
 
-    // console.log(node)
-    await node.start()
+    // console.log(this.node)
+    await this.node.start()
     console.log('libp2p has started')
 
   }
