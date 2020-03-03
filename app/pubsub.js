@@ -49,7 +49,7 @@ class PubSub {
 
     this.blockChainRoom.on('message', (message) => {
       console.log('blockChainRoom received:', message)
-      const parsedMessage =  message.data.toString('utf8')
+      const parsedMessage =  JSON.parse(message.data.toString('utf8'));
       // console.log('message.data:', parsedMessage)
       this.blockchain.replaceChain(parsedMessage, true, () => {
         this.transactionPool.clearBlockchainTransactions({
@@ -60,7 +60,7 @@ class PubSub {
 
     this.transactionRoom.on('message', (message) => {
       console.log('transactionRoom received:', message)
-      const parsedMessage =  message.data.toString('utf8')
+      const parsedMessage =  JSON.parse(message.data.toString('utf8'));
       // console.log('message.data:', parsedMessage)
       this.transactionPool.setTransaction(parsedMessage);
     })
