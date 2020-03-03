@@ -4,10 +4,10 @@ const TCP = require('libp2p-tcp')
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 const MulticastDNS = require('libp2p-mdns')
-const Gossipsub = require('libp2p-gossipsub')
+const DHT = require('libp2p-kad-dht')
+const GossipSub = require('libp2p-gossipsub')
 
-
-
+const Room = require('ipfs-pubsub-room')
 
 const CHANNELS = {
   TEST: 'TEST',
@@ -20,101 +20,60 @@ class PubSub {
     this.blockchain = blockchain;
     this.transactionPool = transactionPool;
     this.wallet = wallet;
-
-    // this.publisher = redis.createClient(redisUrl);
-    // this.subscriber = redis.createClient(redisUrl);
-
-
     this.discoverPeers()
-    .then( () => {
-      // this.subscribeToChannels();
-    })
   }
 
   async discoverPeers() {
     // create a node, assign to the class variable, discover peers,
     // and have the node establish connections to the peers
-    this.node = await Libp2p.create({
+    const node = await Libp2p.create({
       modules: {
-        transport: [ TCP ],
-        streamMuxer: [ MPLEX ],
-        connEncryption: [ SECIO ],
-        // we add the Pubsub module we want
-        peerDiscovery: [ MulticastDNS ],
-        pubsub: Gossipsub
-      },
-      config: {
-        peerDiscovery: {
-          mdns: {
-            interval: 20e3,
-            enabled: true
-          }
-        }
+        transport: [
+          TCP,
+          // new WS() // It can take instances too!
+        ],
+        streamMuxer: [MPLEX],
+        connEncryption: [SECIO],
+        peerDiscovery: [MulticastDNS],
+        dht: DHT,
+        pubsub: GossipSub
       }
     })
-    this.node.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0')
 
-    this.node.on('peer:discovery', (peer) => {
-      console.log('Discovered:', peer.id.toB58String())
-    })
-    this.node.on('peer:connect', (peer) => {
-      console.log('Connected to %s', peer.id.toB58String()) // Log connected peer
-    })
-
-    // console.log(this.node)
-    await this.node.start()
+    await node.peerInfo.multiaddrs.add('/ip4/127.0.0.1/tcp/0')
+    await node.start()
     console.log('libp2p has started')
 
-  }
+    this.blockChainRoom = new Room(node, CHANNELS.BLOCKCHAIN)
+    this.transactionRoom = new Room(node, CHANNELS.TRANSACTION)
 
-  handleMessage(channel, message) {
-    console.log(`Message received. Channel: ${channel}. Message: ${message}.`);
-
-    const parsedMessage = JSON.parse(message);
-
-    switch(channel) {
-      case CHANNELS.BLOCKCHAIN:
+    this.blockChainRoom.on('message', (message) => {
+      console.log('blockChainRoom received:', message)
+      const parsedMessage =  message.data.toString('utf8')
+      // console.log('message.data:', parsedMessage)
       this.blockchain.replaceChain(parsedMessage, true, () => {
         this.transactionPool.clearBlockchainTransactions({
           chain: parsedMessage
         });
       });
-      break;
-      case CHANNELS.TRANSACTION:
+    })
+
+    this.transactionRoom.on('message', (message) => {
+      console.log('transactionRoom received:', message)
+      const parsedMessage =  message.data.toString('utf8')
+      // console.log('message.data:', parsedMessage)
       this.transactionPool.setTransaction(parsedMessage);
-      break;
-      default:
-      return;
-    }
-  }
-
-  subscribeToChannels() {
-    Object.values(CHANNELS).forEach(channel => {
-      PubSub.subscribe(channel, mySubscriber);
-      this.subscriber.subscribe(channel);
-    });
-  }
-
-  publish({ channel, message }) {
-    // this.subscriber.unsubscribe(channel, () => {
-    //   this.publisher.publish(channel, message, () => {
-    //     this.subscriber.subscribe(channel);
-    //   });
-    // });
+    })
   }
 
   broadcastChain() {
-    this.publish({
-      channel: CHANNELS.BLOCKCHAIN,
-      message: JSON.stringify(this.blockchain.chain)
-    });
+    if(this.blockChainRoom) {
+      this.blockChainRoom.broadcast(JSON.stringify(this.blockchain.chain));
+    }
   }
 
   broadcastTransaction(transaction) {
-    this.publish({
-      channel: CHANNELS.TRANSACTION,
-      message: JSON.stringify(transaction)
-    });
+    this.transactionRoom.broadcast(JSON.stringify(transaction))
   }
 }
 
