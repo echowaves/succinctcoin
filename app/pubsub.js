@@ -64,7 +64,23 @@ class PubSub {
       // console.log('message.data:', parsedMessage)
       this.transactionPool.setTransaction(parsedMessage);
     })
+
+    this.blockChainRoom.on('peer joined', (peer) => {
+      console.log('Peer joined blockChainRoom', peer)
+    })
+    this.transactionRoom.on('peer joined', (peer) => {
+      console.log('Peer joined transactionRoom', peer)
+    })
+
+    this.blockChainRoom.on('peer left', (peer) => {
+      console.log('Peer left blockChainRoom', peer)
+    })
+    this.transactionRoom.on('peer left', (peer) => {
+      console.log('Peer left transactionRoom', peer)
+    })
+
   }
+
 
   broadcastChain() {
     if(this.blockChainRoom) {
