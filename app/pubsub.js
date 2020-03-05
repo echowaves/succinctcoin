@@ -29,7 +29,7 @@ class PubSub {
     const node = await Libp2p.create({
       modules: {
         transport: [
-          TCP,
+          TCP
           // new WS() // It can take instances too!
         ],
         streamMuxer: [MPLEX],
@@ -37,10 +37,16 @@ class PubSub {
         peerDiscovery: [MulticastDNS],
         dht: DHT,
         pubsub: GossipSub
+      },
+      config: {
+        dht: {
+          // dht must be enabled
+          enabled: true
+        }
       }
     })
 
-    await node.peerInfo.multiaddrs.add('/ip4/127.0.0.1/tcp/10335')
+    await node.peerInfo.multiaddrs.add('/ip4/127.0.0.1/tcp/0')
     await node.start()
     console.log('libp2p has started')
 
