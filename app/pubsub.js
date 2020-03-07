@@ -39,6 +39,20 @@ class PubSub {
         pubsub: GossipSub
       },
       config: {
+        peerDiscovery: {
+         autoDial: true,             // Auto connect to discovered peers (limited by ConnectionManager minPeers)
+         mdns: {                     // mdns options
+           interval: 1000,           // ms
+           enabled: true
+         }
+        },
+        relay: {                      // Circuit Relay options
+         enabled: true,
+         hop: {
+           enabled: false,
+           active: false
+         }
+       },
         dht: {
           // dht must be enabled
           enabled: true,
