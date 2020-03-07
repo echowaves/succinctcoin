@@ -50,7 +50,8 @@ class PubSub {
     })
 
     // await node.peerInfo.multiaddrs.add('/ip6/::1/tcp/0')
-    await node.peerInfo.multiaddrs.add('/ip4/127.0.0.1/tcp/0')
+    await node.peerInfo.multiaddrs.add('/ip6/::/tcp/0')
+    // await node.peerInfo.multiaddrs.add('/ip4/127.0.0.1/tcp/0')
 
     await node.start()
     console.log('libp2p has started')
