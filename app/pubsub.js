@@ -92,17 +92,17 @@ class PubSub {
     })
 
     this.blockChainRoom.on('peer joined', (peer) => {
-      console.log('Peer joined blockChainRoom', peer)
+      console.log(`Peer joined blockChainRoom ${new Date()}`, peer)
     })
     this.transactionRoom.on('peer joined', (peer) => {
-      console.log('Peer joined transactionRoom', peer)
+      console.log(`Peer joined transactionRoom ${new Date()}`, peer)
     })
 
     this.blockChainRoom.on('peer left', (peer) => {
-      console.log('Peer left blockChainRoom', peer)
+      console.log(`Peer left blockChainRoom ${new Date()}`, peer)
     })
     this.transactionRoom.on('peer left', (peer) => {
-      console.log('Peer left transactionRoom', peer)
+      console.log(`Peer left transactionRoom ${new Date()}`, peer)
     })
 
   }
