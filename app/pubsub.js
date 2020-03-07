@@ -49,8 +49,8 @@ class PubSub {
         relay: {                      // Circuit Relay options
          enabled: true,
          hop: {
-           enabled: false,
-           active: false
+           enabled: true,
+           active: true
          }
        },
         dht: {
