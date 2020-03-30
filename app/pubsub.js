@@ -32,9 +32,15 @@ class PubSub {
 					TCP,
 					// new WS() // It can take instances too!
 				],
-				streamMuxer: [MPLEX, ],
-				connEncryption: [SECIO, ],
-				peerDiscovery: [MulticastDNS, ],
+				streamMuxer: [
+					MPLEX,
+				],
+				connEncryption: [
+					SECIO,
+				],
+				peerDiscovery: [
+					MulticastDNS,
+				],
 				dht: DHT,
 				pubsub: GossipSub,
 			},
@@ -68,13 +74,13 @@ class PubSub {
 		await node.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0')
 
 		await node.start()
-		console.log('libp2p has started')
+		console.log('libp2p has started') // eslint-disable-line no-console
 
 		this.blockChainRoom = new Room(node, CHANNELS.BLOCKCHAIN)
 		this.transactionRoom = new Room(node, CHANNELS.TRANSACTION)
 
 		this.blockChainRoom.on('message', message => {
-			console.log('blockChainRoom received:', message)
+			console.log('blockChainRoom received:', message) // eslint-disable-line no-console
 			const parsedMessage = JSON.parse(message.data.toString('utf8'))
 			// console.log('message.data:', parsedMessage)
 			this.blockchain.replaceChain(parsedMessage, true, () => {
@@ -85,24 +91,24 @@ class PubSub {
 		})
 
 		this.transactionRoom.on('message', message => {
-			console.log('transactionRoom received:', message)
+			console.log('transactionRoom received:', message) // eslint-disable-line no-console
 			const parsedMessage = JSON.parse(message.data.toString('utf8'))
 			// console.log('message.data:', parsedMessage)
 			this.transactionPool.setTransaction(parsedMessage)
 		})
 
 		this.blockChainRoom.on('peer joined', peer => {
-			console.log(`Peer joined blockChainRoom  ${new Date()}`, peer)
+			console.log(`Peer joined blockChainRoom  ${new Date()}`, peer) // eslint-disable-line no-console
 		})
 		this.transactionRoom.on('peer joined', peer => {
-			console.log(`Peer joined transactionRoom ${new Date()}`, peer)
+			console.log(`Peer joined transactionRoom ${new Date()}`, peer) // eslint-disable-line no-console
 		})
 
 		this.blockChainRoom.on('peer left', peer => {
-			console.log(`Peer left blockChainRoom  ${new Date()}`, peer)
+			console.log(`Peer left blockChainRoom  ${new Date()}`, peer) // eslint-disable-line no-console
 		})
 		this.transactionRoom.on('peer left', peer => {
-			console.log(`Peer left transactionRoom ${new Date()}`, peer)
+			console.log(`Peer left transactionRoom ${new Date()}`, peer) // eslint-disable-line no-console
 		})
 	}
 
