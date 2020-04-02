@@ -19,17 +19,15 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "7.9.0",
+    "@babel/core": "^7.0.0-0",
     "@babel/preset-env": "7.9.0 ",
     "@babel/preset-react": "7.9.4",
     "@babel/runtime": "7.9.2",
     "@react-native-community/eslint-config": "1.0.0",
     "babel-eslint": "10.1.0",
     "babel-jest": "25.2.4",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
+    "@babel/plugin-proposal-class-properties": "7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "7.9.0",
     "cross-env": "7.0.2",
     "eslint": "6.8.0",
     "eslint-config-airbnb": "18.1.0",
@@ -41,7 +39,7 @@
     "eslint-plugin-react-native": "3.8.1",
     "jest": "25.2.4",
     "nodemon": "2.0.2",
-    "parcel": "^2.0.0-alpha.3.2"
+    "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
     "body-parser": "1.19.0",
@@ -60,7 +58,6 @@
     "libp2p-secio": "0.12.4",
     "libp2p-tcp": "0.14.4",
     "libp2p-websockets": "0.13.6",
-    "parcel-bundler": "1.12.4",
     "react": "16.13.1",
     "react-bootstrap": "1.0.0",
     "react-dom": "16.13.1",
