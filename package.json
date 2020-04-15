@@ -2,15 +2,43 @@
   "name": "succinctcoin",
   "version": "1.0.0",
   "description": "minimalistic crypto-currency",
-  "main": "index.js",
+  "main": "client/src/start.js",
+  "homepage": "./",
+  "build": {
+    "appId": "echowaves.succinctcoin",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "category": "echowaves.succinctcoin.category.type",
+      "iconUrl": "path-to-icon.png"
+    },
+    "mac": {
+      "category": "echowaves.succinctcoin.category.type",
+      "iconUrl": "path-to-icon.png"
+    }
+  },
   "scripts": {
     "test": "jest --watchAll",
-    "start": "yarn run build-client & node index.js",
-    "dev": "yarn run dev-client && cross-env ENV='development' nodemon index.js",
-    "dev-peer": "cross-env GENERATE_PEER_PORT='true' ENV='development' nodemon index.js",
-    "build-client": "yarn run clean && parcel build client/src/index.html --out-dir client/dist",
-    "dev-client": "yarn run clean && parcel client/src/index.html --out-dir client/dist",
-    "clean": "rm -rf .cache client/dist"
+    "clean": "rm -rf .cache client/dist",
+    "electron": "electron .",
+    "start": "node_modules/react-scripts/bin/react-scripts.js start",
+    "build": "node_modules/react-scripts/bin/react-scripts.js build"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
   "jest": {
     "testEnvironment": "node"
@@ -25,6 +53,7 @@
     "@babel/preset-react": "^7.9.4",
     "@react-native-community/eslint-config": "1.0.0",
     "cross-env": "7.0.2",
+    "electron-builder": "^22.4.1",
     "eslint": "6.8.0",
     "eslint-config-airbnb": "18.1.0",
     "eslint-config-prettier": "6.10.1",
@@ -33,12 +62,15 @@
     "eslint-plugin-jsx-a11y": "6.2.3",
     "eslint-plugin-react": "7.19.0",
     "eslint-plugin-react-native": "3.8.1",
-    "jest": "25.2.4",
+    "jest": "24.9.0",
     "nodemon": "2.0.2",
+    "react-scripts": "3.4.1",
     "parcel-bundler": "^1.12.4"
   },
   "dependencies": {
     "body-parser": "1.19.0",
+    "electron": "^8.2.0",
+    "electron-is-dev": "^1.2.0",
     "elliptic": "6.5.2",
     "express": "4.17.1",
     "hex-to-binary": "1.0.1",
