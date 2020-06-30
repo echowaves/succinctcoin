@@ -1,78 +1,14 @@
 {
   "name": "succinctcoin",
+  "author": "Echowaves",
   "version": "1.0.0",
   "description": "minimalistic crypto-currency",
-  "main": "./client/src/start.js",
+  "main": "electron/main.js",
   "homepage": "./",
-  "build": {
-    "appId": "echowaves.succinctcoin",
-    "directories": {
-      "buildResources": "assets"
-    },
-    "win": {
-      "category": "echowaves.succinctcoin.category.type",
-      "iconUrl": "path-to-icon.png"
-    },
-    "mac": {
-      "category": "echowaves.succinctcoin.category.type",
-      "iconUrl": "path-to-icon.png"
-    }
-  },
-  "scripts": {
-    "test": "jest --watchAll",
-    "clean": "rm -rf .cache client/dist",
-    "electron": "electron .",
-    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
-    "start": "react-scripts start",
-    "build": "react-scripts build"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "jest": {
-    "testEnvironment": "node"
-  },
-  "keywords": [],
-  "author": "",
   "license": "MIT",
-  "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-proposal-class-properties": "7.8.3",
-    "@babel/plugin-proposal-object-rest-spread": "7.9.0",
-    "@babel/preset-react": "^7.9.4",
-    "@react-native-community/eslint-config": "1.0.0",
-    "cross-env": "7.0.2",
-    "react-scripts": "3.4.1",
-    "electron-builder": "^22.7.0",
-    "eslint": "6.8.0",
-    "eslint-config-airbnb": "18.1.0",
-    "eslint-config-prettier": "6.10.1",
-    "eslint-plugin-import": "2.20.2",
-    "eslint-plugin-jest": "23.8.2",
-    "eslint-plugin-jsx-a11y": "6.2.3",
-    "eslint-plugin-react": "7.19.0",
-    "eslint-plugin-react-native": "3.8.1",
-    "jest": "24.9.0",
-    "nodemon": "2.0.2",
-    "parcel-bundler": "^1.12.4",
-    "react-scripts": "3.4.1"
-  },
   "dependencies": {
     "body-parser": "1.19.0",
     "concurrently": "^5.2.0",
-    "electron": "^9.0.5",
     "electron-is-dev": "^1.2.0",
     "elliptic": "6.5.2",
     "express": "4.17.1",
@@ -94,7 +30,71 @@
     "react-dom": "16.13.1",
     "react-router-dom": "5.2.0",
     "request": "^2.88.0",
-    "uuid": "7.0.3",
+    "uuid": "8.2.0",
     "wait-on": "^5.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-class-properties": "7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "@react-native-community/eslint-config": "1.0.0",
+    "@testing-library/react": "10.4.3",
+    "cross-env": "7.0.2",
+    "electron": "^9.0.5",
+    "electron-builder": "^22.7.0",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb": "18.1.0",
+    "eslint-config-prettier": "6.10.1",
+    "eslint-plugin-import": "2.20.2",
+    "eslint-plugin-jest": "23.8.2",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.19.0",
+    "eslint-plugin-react-native": "3.8.1",
+    "jest": "24.9.0",
+    "nodemon": "2.0.2",
+    "parcel-bundler": "^1.12.4",
+    "react-scripts": "3.4.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "build": {
+    "productName": "succinctcoin",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*",
+      "electron/*"
+    ],
+    "publish": {
+      "provider": "github",
+      "repo": "succinctcoin",
+      "owner": "Echowaves"
+    }
+  },
+  "scripts": {
+    "test": "jest --ci --coverage --reporters=default",
+    "test:ci": "jest --watchAll",
+    "start": "export BROWSER=none && react-scripts start",
+    "start:electron": "export ELECTRON_START_URL=http://localhost:3000 && electron .",
+    "build": "react-scripts build",
+    "build:electron": "mkdir build/src && cp -r electron/. build/electron && cp -r src/shared/. build/src/shared",
+    "package": "electron-builder build --mac --win -c.extraMetadata.main=build/electron/main.js --publish never",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
