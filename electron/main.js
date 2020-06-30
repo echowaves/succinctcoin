@@ -7,13 +7,13 @@ let mainWindow
 
 function createWindow() {
   const startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, '../index.html'),
+    pathname: path.join(__dirname, `file://${path.join(__dirname, '../build/index.html')}`),
     protocol: 'file:',
     slashes: true,
   })
   mainWindow = new BrowserWindow({
     width: 800,
-    height: 600,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

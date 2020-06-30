@@ -1,17 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './react/App';
-import * as serviceWorker from './serviceWorker';
+import React from 'react'
+import { render, } from 'react-dom'
+import { BrowserRouter, Switch, Route, } from 'react-router-dom'
+import history from './react/history'
+import App from './react/components/App'
+import Blocks from './react/components/Blocks'
+import ConductTransaction from './react/components/ConductTransaction'
+import TransactionPool from './react/components/TransactionPool'
+import './index.css'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+render(
+  <BrowserRouter history={history}>
+    <Switch>
+      <Route exact path="/" component={App} />
+      <Route path="/blocks" component={Blocks} />
+      <Route path="/conduct-transaction" component={ConductTransaction} />
+      <Route path="/transaction-pool" component={TransactionPool} />
+    </Switch>
+  </BrowserRouter>,
   document.getElementById('root')
-);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+)
