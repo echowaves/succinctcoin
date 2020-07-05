@@ -2,7 +2,6 @@ import React, { Component, } from 'react'
 import { Button, } from 'react-bootstrap'
 import { Link, } from 'react-router-dom'
 import Transaction from './Transaction'
-import history from '../history'
 
 const POLL_INERVAL_MS = 10000
 
@@ -20,7 +19,6 @@ class TransactionPool extends Component {
       .then(response => {
         if (response.status === 200) {
           alert('success')
-          history.push('/blocks')
         } else {
           alert('The mine-transactions block request did not complete.')
         }
