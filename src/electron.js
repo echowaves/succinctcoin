@@ -6,7 +6,8 @@ const electron = require("electron")
 const { app, BrowserWindow, } = electron
 
 const isDev = require("electron-is-dev")
-// const { channels, } = require('./constants')
+
+const api = require('./api') // express app
 
 let mainWindow
 
@@ -26,12 +27,6 @@ function createMainWindow() {
     mainWindow.webContents.openDevTools()
   }
 
-  // mainWindow.loadURL(
-  //   isDev
-  //     ? "http://localhost:3000"
-  //     : `${electron.app.getAppPath()}../build/index.html`
-  // )
-
   let indexPath
 
   if (isDev && process.argv.indexOf('--noDevServer') === -1) {
@@ -50,11 +45,10 @@ function createMainWindow() {
   }
 
   mainWindow.loadURL(indexPath)
-
-  // mainWindow.on("closed", () => (mainWindow = null))
 }
 
 app.on('ready', () => {
+  // api()
   createMainWindow()
 })
 
@@ -69,9 +63,3 @@ app.on('activate', () => {
     createMainWindow()
   }
 })
-// ipcMain.on(channels.APP_INFO, event => {
-//   event.sender.send(channels.APP_INFO, {
-//     appName: app.getName(),
-//     appVersion: app.getVersion(),
-//   })
-// })
