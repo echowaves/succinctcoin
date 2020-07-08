@@ -3,19 +3,21 @@ import { Button, } from 'react-bootstrap'
 import { Link, } from 'react-router-dom'
 import Transaction from './Transaction'
 
+const { ROOT_NODE_ADDRESS, } = require('../api/config')
+
 const POLL_INERVAL_MS = 10000
 
 class TransactionPool extends Component {
   state = { transactionPoolMap: {}, };
 
   fetchTransactionPoolMap = () => {
-    fetch(`${document.location.origin}/api/transaction-pool-map`)
+    fetch(`${ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
       .then(response => response.json())
       .then(json => this.setState({ transactionPoolMap: json, }))
   }
 
   fetchMineTransactions = () => {
-    fetch(`${document.location.origin}/api/mine-transactions`)
+    fetch(`${ROOT_NODE_ADDRESS}/api/mine-transactions`)
       .then(response => {
         if (response.status === 200) {
           alert('success')

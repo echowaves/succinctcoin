@@ -2,6 +2,8 @@ import React, { Component, } from 'react'
 import { Link, } from 'react-router-dom'
 import logo from '../assets/logo.png'
 
+const { ROOT_NODE_ADDRESS, } = require('../api/config')
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -9,7 +11,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch(`http://localhost:3333/api/wallet-info`)
+    fetch(`${ROOT_NODE_ADDRESS}/api/wallet-info`)
       .then(response => response.json())
       .then(json => console.log(`retrieved json: ${json}`))
   }

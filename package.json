@@ -36,6 +36,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "1.19.0",
+    "cors": "^2.8.5",
     "electron-is-dev": "1.2.0",
     "elliptic": "6.5.3",
     "express": "4.17.1",

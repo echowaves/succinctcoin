@@ -2,6 +2,8 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const request = require('request')
 const path = require('path')
+const cors = require('cors')
+
 const Blockchain = require('./blockchain')
 const PubSub = require('./app/pubsub')
 const TransactionPool = require('./wallet/transaction-pool')
@@ -23,6 +25,9 @@ const transactionMiner = new TransactionMiner({
 
 app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'client/dist')))
+
+// enable CORS
+app.use(cors())
 
 app.get('/api/hello', (req, res) => {
   console.log("calling hello world")

@@ -3,11 +3,13 @@ import { Button, } from 'react-bootstrap'
 import { Link, } from 'react-router-dom'
 import Block from './Block'
 
+const { ROOT_NODE_ADDRESS, } = require('../api/config')
+
 class Blocks extends Component {
   state = { blocks: [], paginatedId: 1, blocksLength: 0, };
 
   componentDidMount() {
-    fetch(`${document.location.origin}/api/blocks/length`)
+    fetch(`${ROOT_NODE_ADDRESS}/api/blocks/length`)
       .then(response => response.json())
       .then(json => this.setState({ blocksLength: json, }))
 
@@ -15,7 +17,7 @@ class Blocks extends Component {
   }
 
   fetchPaginatedBlocks = paginatedId => () => {
-    fetch(`${document.location.origin}/api/blocks/${paginatedId}`)
+    fetch(`${ROOT_NODE_ADDRESS}/api/blocks/${paginatedId}`)
       .then(response => response.json())
       .then(json => this.setState({ blocks: json, }))
   }
