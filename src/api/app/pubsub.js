@@ -99,6 +99,7 @@ class PubSub {
 
     this.blockChainRoom.on('peer joined', peer => {
       console.log(`Peer joined blockChainRoom  ${new Date()}`, peer) // eslint-disable-line no-console
+      this.broadcastChain()
     })
     this.transactionRoom.on('peer joined', peer => {
       console.log(`Peer joined transactionRoom ${new Date()}`, peer) // eslint-disable-line no-console
