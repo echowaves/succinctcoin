@@ -29,11 +29,6 @@ app.use(express.static(path.join(__dirname, 'client/dist')))
 // enable CORS
 app.use(cors())
 
-app.get('/api/hello', (req, res) => {
-  console.log("calling hello world")
-  res.json("{hello:world}")
-})
-
 app.get('/api/blocks', (req, res) => {
   res.json(blockchain.chain)
 })
