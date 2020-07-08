@@ -2,47 +2,45 @@
   "name": "succinctcoin",
   "version": "1.0.0",
   "description": "minimalistic crypto-currency",
-  "main": "index.js",
+  "main": "src/electron.js",
   "scripts": {
-    "test": "jest --watchAll",
-    "start": "yarn run build-client & node index.js",
-    "dev": "yarn run dev-client && cross-env ENV='development' nodemon index.js",
-    "dev-peer": "cross-env GENERATE_PEER_PORT='true' ENV='development' nodemon index.js",
-    "build-client": "yarn run clean && parcel build client/src/index.html --out-dir client/dist",
-    "dev-client": "yarn run clean && parcel client/src/index.html --out-dir client/dist",
-    "clean": "rm -rf .cache client/dist"
+    "test": "jest --ci --coverage --reporters=default",
+    "test:ci": "jest --watchAll",
+    "react-start": "parcel -p 3000 index.html --out-dir build",
+    "react-build": "parcel build index.html --out-dir build --public-url ./ --no-source-maps ",
+    "electron-build": "electron-builder -mwl",
+    "clean-build": "rm -rf build/ .cache dist/",
+    "build": "yarn clean-build && yarn react-build && yarn electron-build",
+    "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron . \"",
+    "test-bundle": "bundlesize"
   },
-  "jest": {
-    "testEnvironment": "node"
-  },
-  "keywords": [],
-  "author": "",
+  "bundlesize": [
+    {
+      "path": "./build/src.*.js",
+      "maxSize": "250 kB"
+    },
+    {
+      "path": "./build/src.*.css",
+      "maxSize": "100 kB"
+    }
+  ],
+  "keywords": [
+    "echowaves",
+    "succinct coin",
+    "SuccinctCoin",
+    "electron",
+    "react",
+    "parcel"
+  ],
+  "author": "Echowaves <dmitry@echowaves.com>",
   "license": "MIT",
-  "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-proposal-class-properties": "7.8.3",
-    "@babel/plugin-proposal-object-rest-spread": "7.9.0",
-    "@babel/preset-react": "^7.9.4",
-    "@react-native-community/eslint-config": "1.0.0",
-    "cross-env": "7.0.2",
-    "eslint": "6.8.0",
-    "eslint-config-airbnb": "18.1.0",
-    "eslint-config-prettier": "6.10.1",
-    "eslint-plugin-import": "2.20.2",
-    "eslint-plugin-jest": "23.8.2",
-    "eslint-plugin-jsx-a11y": "6.2.3",
-    "eslint-plugin-react": "7.19.0",
-    "eslint-plugin-react-native": "3.8.1",
-    "jest": "25.2.4",
-    "nodemon": "2.0.2",
-    "parcel-bundler": "^1.12.4"
-  },
   "dependencies": {
     "body-parser": "1.19.0",
-    "elliptic": "6.5.2",
+    "cors": "^2.8.5",
+    "electron-is-dev": "1.2.0",
+    "elliptic": "6.5.3",
     "express": "4.17.1",
     "hex-to-binary": "1.0.1",
-    "history": "4.10.1",
     "ipfs": "0.42.0",
     "ipfs-pubsub-room": "2.0.1",
     "libp2p": "0.27.4",
@@ -54,11 +52,66 @@
     "libp2p-secio": "0.12.4",
     "libp2p-tcp": "0.14.4",
     "libp2p-websockets": "0.13.6",
-    "react": "16.13.1",
-    "react-bootstrap": "1.0.0",
-    "react-dom": "16.13.1",
-    "react-router-dom": "5.1.2",
-    "request": "^2.88.0",
-    "uuid": "7.0.3"
+    "react": ">=16.8.0",
+    "react-bootstrap": "^1.0.1",
+    "react-dom": ">=16.8.0",
+    "react-router-dom": "5.2.0",
+    "request": "2.88.0",
+    "uuid": "8.2.0"
+  },
+  "build": {
+    "appId": "com.echowaves.SuccinctCoin",
+    "files": [
+      "build/*",
+      "build/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "src/electron.js",
+      "src/api",
+      "src/assets/*"
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "src/assets/logo.png"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/assets/logo.png"
+    },
+    "linux": {
+      "target": "deb",
+      "icon": "src/assets/logo.png",
+      "category": "Development"
+    }
+  },
+  "homepage": "./",
+  "devDependencies": {
+    "@babel/core": "7.10.4",
+    "@babel/preset-react": "7.10.4",
+    "@react-native-community/eslint-config": "2.0.0",
+    "@react-native-community/eslint-plugin": "1.1.0",
+    "@testing-library/react": "10.4.3",
+    "babel-cli": "6.26.0",
+    "bundlesize": "0.18.0",
+    "concurrently": "5.2.0",
+    "cross-env": "7.0.2",
+    "electron": "9.0.5",
+    "electron-builder": "22.7.0",
+    "eslint": "7.4.0",
+    "eslint-config-airbnb": "18.2.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-import": "2.22.0",
+    "eslint-plugin-jest": "23.17.1",
+    "eslint-plugin-jsx-a11y": "6.3.1",
+    "eslint-plugin-react": "7.20.3",
+    "eslint-plugin-react-native": "3.8.1",
+    "jest": "26.1.0",
+    "kind-of": "6.0.3",
+    "nodemon": "2.0.4",
+    "parcel-bundler": "1.12.4",
+    "wait-on": "5.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
