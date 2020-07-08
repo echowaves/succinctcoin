@@ -1,4 +1,4 @@
-const DEFAULT_PORT = 3030
+const DEFAULT_PORT = 3333
 const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`
 
 const MINE_RATE = 1000
