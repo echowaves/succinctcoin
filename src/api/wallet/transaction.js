@@ -24,7 +24,7 @@ class Transaction {
   createInput({ senderWallet, outputMap, }) {
     return {
       timestamp: Date.now(),
-      amount: senderWallet.balance,
+      amount: senderWallet.balance, // TODO: recalculate wallet balance on the fly instead of storing it on every transaction
       address: senderWallet.publicKey,
       signature: senderWallet.sign(outputMap),
     }
@@ -35,12 +35,14 @@ class Transaction {
       throw new Error('Amount exceeds balance')
     }
 
-    if (!this.outputMap[recipient]) {
-      this.outputMap[recipient] = amount
-    } else {
-      this.outputMap[recipient] += amount
+    this.outputMap[recipient] = amount
+
+    let previousAmount = 0
+    if (this.outputMap[recipient]) {
+      previousAmount = this.outputMap[recipient]
     }
 
+    this.outputMap[senderWallet.publicKey] += previousAmount
     this.outputMap[senderWallet.publicKey] -= amount
 
     this.input = this.createInput({ senderWallet, outputMap: this.outputMap, })

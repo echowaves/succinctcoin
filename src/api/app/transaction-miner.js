@@ -13,6 +13,7 @@ class TransactionMiner {
   mineTransactions() {
     const validTransactions = this.transactionPool.validTransactions()
 
+    // TODO: move this condition to an object and make it testable
     // only mine if there are transactions in the pool, otherwise it will create reward transaction without doing any work
     if (validTransactions.length) {
       validTransactions.push(

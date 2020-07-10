@@ -6,6 +6,7 @@ const cors = require('cors')
 
 const Blockchain = require('./blockchain')
 const PubSub = require('./app/pubsub')
+const Transaction = require('./wallet/transaction')
 const TransactionPool = require('./wallet/transaction-pool')
 const Wallet = require('./wallet')
 const TransactionMiner = require('./app/transaction-miner')
@@ -67,10 +68,13 @@ app.post('/api/transact', (req, res) => {
 
   let transaction = transactionPool
     .existingTransaction({ inputAddress: wallet.publicKey, })
-
   try {
     if (transaction) {
-      transaction.update({ senderWallet: wallet, recipient, amount, })
+      const transactionObj = Object.assign(new Transaction({
+        senderWallet: wallet, recipient, amount, outputMap: {}, input: {},
+      }), transaction)
+
+      transactionObj.update({ senderWallet: wallet, recipient, amount, })
     } else {
       transaction = wallet.createTransaction({
         recipient,
