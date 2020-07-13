@@ -1,7 +1,7 @@
 const Transaction = require('./transaction')
 const Wallet = require('./index')
 const { verifySignature, } = require('../util')
-const { REWARD_INPUT, MINING_REWARD, } = require('../config')
+const { REWARD_INPUT, MINING_REWARD, } = require('../../config')
 
 describe('Transaction', () => {
   let transaction,

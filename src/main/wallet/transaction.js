@@ -1,7 +1,7 @@
 const { v4: uuidv4, } = require('uuid')
 
 const { verifySignature, } = require('../util')
-const { REWARD_INPUT, MINING_REWARD, } = require('../config')
+const { REWARD_INPUT, MINING_REWARD, } = require('../../config')
 
 class Transaction {
   constructor({

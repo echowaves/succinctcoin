@@ -2,17 +2,21 @@
   "name": "succinctcoin",
   "version": "1.0.0",
   "description": "minimalistic crypto-currency",
-  "main": "src/electron.js",
   "scripts": {
     "test": "jest --ci --coverage --reporters=default",
     "test:ci": "jest --watchAll",
-    "react-start": "parcel -p 3000 index.html --out-dir build",
-    "react-build": "parcel build index.html --out-dir build --public-url ./ --no-source-maps ",
+    "react-start": "parcel -p 3000 index.html ",
+    "react-build": "parcel build index.html --public-url ./ --detailed-report",
     "electron-build": "electron-builder -mwl",
     "clean-build": "rm -rf build/ .cache dist/",
     "build": "yarn clean-build && yarn react-build && yarn electron-build",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron . \"",
-    "test-bundle": "bundlesize"
+    "test-bundle": "bundlesize",
+
+    "dev": "electron-webpack dev",
+    "compile": "electron-webpack",
+    "dist": "yarn compile && electron-builder",
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "bundlesize": [
     {
@@ -29,8 +33,7 @@
     "succinct coin",
     "SuccinctCoin",
     "electron",
-    "react",
-    "parcel"
+    "react"
   ],
   "author": "Echowaves <dmitry@echowaves.com>",
   "license": "MIT",
@@ -53,24 +56,17 @@
     "libp2p-secio": "0.12.4",
     "libp2p-tcp": "0.14.4",
     "libp2p-websockets": "0.13.6",
-    "react": ">=16.8.0",
-    "react-bootstrap": "^1.0.1",
-    "react-dom": ">=16.8.0",
+    "react": "16.13.1",
+    "react-bootstrap": "1.2.2",
+    "react-dom": "16.13.1",
     "react-router-dom": "5.2.0",
     "request": "2.88.0",
+    "source-map-support": "0.5.19",
     "uuid": "8.2.0"
   },
   "build": {
     "appId": "com.echowaves.SuccinctCoin",
-    "files": [
-      "build/*",
-      "build/**/*",
-      "node_modules/**/*",
-      "package.json",
-      "src/electron.js",
-      "src/api",
-      "src/assets/*"
-    ],
+    "files": [],
     "mac": {
       "target": "dmg",
       "icon": "src/assets/logo.png"
@@ -87,17 +83,20 @@
   },
   "homepage": "./",
   "devDependencies": {
-    "@babel/core": "7.10.4",
-    "@babel/preset-react": "7.10.4",
-    "@react-native-community/eslint-config": "2.0.0",
-    "@react-native-community/eslint-plugin": "1.1.0",
-    "@testing-library/react": "10.4.3",
     "@babel/cli": "7.10.4",
+    "@babel/core": "7.10.4",
+    "@babel/plugin-proposal-class-properties": "7.10.4",
+    "@babel/plugin-transform-runtime": "7.10.4",
+    "@babel/preset-env": "7.10.4",
+    "@babel/preset-react": "7.10.4",
+    "@testing-library/react": "10.4.3",
+    "babel-eslint": "10.1.0",
     "bundlesize": "0.18.0",
     "concurrently": "5.2.0",
     "cross-env": "7.0.2",
     "electron": "9.0.5",
     "electron-builder": "22.7.0",
+    "electron-webpack": "2.8.2",
     "eslint": "7.4.0",
     "eslint-config-airbnb": "18.2.0",
     "eslint-config-prettier": "6.11.0",
@@ -105,12 +104,17 @@
     "eslint-plugin-jest": "23.17.1",
     "eslint-plugin-jsx-a11y": "6.3.1",
     "eslint-plugin-react": "7.20.3",
-    "eslint-plugin-react-native": "3.8.1",
+    "eslint-plugin-react-hooks": "^4.0.7",
     "jest": "26.1.0",
     "kind-of": "6.0.3",
     "nodemon": "2.0.4",
-    "parcel-bundler": "1.12.4",
-    "wait-on": "5.0.1"
+    "wait-on": "5.0.1",
+    "webpack": "4.43.0"
+  },
+  "electronWebpack": {
+    "renderer": {
+        "webpackConfig":  "webpack.renderer.additions.js"
+    }
   },
   "jest": {
     "testEnvironment": "node"

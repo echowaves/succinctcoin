@@ -3,11 +3,11 @@
 		"eslint:recommended",
 		"plugin:import/errors",
 		"plugin:import/warnings",
+    "plugin:react-hooks/recommended",
     "airbnb"
 	],
 	"plugins": [
 		"react",
-		"react-native",
     "jest"
 	],
   "parser": "babel-eslint",
@@ -67,10 +67,6 @@
 		"object-curly-spacing": 1,
 		"one-var": 0,
 		"quotes": 0,
-		"react-native/no-color-literals": 0,
-		"react-native/no-inline-styles": 0,
-		"react-native/no-unused-styles": 2,
-		"react-native/split-platform-components": 2,
 		"react/display-name": [ 1, { "ignoreTranspilerName": false }],
 		"react/forbid-prop-types": [1, { "forbid": ["any"] }],
 		"react/jsx-boolean-value": 1,

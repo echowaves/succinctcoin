@@ -11,7 +11,7 @@ const TransactionPool = require('./wallet/transaction-pool')
 const Wallet = require('./wallet')
 const TransactionMiner = require('./app/transaction-miner')
 
-const { DEFAULT_PORT, ROOT_NODE_ADDRESS, } = require('./config')
+const { DEFAULT_PORT, ROOT_NODE_ADDRESS, } = require('../config')
 
 const app = express()
 const blockchain = new Blockchain()

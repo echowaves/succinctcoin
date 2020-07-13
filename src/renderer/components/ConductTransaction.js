@@ -2,10 +2,13 @@ import React, { Component, } from 'react'
 import { FormGroup, FormControl, Button, } from 'react-bootstrap'
 import { Link, } from 'react-router-dom'
 
-const { ROOT_NODE_ADDRESS, } = require('../api/config')
+const { ROOT_NODE_ADDRESS, } = require('../../config')
 
 class ConductTransaction extends Component {
-  state = { recipient: '', amount: 0, knownAddresses: [], };
+  constructor(props) {
+    super(props)
+    this.state = { recipient: '', amount: 0, knownAddresses: [], }
+  }
 
   componentDidMount() {
     fetch(`${ROOT_NODE_ADDRESS}/api/known-addresses`)

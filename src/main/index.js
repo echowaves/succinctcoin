@@ -1,3 +1,5 @@
+import { format as formatUrl, } from 'url'
+
 const url = require('url')
 const path = require('path')
 
@@ -7,7 +9,7 @@ const { app, BrowserWindow, } = electron
 
 const isDev = require("electron-is-dev")
 
-const api = require('./api') // express app
+const api = require('./api.js') // express app
 
 let mainWindow
 
@@ -27,24 +29,15 @@ function createMainWindow() {
     mainWindow.webContents.openDevTools()
   }
 
-  let indexPath
-
-  if (isDev && process.argv.indexOf('--noDevServer') === -1) {
-    indexPath = url.format({
-      protocol: 'http:',
-      host: 'localhost:3000',
-      pathname: 'index.html',
-      slashes: true,
-    })
+  if (isDev) {
+    mainWindow.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
   } else {
-    indexPath = url.format({
-      protocol: 'file:',
-      pathname: path.join(__dirname, '../build', 'index.html'),
+    mainWindow.loadURL(formatUrl({
+      pathname: path.join(__dirname, 'index.html'),
+      protocol: 'file',
       slashes: true,
-    })
+    }))
   }
-
-  mainWindow.loadURL(indexPath)
 }
 
 app.on('ready', () => {

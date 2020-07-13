@@ -3,7 +3,7 @@ import { Button, } from 'react-bootstrap'
 import { Link, } from 'react-router-dom'
 import Transaction from './Transaction'
 
-const { ROOT_NODE_ADDRESS, } = require('../api/config')
+const { ROOT_NODE_ADDRESS, } = require('../../config')
 
 const POLL_INERVAL_MS = 10000
 

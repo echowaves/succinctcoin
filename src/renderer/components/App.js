@@ -1,8 +1,8 @@
 import React, { Component, } from 'react'
 import { Link, } from 'react-router-dom'
-import logo from '../assets/logo.png'
+import logo from '../../static/assets/logo.png'
 
-const { ROOT_NODE_ADDRESS, } = require('../api/config')
+const { ROOT_NODE_ADDRESS, } = require('../../config')
 
 class App extends Component {
   constructor(props) {
@@ -13,7 +13,9 @@ class App extends Component {
   componentDidMount() {
     fetch(`${ROOT_NODE_ADDRESS}/api/wallet-info`)
       .then(response => response.json())
-      .then(json => console.log(`retrieved json: ${json}`))
+      .then(json => {
+        this.setState({ walletInfo: json, })
+      })
   }
 
   render() {

@@ -3,10 +3,9 @@ import { Button, } from 'react-bootstrap'
 import Transaction from './Transaction'
 
 class Block extends Component {
-  state = { displayTransaction: false, };
-
-  toggleTransaction = () => {
-    this.setState({ displayTransaction: !this.state.displayTransaction, })
+  constructor(props) {
+    super(props)
+    this.state = { displayTransaction: false, }
   }
 
   get displayTransaction() {
@@ -51,6 +50,10 @@ class Block extends Component {
         </Button>
       </div>
     )
+  }
+
+  toggleTransaction = () => {
+    this.setState({ displayTransaction: !this.state.displayTransaction, })
   }
 
   render() {
