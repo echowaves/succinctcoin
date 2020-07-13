@@ -1,14 +1,14 @@
-import React, { Component, } from 'react'
-import { Button, } from 'react-bootstrap'
-import { Link, } from 'react-router-dom'
+import React, { Component } from 'react'
+import { Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import Block from './Block'
 
-const { ROOT_NODE_ADDRESS, } = require('../../config')
+const { ROOT_NODE_ADDRESS } = require('../../config')
 
 class Blocks extends Component {
   constructor(props) {
     super(props)
-    this.state = { blocks: [], paginatedId: 1, blocksLength: 0, }
+    this.state = { blocks: [], paginatedId: 1, blocksLength: 0 }
   }
 
   componentDidMount() {
@@ -17,8 +17,8 @@ class Blocks extends Component {
       .then(json => {
         console.log(`retrieved json: ${JSON.stringify(json)}`)
 
-        this.setState({ blocksLength: json, })
-        const { paginatedId, } = this.state
+        this.setState({ blocksLength: json })
+        const { paginatedId } = this.state
         // this.fetchPaginatedBlocks(paginatedId)()
       })
   }
@@ -26,18 +26,18 @@ class Blocks extends Component {
   fetchPaginatedBlocks = paginatedId => () => {
     fetch(`${ROOT_NODE_ADDRESS}/api/blocks/${paginatedId}`)
       .then(response => response.json())
-      .then(json => this.setState({ blocks: json, }))
+      .then(json => this.setState({ blocks: json }))
   }
 
   render() {
-    const { blocksLength, blocks, } = this.state
+    const { blocksLength, blocks } = this.state
     return (
       <div>
         <div><Link to="/">Home</Link></div>
         <h3>Blocks</h3>
         <div>
           {
-            [...Array(Math.ceil(blocksLength / 5)).keys(), ].map(key => {
+            [...Array(Math.ceil(blocksLength / 5)).keys()].map(key => {
               const paginatedId = key + 1
 
               return (

@@ -5,12 +5,6 @@
   "scripts": {
     "test": "jest --ci --coverage --reporters=default",
     "test:ci": "jest --watchAll",
-    "react-start": "parcel -p 3000 index.html ",
-    "react-build": "parcel build index.html --public-url ./ --detailed-report",
-    "electron-build": "electron-builder -mwl",
-    "clean-build": "rm -rf build/ .cache dist/",
-    "build": "yarn clean-build && yarn react-build && yarn electron-build",
-    "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron . \"",
     "test-bundle": "bundlesize",
 
     "dev": "electron-webpack dev",
