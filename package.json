@@ -5,23 +5,14 @@
   "scripts": {
     "test": "jest --ci --coverage --reporters=default",
     "test:ci": "jest --watchAll",
-    "test-bundle": "bundlesize",
 
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
     "dist": "yarn compile && electron-builder",
+    "dist:all": "yarn compile && electron-builder -mwl",
+
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
-  "bundlesize": [
-    {
-      "path": "./build/src.*.js",
-      "maxSize": "250 kB"
-    },
-    {
-      "path": "./build/src.*.css",
-      "maxSize": "100 kB"
-    }
-  ],
   "keywords": [
     "echowaves",
     "succinct coin",
@@ -63,15 +54,15 @@
     "files": [],
     "mac": {
       "target": "dmg",
-      "icon": "src/assets/logo.png"
+      "icon": "src/static/assets/logo.png"
     },
     "win": {
       "target": "nsis",
-      "icon": "src/assets/logo.png"
+      "icon": "src/static/assets/logo.png"
     },
     "linux": {
       "target": "deb",
-      "icon": "src/assets/logo.png",
+      "icon": "src/static/assets/logo.png",
       "category": "Development"
     }
   },
@@ -85,7 +76,6 @@
     "@babel/preset-react": "7.10.4",
     "@testing-library/react": "10.4.3",
     "babel-eslint": "10.1.0",
-    "bundlesize": "0.18.0",
     "concurrently": "5.2.0",
     "cross-env": "7.0.2",
     "electron": "9.0.5",
