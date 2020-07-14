@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Button } from 'react-bootstrap'
+import PropTypes from 'prop-types'
 import Transaction from './Transaction'
 
 class Block extends Component {
@@ -9,7 +10,8 @@ class Block extends Component {
   }
 
   get displayTransaction() {
-    const { data } = this.props.block
+    const { block: { data } } = this.props
+    const { displayTransaction } = this.state
 
     const stringifiedData = JSON.stringify(data)
 
@@ -17,7 +19,7 @@ class Block extends Component {
       ? `${stringifiedData.substring(0, 35)}...`
       : stringifiedData
 
-    if (this.state.displayTransaction) {
+    if (displayTransaction) {
       return (
         <div>
           {
@@ -53,11 +55,13 @@ class Block extends Component {
   }
 
   toggleTransaction = () => {
-    this.setState({ displayTransaction: !this.state.displayTransaction })
+    const { displayTransaction } = this.state
+
+    this.setState({ displayTransaction: !displayTransaction })
   }
 
   render() {
-    const { timestamp, hash } = this.props.block
+    const { block: { timestamp, hash } } = this.props
 
     const hashDisplay = `${hash.substring(0, 15)}...`
 
@@ -69,6 +73,10 @@ class Block extends Component {
       </div>
     )
   }
+}
+
+Block.propTypes = {
+  block: PropTypes.object.isRequired,
 }
 
 export default Block

@@ -1,8 +1,7 @@
 import { format as formatUrl } from 'url'
 
-import api from './api.js'
+import { api, syncWithRootState } from './api.js'
 
-const url = require('url')
 const path = require('path')
 
 const electron = require("electron")
@@ -11,9 +10,17 @@ const { app, BrowserWindow } = electron
 
 const isDev = require("electron-is-dev") // express app
 
+const { DEFAULT_PORT } = require('../config')
+
 let mainWindow
 
 function createMainWindow() {
+  api.listen(DEFAULT_PORT, () => {
+    console.log(`listening at localhost:${DEFAULT_PORT}`) // eslint-disable-line no-console
+
+    syncWithRootState()
+  })
+
   mainWindow = new BrowserWindow({
     title: 'APP NAME',
     width: isDev ? 1600 : 800,

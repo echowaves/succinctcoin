@@ -11,9 +11,9 @@ const TransactionPool = require('./wallet/transaction-pool')
 const Wallet = require('./wallet')
 const TransactionMiner = require('./app/transaction-miner')
 
-const { DEFAULT_PORT, ROOT_NODE_ADDRESS } = require('../config')
+const { ROOT_NODE_ADDRESS } = require('../config')
 
-const app = express()
+const api = express()
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 const wallet = new Wallet()
@@ -24,21 +24,21 @@ const transactionMiner = new TransactionMiner({
   blockchain, transactionPool, wallet, pubsub,
 })
 
-app.use(bodyParser.json())
-app.use(express.static(path.join(__dirname, 'client/dist')))
+api.use(bodyParser.json())
+api.use(express.static(path.join(__dirname, 'client/dist')))
 
 // enable CORS
-app.use(cors())
+api.use(cors())
 
-app.get('/api/blocks', (req, res) => {
+api.get('/api/blocks', (req, res) => {
   res.json(blockchain.chain)
 })
 
-app.get('/api/blocks/length', (req, res) => {
+api.get('/api/blocks/length', (req, res) => {
   res.json(blockchain.chain.length)
 })
 
-app.get('/api/blocks/:id', (req, res) => {
+api.get('/api/blocks/:id', (req, res) => {
   const { id } = req.params
   const { length } = blockchain.chain
 
@@ -53,7 +53,7 @@ app.get('/api/blocks/:id', (req, res) => {
   res.json(blocksReversed.slice(startIndex, endIndex))
 })
 
-app.post('/api/mine', (req, res) => {
+api.post('/api/mine', (req, res) => {
   const { data } = req.body
 
   blockchain.addBlock({ data })
@@ -63,7 +63,7 @@ app.post('/api/mine', (req, res) => {
   res.redirect('/api/blocks')
 })
 
-app.post('/api/transact', (req, res) => {
+api.post('/api/transact', (req, res) => {
   const { amount, recipient } = req.body
 
   let transaction = transactionPool
@@ -93,17 +93,17 @@ app.post('/api/transact', (req, res) => {
   res.json({ type: 'success', transaction })
 })
 
-app.get('/api/transaction-pool-map', (req, res) => {
+api.get('/api/transaction-pool-map', (req, res) => {
   res.json(transactionPool.transactionMap)
 })
 
-app.get('/api/mine-transactions', (req, res) => {
+api.get('/api/mine-transactions', (req, res) => {
   transactionMiner.mineTransactions()
 
   res.redirect('/api/blocks')
 })
 
-app.get('/api/wallet-info', (req, res) => {
+api.get('/api/wallet-info', (req, res) => {
   const address = wallet.publicKey
 
   res.json({
@@ -112,7 +112,7 @@ app.get('/api/wallet-info', (req, res) => {
   })
 })
 
-app.get('/api/known-addresses', (req, res) => {
+api.get('/api/known-addresses', (req, res) => {
   const addressMap = {}
 
   for (const block of blockchain.chain) { // eslint-disable-line no-restricted-syntax
@@ -126,7 +126,7 @@ app.get('/api/known-addresses', (req, res) => {
   res.json(Object.keys(addressMap))
 })
 
-// app.get('*', (req, res) => {
+// api.get('*', (req, res) => {
 //   res.sendFile(path.join(__dirname, '/index.html'))
 // })
 
@@ -150,8 +150,4 @@ const syncWithRootState = () => {
   })
 }
 
-app.listen(DEFAULT_PORT, () => {
-  console.log(`listening at localhost:${DEFAULT_PORT}`) // eslint-disable-line no-console
-
-  syncWithRootState()
-})
+module.exports = { api, syncWithRootState }

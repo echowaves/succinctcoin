@@ -19,7 +19,7 @@ class Blocks extends Component {
 
         this.setState({ blocksLength: json })
         const { paginatedId } = this.state
-        // this.fetchPaginatedBlocks(paginatedId)()
+        this.fetchPaginatedBlocks(paginatedId)()
       })
   }
 

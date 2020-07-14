@@ -4,7 +4,7 @@
   "description": "minimalistic crypto-currency",
   "scripts": {
     "test": "jest --ci --coverage --reporters=default",
-    "test:ci": "jest --watchAll",
+    "test:ci": "jest --watch",
 
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
