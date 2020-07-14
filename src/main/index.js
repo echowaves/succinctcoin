@@ -1,15 +1,15 @@
-import { format as formatUrl, } from 'url'
+import { format as formatUrl } from 'url'
+
+import api from './api.js'
 
 const url = require('url')
 const path = require('path')
 
 const electron = require("electron")
 
-const { app, BrowserWindow, } = electron
+const { app, BrowserWindow } = electron
 
-const isDev = require("electron-is-dev")
-
-const api = require('./api.js') // express app
+const isDev = require("electron-is-dev") // express app
 
 let mainWindow
 

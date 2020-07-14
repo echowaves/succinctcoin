@@ -1,8 +1,8 @@
 const Block = require('./block')
 const Transaction = require('../wallet/transaction')
 const Wallet = require('../wallet')
-const { cryptoHash, } = require('../util')
-const { REWARD_INPUT, MINING_REWARD, } = require('../../config')
+const { cryptoHash } = require('../util')
+const { REWARD_INPUT, MINING_REWARD } = require('../../config')
 
 class Blockchain {
   constructor() {
@@ -11,7 +11,7 @@ class Blockchain {
     ]
   }
 
-  addBlock({ data, }) {
+  addBlock({ data }) {
     const newBlock = Block.mineBlock({
       lastBlock: this.chain[this.chain.length - 1],
       data,
@@ -31,7 +31,7 @@ class Blockchain {
       return
     }
 
-    if (validateTransactions && !this.validTransactionData({ chain, })) {
+    if (validateTransactions && !this.validTransactionData({ chain })) {
       console.error('The incoming chain has invalid data') // eslint-disable-line no-console
       return
     }
@@ -41,7 +41,7 @@ class Blockchain {
     this.chain = chain
   }
 
-  validTransactionData({ chain, }) {
+  validTransactionData({ chain }) {
     for (let i = 1; i < chain.length; i++) { // eslint-disable-line no-plusplus
       const block = chain[i]
       const transactionSet = new Set()

@@ -17,7 +17,7 @@ class TransactionPool {
     this.transactionMap = transactionMap
   }
 
-  existingTransaction({ inputAddress, }) {
+  existingTransaction({ inputAddress }) {
     const transactions = Object.values(this.transactionMap)
 
     return transactions.find(transaction => transaction.input.address === inputAddress)
@@ -29,7 +29,7 @@ class TransactionPool {
     )
   }
 
-  clearBlockchainTransactions({ chain, }) {
+  clearBlockchainTransactions({ chain }) {
     for (let i = 1; i < chain.length; i++) { // eslint-disable-line no-plusplus
       const block = chain[i]
 

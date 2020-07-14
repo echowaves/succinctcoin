@@ -1,8 +1,8 @@
 const Wallet = require('./index')
 const Transaction = require('./transaction')
-const { verifySignature, } = require('../util')
+const { verifySignature } = require('../util')
 const Blockchain = require('../blockchain')
-const { STARTING_BALANCE, } = require('../../config')
+const { STARTING_BALANCE } = require('../../config')
 
 describe('Wallet', () => {
   let wallet
@@ -46,7 +46,7 @@ describe('Wallet', () => {
   describe('createTransaction()', () => {
     describe('and the amount exceeds the balance', () => {
       it('throws an error', () => {
-        expect(() => wallet.createTransaction({ amount: 999999, recipient: 'foo-recipient', }))
+        expect(() => wallet.createTransaction({ amount: 999999, recipient: 'foo-recipient' }))
           .toThrow('Amount exceeds balance')
       })
     })
@@ -59,7 +59,7 @@ describe('Wallet', () => {
       beforeEach(() => {
         amount = 50
         recipient = 'foo-recipient'
-        transaction = wallet.createTransaction({ amount, recipient, })
+        transaction = wallet.createTransaction({ amount, recipient })
       })
 
       it('creates an instance of `Transaction`', () => {
@@ -184,7 +184,7 @@ describe('Wallet', () => {
               amount: 60,
             })
 
-            sameBlockTransaction = Transaction.rewardTransaction({ minerWallet: wallet, })
+            sameBlockTransaction = Transaction.rewardTransaction({ minerWallet: wallet })
 
             blockchain.addBlock({
               data: [

@@ -32,7 +32,7 @@ describe('TransactionPool', () => {
       transactionPool.setTransaction(transaction)
 
       expect(
-        transactionPool.existingTransaction({ inputAddress: senderWallet.publicKey, })
+        transactionPool.existingTransaction({ inputAddress: senderWallet.publicKey })
       ).toBe(transaction)
     })
   })
@@ -106,7 +106,7 @@ describe('TransactionPool', () => {
         }
       }
 
-      transactionPool.clearBlockchainTransactions({ chain: blockchain.chain, })
+      transactionPool.clearBlockchainTransactions({ chain: blockchain.chain })
 
       expect(transactionPool.transactionMap).toEqual(expectedTransactionMap)
     })

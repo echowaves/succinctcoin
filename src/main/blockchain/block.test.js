@@ -1,7 +1,7 @@
 const hexToBinary = require('hex-to-binary')
 const Block = require('./block')
-const { GENESIS_DATA, MINE_RATE, } = require('../../config')
-const { cryptoHash, } = require('../util')
+const { GENESIS_DATA, MINE_RATE } = require('../../config')
+const { cryptoHash } = require('../util')
 
 describe('Block', () => {
   const timestamp = 2000
@@ -41,7 +41,7 @@ describe('Block', () => {
   describe('mineBlock()', () => {
     const lastBlock = Block.genesis()
     const data = 'mined data'
-    const minedBlock = Block.mineBlock({ lastBlock, data, })
+    const minedBlock = Block.mineBlock({ lastBlock, data })
 
     it('returns a Block instance', () => {
       expect(minedBlock instanceof Block).toBe(true)
@@ -103,7 +103,7 @@ describe('Block', () => {
     it('has a lower limit of 1', () => {
       block.difficulty = -1
 
-      expect(Block.adjustDifficulty({ originalBlock: block, })).toEqual(1)
+      expect(Block.adjustDifficulty({ originalBlock: block })).toEqual(1)
     })
   })
 })

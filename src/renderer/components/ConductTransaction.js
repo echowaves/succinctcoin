@@ -1,36 +1,36 @@
-import React, { Component, } from 'react'
-import { FormGroup, FormControl, Button, } from 'react-bootstrap'
-import { Link, } from 'react-router-dom'
+import React, { Component } from 'react'
+import { FormGroup, FormControl, Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
-const { ROOT_NODE_ADDRESS, } = require('../../config')
+const { ROOT_NODE_ADDRESS } = require('../../config')
 
 class ConductTransaction extends Component {
   constructor(props) {
     super(props)
-    this.state = { recipient: '', amount: 0, knownAddresses: [], }
+    this.state = { recipient: '', amount: 0, knownAddresses: [] }
   }
 
   componentDidMount() {
     fetch(`${ROOT_NODE_ADDRESS}/api/known-addresses`)
       .then(response => response.json())
-      .then(json => this.setState({ knownAddresses: json, }))
+      .then(json => this.setState({ knownAddresses: json }))
   }
 
   updateRecipient = event => {
-    this.setState({ recipient: event.target.value, })
+    this.setState({ recipient: event.target.value })
   }
 
   updateAmount = event => {
-    this.setState({ amount: Number(event.target.value), })
+    this.setState({ amount: Number(event.target.value) })
   }
 
   conductTransaction = () => {
-    const { recipient, amount, } = this.state
+    const { recipient, amount } = this.state
 
     fetch(`${ROOT_NODE_ADDRESS}/api/transact`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', },
-      body: JSON.stringify({ recipient, amount, }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipient, amount }),
     }).then(response => response.json())
       .then(json => {
         alert(json.message || json.type)

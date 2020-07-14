@@ -1,6 +1,6 @@
 const Blockchain = require('./index')
 const Block = require('./block')
-const { cryptoHash, } = require('../util')
+const { cryptoHash } = require('../util')
 const Wallet = require('../wallet')
 const Transaction = require('../wallet/transaction')
 
@@ -29,7 +29,7 @@ describe('Blockchain', () => {
 
   it('adds a new block to the chain', () => {
     const newData = 'foo bar'
-    blockchain.addBlock({ data: newData, })
+    blockchain.addBlock({ data: newData })
 
     expect(blockchain.chain[blockchain.chain.length - 1].data).toEqual(newData)
   })
@@ -37,7 +37,7 @@ describe('Blockchain', () => {
   describe('isValidChain()', () => {
     describe('when the chain does not start with the genesis block', () => {
       it('returns false', () => {
-        blockchain.chain[0] = { data: 'fake-genesis', }
+        blockchain.chain[0] = { data: 'fake-genesis' }
 
         expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
       })
@@ -45,9 +45,9 @@ describe('Blockchain', () => {
 
     describe('when the chain starts with the genesis block and has multiple blocks', () => {
       beforeEach(() => {
-        blockchain.addBlock({ data: 'Bears', })
-        blockchain.addBlock({ data: 'Beets', })
-        blockchain.addBlock({ data: 'Battlestar Galactica', })
+        blockchain.addBlock({ data: 'Bears' })
+        blockchain.addBlock({ data: 'Beets' })
+        blockchain.addBlock({ data: 'Battlestar Galactica' })
       })
 
       describe('and a lastHash reference has changed', () => {
@@ -104,7 +104,7 @@ describe('Blockchain', () => {
 
     describe('when the new chain is not longer', () => {
       beforeEach(() => {
-        newChain.chain[0] = { new: 'chain', }
+        newChain.chain[0] = { new: 'chain' }
 
         blockchain.replaceChain(newChain.chain)
       })
@@ -120,9 +120,9 @@ describe('Blockchain', () => {
 
     describe('when the new chain is longer', () => {
       beforeEach(() => {
-        newChain.addBlock({ data: 'Bears', })
-        newChain.addBlock({ data: 'Beets', })
-        newChain.addBlock({ data: 'Battlestar Galactica', })
+        newChain.addBlock({ data: 'Bears' })
+        newChain.addBlock({ data: 'Beets' })
+        newChain.addBlock({ data: 'Battlestar Galactica' })
       })
 
       describe('and the chain is invalid', () => {
@@ -162,7 +162,7 @@ describe('Blockchain', () => {
 
         blockchain.validTransactionData = validTransactionDataMock
 
-        newChain.addBlock({ data: 'foo', })
+        newChain.addBlock({ data: 'foo' })
         blockchain.replaceChain(newChain.chain, true)
 
         expect(validTransactionDataMock).toHaveBeenCalled()
@@ -177,8 +177,8 @@ describe('Blockchain', () => {
 
     beforeEach(() => {
       wallet = new Wallet()
-      transaction = wallet.createTransaction({ recipient: 'foo-address', amount: 65, })
-      rewardTransaction = Transaction.rewardTransaction({ minerWallet: wallet, })
+      transaction = wallet.createTransaction({ recipient: 'foo-address', amount: 65 })
+      rewardTransaction = Transaction.rewardTransaction({ minerWallet: wallet })
     })
 
     describe('and the transaction data is valid', () => {
@@ -189,7 +189,7 @@ describe('Blockchain', () => {
           ],
         })
 
-        expect(blockchain.validTransactionData({ chain: newChain.chain, })).toBe(true)
+        expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(true)
         expect(errorMock).not.toHaveBeenCalled()
       })
     })
@@ -202,7 +202,7 @@ describe('Blockchain', () => {
           ],
         })
 
-        expect(blockchain.validTransactionData({ chain: newChain.chain, })).toBe(false)
+        expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false)
         expect(errorMock).toHaveBeenCalled()
       })
     })
@@ -218,7 +218,7 @@ describe('Blockchain', () => {
             ],
           })
 
-          expect(blockchain.validTransactionData({ chain: newChain.chain, })).toBe(false)
+          expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false)
           expect(errorMock).toHaveBeenCalled()
         })
       })
@@ -233,7 +233,7 @@ describe('Blockchain', () => {
             ],
           })
 
-          expect(blockchain.validTransactionData({ chain: newChain.chain, })).toBe(false)
+          expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false)
           expect(errorMock).toHaveBeenCalled()
         })
       })
@@ -264,7 +264,7 @@ describe('Blockchain', () => {
           ],
         })
 
-        expect(blockchain.validTransactionData({ chain: newChain.chain, })).toBe(false)
+        expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false)
         expect(errorMock).toHaveBeenCalled()
       })
     })
@@ -277,7 +277,7 @@ describe('Blockchain', () => {
           ],
         })
 
-        expect(blockchain.validTransactionData({ chain: newChain.chain, })).toBe(false)
+        expect(blockchain.validTransactionData({ chain: newChain.chain })).toBe(false)
         expect(errorMock).toHaveBeenCalled()
       })
     })

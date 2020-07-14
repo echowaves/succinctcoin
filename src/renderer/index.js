@@ -1,7 +1,7 @@
 import React from "react"
-import { render, } from 'react-dom'
+import { render } from 'react-dom'
 
-import { HashRouter, Switch, Route, } from 'react-router-dom'
+import { HashRouter, Switch, Route } from 'react-router-dom'
 import App from './components/App'
 import Blocks from './components/Blocks'
 import ConductTransaction from './components/ConductTransaction'

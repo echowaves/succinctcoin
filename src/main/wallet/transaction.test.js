@@ -1,7 +1,7 @@
 const Transaction = require('./transaction')
 const Wallet = require('./index')
-const { verifySignature, } = require('../util')
-const { REWARD_INPUT, MINING_REWARD, } = require('../../config')
+const { verifySignature } = require('../util')
+const { REWARD_INPUT, MINING_REWARD } = require('../../config')
 
 describe('Transaction', () => {
   let transaction,
@@ -13,7 +13,7 @@ describe('Transaction', () => {
     senderWallet = new Wallet()
     recipient = 'recipient-public-key'
     amount = 50
-    transaction = new Transaction({ senderWallet, recipient, amount, })
+    transaction = new Transaction({ senderWallet, recipient, amount })
   })
 
   it('has an `id`', () => {
@@ -171,7 +171,7 @@ describe('Transaction', () => {
 
     beforeEach(() => {
       minerWallet = new Wallet()
-      rewardTransaction = Transaction.rewardTransaction({ minerWallet, })
+      rewardTransaction = Transaction.rewardTransaction({ minerWallet })
     })
 
     it('creates a transaction with the reward input', () => {

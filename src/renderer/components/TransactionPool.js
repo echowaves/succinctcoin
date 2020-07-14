@@ -1,19 +1,19 @@
-import React, { Component, } from 'react'
-import { Button, } from 'react-bootstrap'
-import { Link, } from 'react-router-dom'
+import React, { Component } from 'react'
+import { Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import Transaction from './Transaction'
 
-const { ROOT_NODE_ADDRESS, } = require('../../config')
+const { ROOT_NODE_ADDRESS } = require('../../config')
 
 const POLL_INERVAL_MS = 10000
 
 class TransactionPool extends Component {
-  state = { transactionPoolMap: {}, };
+  state = { transactionPoolMap: {} };
 
   fetchTransactionPoolMap = () => {
     fetch(`${ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
       .then(response => response.json())
-      .then(json => this.setState({ transactionPoolMap: json, }))
+      .then(json => this.setState({ transactionPoolMap: json }))
   }
 
   fetchMineTransactions = () => {

@@ -1,25 +1,25 @@
-import React, { Component, } from 'react'
-import { Link, } from 'react-router-dom'
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import logo from '../../static/assets/logo.png'
 
-const { ROOT_NODE_ADDRESS, } = require('../../config')
+const { ROOT_NODE_ADDRESS } = require('../../config')
 
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = { walletInfo: {}, }
+    this.state = { walletInfo: {} }
   }
 
   componentDidMount() {
     fetch(`${ROOT_NODE_ADDRESS}/api/wallet-info`)
       .then(response => response.json())
       .then(json => {
-        this.setState({ walletInfo: json, })
+        this.setState({ walletInfo: json })
       })
   }
 
   render() {
-    const { state: { walletInfo: { address, balance, }, }, } = this
+    const { state: { walletInfo: { address, balance } } } = this
 
     return (
       <div className="App">

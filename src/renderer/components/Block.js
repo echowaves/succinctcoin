@@ -1,15 +1,15 @@
-import React, { Component, } from 'react'
-import { Button, } from 'react-bootstrap'
+import React, { Component } from 'react'
+import { Button } from 'react-bootstrap'
 import Transaction from './Transaction'
 
 class Block extends Component {
   constructor(props) {
     super(props)
-    this.state = { displayTransaction: false, }
+    this.state = { displayTransaction: false }
   }
 
   get displayTransaction() {
-    const { data, } = this.props.block
+    const { data } = this.props.block
 
     const stringifiedData = JSON.stringify(data)
 
@@ -53,11 +53,11 @@ class Block extends Component {
   }
 
   toggleTransaction = () => {
-    this.setState({ displayTransaction: !this.state.displayTransaction, })
+    this.setState({ displayTransaction: !this.state.displayTransaction })
   }
 
   render() {
-    const { timestamp, hash, } = this.props.block
+    const { timestamp, hash } = this.props.block
 
     const hashDisplay = `${hash.substring(0, 15)}...`
 
