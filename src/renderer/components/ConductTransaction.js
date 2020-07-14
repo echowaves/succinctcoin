@@ -38,6 +38,7 @@ class ConductTransaction extends Component {
   }
 
   render() {
+    const { knownAddresses, recipient, amount } = this.state
     return (
       <div className="ConductTransaction">
         <Link to="/">Home</Link>
@@ -45,7 +46,7 @@ class ConductTransaction extends Component {
         <br />
         <h4>Known Addresses</h4>
         {
-          this.state.knownAddresses.map(knownAddress => (
+          knownAddresses.map(knownAddress => (
             <div key={knownAddress}>
               <div>{knownAddress}</div>
               <br />
@@ -57,7 +58,7 @@ class ConductTransaction extends Component {
           <FormControl
             input="text"
             placeholder="recipient"
-            value={this.state.recipient}
+            value={recipient}
             onChange={this.updateRecipient}
           />
         </FormGroup>
@@ -65,7 +66,7 @@ class ConductTransaction extends Component {
           <FormControl
             input="number"
             placeholder="amount"
-            value={this.state.amount}
+            value={amount}
             onChange={this.updateAmount}
           />
         </FormGroup>

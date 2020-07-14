@@ -8,7 +8,23 @@ const { ROOT_NODE_ADDRESS } = require('../../config')
 const POLL_INERVAL_MS = 10000
 
 class TransactionPool extends Component {
-  state = { transactionPoolMap: {} };
+  constructor(props) {
+    super(props)
+    this.state = { transactionPoolMap: {} }
+  }
+
+  componentDidMount() {
+    this.fetchTransactionPoolMap()
+
+    this.fetchPoolMapInterval = setInterval(
+      () => this.fetchTransactionPoolMap(),
+      POLL_INERVAL_MS
+    )
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.fetchPoolMapInterval)
+  }
 
   fetchTransactionPoolMap = () => {
     fetch(`${ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
@@ -27,26 +43,14 @@ class TransactionPool extends Component {
       })
   }
 
-  componentDidMount() {
-    this.fetchTransactionPoolMap()
-
-    this.fetchPoolMapInterval = setInterval(
-      () => this.fetchTransactionPoolMap(),
-      POLL_INERVAL_MS
-    )
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.fetchPoolMapInterval)
-  }
-
   render() {
+    const { transactionPoolMap } = this.state
     return (
       <div className="TransactionPool">
         <div><Link to="/">Home</Link></div>
         <h3>Transaction Pool</h3>
         {
-          Object.values(this.state.transactionPoolMap).map(transaction => (
+          Object.values(transactionPoolMap).map(transaction => (
             <div key={transaction.id}>
               <hr />
               <Transaction transaction={transaction} />

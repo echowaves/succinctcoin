@@ -15,7 +15,7 @@ class Blocks extends Component {
     fetch(`${ROOT_NODE_ADDRESS}/api/blocks/length`)
       .then(response => response.json())
       .then(json => {
-        console.log(`retrieved json: ${JSON.stringify(json)}`)
+        console.log(`retrieved json: ${JSON.stringify(json)}`) // eslint-disable-line no-console
 
         this.setState({ blocksLength: json })
         const { paginatedId } = this.state
@@ -41,7 +41,12 @@ class Blocks extends Component {
               const paginatedId = key + 1
 
               return (
-                <span key={key} onClick={this.fetchPaginatedBlocks(paginatedId)}>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  key={key}
+                  onClick={this.fetchPaginatedBlocks(paginatedId)}
+                  onKeyPress={this.fetchPaginatedBlocks(paginatedId)}>
                   <Button bssize="small" bsstyle="danger">
                     {paginatedId}
                   </Button>{' '}

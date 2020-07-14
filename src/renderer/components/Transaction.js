@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const Transaction = ({ transaction }) => {
   const { input, outputMap } = transaction
@@ -16,6 +17,10 @@ const Transaction = ({ transaction }) => {
       }
     </div>
   )
+}
+
+Transaction.propTypes = {
+  transaction: PropTypes.object.isRequired,
 }
 
 export default Transaction
