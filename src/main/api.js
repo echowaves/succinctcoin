@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser')
 const express = require('express')
-const request = require('request')
+const fetch = require("node-fetch")
 const path = require('path')
 const cors = require('cors')
 
@@ -126,28 +126,24 @@ api.get('/api/known-addresses', (req, res) => {
   res.json(Object.keys(addressMap))
 })
 
-// api.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, '/index.html'))
-// })
-
 const syncWithRootState = () => {
-  request({ url: `${ROOT_NODE_ADDRESS}/api/blocks` }, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      const rootChain = JSON.parse(body)
+  fetch(`${ROOT_NODE_ADDRESS}/api/blocks`)
+    .then(response => response.json())
+    .then(json => {
+      const rootChain = json
 
       console.log('replace chain on a sync with', rootChain) // eslint-disable-line no-console
       blockchain.replaceChain(rootChain)
-    }
-  })
+    })
 
-  request({ url: `${ROOT_NODE_ADDRESS}/api/transaction-pool-map` }, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      const rootTransactionPoolMap = JSON.parse(body)
+  fetch(`${ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
+    .then(response => response.json())
+    .then(json => {
+      const rootTransactionPoolMap = json
 
       console.log('replace transaction pool map on a sync with', rootTransactionPoolMap) // eslint-disable-line no-console
       transactionPool.setMap(rootTransactionPoolMap)
-    }
-  })
+    })
 }
 
 module.exports = { api, syncWithRootState }
