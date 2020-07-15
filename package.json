@@ -11,7 +11,9 @@
     "dist": "yarn compile && electron-builder",
     "dist:all": "yarn compile && electron-builder -mwl",
 
-    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null",
+
+		"lint": "eslint . --ext .js,.ts"
   },
   "keywords": [
     "echowaves",
