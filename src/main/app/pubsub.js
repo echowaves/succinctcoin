@@ -3,6 +3,8 @@ const Libp2p = require('libp2p')
 const TCP = require('libp2p-tcp')
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
+const { NOISE } = require('libp2p-noise')
+
 const MulticastDNS = require('libp2p-mdns')
 const DHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
@@ -27,20 +29,17 @@ class PubSub {
     // create a node, assign to the class variable, discover peers,
     // and have the node establish connections to the peers
     const node = await Libp2p.create({
+      addresses: {
+        listen: ['/ip4/0.0.0.0/tcp/0'],
+      },
       modules: {
         transport: [
           TCP,
           // new WS() // It can take instances too!
         ],
-        streamMuxer: [
-          MPLEX,
-        ],
-        connEncryption: [
-          SECIO,
-        ],
-        peerDiscovery: [
-          MulticastDNS,
-        ],
+        streamMuxer: [MPLEX],
+        connEncryption: [SECIO, NOISE],
+        peerDiscovery: [MulticastDNS],
         dht: DHT,
         pubsub: GossipSub,
       },
@@ -71,7 +70,9 @@ class PubSub {
 
     // await node.peerInfo.multiaddrs.add('/ip6/::1/tcp/0')
     // await node.peerInfo.multiaddrs.add('/ip6/::/tcp/0')
-    await node.peerInfo.multiaddrs.add('/ip4/0.0.0.0/tcp/0')
+
+    // await node.peerStore.multiaddrs.add('/ip4/0.0.0.0/tcp/0')
+    // await node.peerStore.addressBook.add('/ip4/0.0.0.0/tcp/0')
 
     await node.start()
     console.log('libp2p has started') // eslint-disable-line no-console
