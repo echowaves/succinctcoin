@@ -30,7 +30,7 @@
     "elliptic": "6.5.3",
     "express": "4.17.1",
     "hex-to-binary": "1.0.1",
-    "ipfs": "0.42.0",
+    "ipfs": "0.47.0",
     "ipfs-pubsub-room": "2.0.1",
     "libp2p": "0.27.4",
     "libp2p-gossipsub": "0.2.5",
