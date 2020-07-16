@@ -30,13 +30,11 @@ class PubSub {
     // and have the node establish connections to the peers
     const node = await Libp2p.create({
       addresses: {
-        listen: ['/ip4/0.0.0.0/tcp/0'],
+        // listen: ['/ip4/0.0.0.0/tcp/0'],
+        listen: ['/ip6/::1/tcp/0'],
       },
       modules: {
-        transport: [
-          TCP,
-          // new WS() // It can take instances too!
-        ],
+        transport: [TCP],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO, NOISE],
         peerDiscovery: [MulticastDNS],
@@ -47,7 +45,7 @@ class PubSub {
         peerDiscovery: {
           autoDial: true, // Auto connect to discovered peers (limited by ConnectionManager minPeers)
           mdns: { // mdns options
-            interval: 1000, // ms
+            interval: 1e3, // 1 second
             enabled: true,
           },
         },

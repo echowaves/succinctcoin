@@ -73,6 +73,7 @@ class Blockchain {
 
           if (transaction.input.amount !== trueBalance) {
             console.error('Invalid input amount') // eslint-disable-line no-console
+            console.error(`transaction.input.amount:${transaction.input.amount} trueBalance:${trueBalance}`) // eslint-disable-line no-console
             return false
           }
 
