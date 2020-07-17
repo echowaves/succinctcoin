@@ -57,6 +57,12 @@ class PubSub {
             enabled: true,
           },
         },
+        pubsub: { // The pubsub options (and defaults) can be found in the pubsub router documentation
+          enabled: true,
+          emitSelf: true, // whether the node should emit to self on publish
+          signMessages: true, // if messages should be signed
+          strictSigning: true, // if message signing should be required
+        },
         // relay: { // Circuit Relay options
         //   enabled: true,
         //   hop: {
