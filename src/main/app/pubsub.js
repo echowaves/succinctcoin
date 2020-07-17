@@ -4,6 +4,9 @@ const TCP = require('libp2p-tcp')
 const Websockets = require('libp2p-websockets')
 const WebSocketStar = require('libp2p-websocket-star')
 const WebRTCStar = require('libp2p-webrtc-star')
+const wrtc = require('wrtc')
+
+const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
 
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
@@ -44,7 +47,7 @@ class PubSub {
       //   ],
       // },
       modules: {
-        transport: [Websockets, WebRTCStar],
+        transport: [WebRTCStar],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO, NOISE],
         peerDiscovery: [MulticastDNS],
@@ -52,6 +55,11 @@ class PubSub {
         pubsub: GossipSub,
       },
       config: {
+        transport: {
+          [transportKey]: {
+            wrtc, // You can use `wrtc` when running in Node.js
+          },
+        },
         peerDiscovery: {
           webRTCStar: {
             enabled: true,
