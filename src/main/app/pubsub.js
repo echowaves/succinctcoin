@@ -37,15 +37,15 @@ class PubSub {
     // create a node, assign to the class variable, discover peers,
     // and have the node establish connections to the peers
     const node = await Libp2p.create({
-      // addresses: {
+      addresses: {
       //   // Add the signaling server address, along with our PeerId to our multiaddrs list
       //   // libp2p will automatically attempt to dial to the signaling server so that it can
       //   // receive inbound connections from other peers
-      //   listen: [
-      //     '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-      //     '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-      //   ],
-      // },
+        listen: [
+          '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+          '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        ],
+      },
       modules: {
         transport: [WebRTCStar],
         streamMuxer: [MPLEX],
