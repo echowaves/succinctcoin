@@ -50,7 +50,8 @@
     "react-dom": "16.13.1",
     "react-router-dom": "5.2.0",
     "source-map-support": "0.5.19",
-    "uuid": "8.2.0"
+    "uuid": "8.2.0",
+    "wrtc": "^0.4.5"
   },
   "build": {
     "appId": "com.echowaves.SuccinctCoin",

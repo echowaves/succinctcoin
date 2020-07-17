@@ -34,12 +34,17 @@ class PubSub {
     // create a node, assign to the class variable, discover peers,
     // and have the node establish connections to the peers
     const node = await Libp2p.create({
-      addresses: {
-        listen: ['/ip4/0.0.0.0/tcp/0'],
-        // listen: ['/ip6/::1/tcp/0'],
-      },
+      // addresses: {
+      //   // Add the signaling server address, along with our PeerId to our multiaddrs list
+      //   // libp2p will automatically attempt to dial to the signaling server so that it can
+      //   // receive inbound connections from other peers
+      //   listen: [
+      //     '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+      //     '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+      //   ],
+      // },
       modules: {
-        transport: [WebRTCStar],
+        transport: [Websockets, WebRTCStar],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO, NOISE],
         peerDiscovery: [MulticastDNS],
@@ -48,26 +53,24 @@ class PubSub {
       },
       config: {
         peerDiscovery: {
-          autoDial: true, // Auto connect to discovered peers (limited by ConnectionManager minPeers)
-          mdns: { // mdns options
-            interval: 1e3, // 1 second
+          webRTCStar: {
             enabled: true,
           },
         },
-        relay: { // Circuit Relay options
-          enabled: true,
-          hop: {
-            enabled: true,
-            active: true,
-          },
-        },
-        dht: {
-          // dht must be enabled
-          enabled: true,
-          randomWalk: {
-            enabled: true,
-          },
-        },
+        // relay: { // Circuit Relay options
+        //   enabled: true,
+        //   hop: {
+        //     enabled: true,
+        //     active: true,
+        //   },
+        // },
+        // dht: {
+        //   // dht must be enabled
+        //   enabled: true,
+        //   randomWalk: {
+        //     enabled: true,
+        //   },
+        // },
       },
     })
 
