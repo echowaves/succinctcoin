@@ -70,13 +70,15 @@ class PubSub {
         //     active: true,
         //   },
         // },
-        // dht: {
-        //   // dht must be enabled
-        //   enabled: true,
-        //   randomWalk: {
-        //     enabled: true,
-        //   },
-        // },
+        dht: { // The DHT options (and defaults) can be found in its documentation
+          kBucketSize: 20,
+          enabled: true,
+          randomWalk: {
+            enabled: true, // Allows to disable discovery (enabled by default)
+            interval: 300e3,
+            timeout: 10e3,
+          },
+        },
       },
     })
 
