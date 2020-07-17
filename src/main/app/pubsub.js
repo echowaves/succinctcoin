@@ -1,8 +1,16 @@
 // const redis = require('redis');
 const Libp2p = require('libp2p')
 const TCP = require('libp2p-tcp')
+const Websockets = require('libp2p-websockets')
+const WebSocketStar = require('libp2p-websocket-star')
+const WebRTCStar = require('libp2p-webrtc-star')
+const wrtc = require('wrtc')
+
+const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
+
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
+
 const { NOISE } = require('libp2p-noise')
 
 const MulticastDNS = require('libp2p-mdns')
@@ -30,11 +38,16 @@ class PubSub {
     // and have the node establish connections to the peers
     const node = await Libp2p.create({
       addresses: {
-        // listen: ['/ip4/0.0.0.0/tcp/0'],
-        listen: ['/ip6/::1/tcp/0'],
+      //   // Add the signaling server address, along with our PeerId to our multiaddrs list
+      //   // libp2p will automatically attempt to dial to the signaling server so that it can
+      //   // receive inbound connections from other peers
+        listen: [
+          '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+          '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        ],
       },
       modules: {
-        transport: [TCP],
+        transport: [WebRTCStar],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO, NOISE],
         peerDiscovery: [MulticastDNS],
@@ -42,25 +55,36 @@ class PubSub {
         pubsub: GossipSub,
       },
       config: {
+        transport: {
+          [transportKey]: {
+            wrtc, // You can use `wrtc` when running in Node.js
+          },
+        },
         peerDiscovery: {
-          autoDial: true, // Auto connect to discovered peers (limited by ConnectionManager minPeers)
-          mdns: { // mdns options
-            interval: 1e3, // 1 second
+          webRTCStar: {
             enabled: true,
           },
         },
-        relay: { // Circuit Relay options
+        pubsub: { // The pubsub options (and defaults) can be found in the pubsub router documentation
           enabled: true,
-          hop: {
-            enabled: true,
-            active: true,
-          },
+          emitSelf: true, // whether the node should emit to self on publish
+          signMessages: true, // if messages should be signed
+          strictSigning: true, // if message signing should be required
         },
-        dht: {
-          // dht must be enabled
+        // relay: { // Circuit Relay options
+        //   enabled: true,
+        //   hop: {
+        //     enabled: true,
+        //     active: true,
+        //   },
+        // },
+        dht: { // The DHT options (and defaults) can be found in its documentation
+          kBucketSize: 20,
           enabled: true,
           randomWalk: {
-            enabled: true,
+            enabled: true, // Allows to disable discovery (enabled by default)
+            interval: 15e3,
+            timeout: 10e3,
           },
         },
       },
