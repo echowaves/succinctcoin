@@ -75,7 +75,7 @@ class PubSub {
           enabled: true,
           randomWalk: {
             enabled: true, // Allows to disable discovery (enabled by default)
-            interval: 300e3,
+            interval: 15e3,
             timeout: 10e3,
           },
         },
