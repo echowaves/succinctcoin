@@ -1,8 +1,5 @@
 // const redis = require('redis');
 const Libp2p = require('libp2p')
-const TCP = require('libp2p-tcp')
-const Websockets = require('libp2p-websockets')
-const WebSocketStar = require('libp2p-websocket-star')
 const WebRTCStar = require('libp2p-webrtc-star')
 const wrtc = require('wrtc')
 
