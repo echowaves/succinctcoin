@@ -8,10 +8,10 @@ const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 
-const { NOISE } = require('libp2p-noise')
+// const { NOISE } = require('libp2p-noise')
 
-const MulticastDNS = require('libp2p-mdns')
-const DHT = require('libp2p-kad-dht')
+// const MulticastDNS = require('libp2p-mdns')
+// const DHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 
 const Room = require('ipfs-pubsub-room')
@@ -46,9 +46,9 @@ class PubSub {
       modules: {
         transport: [WebRTCStar],
         streamMuxer: [MPLEX],
-        connEncryption: [SECIO, NOISE],
-        peerDiscovery: [MulticastDNS],
-        dht: DHT,
+        connEncryption: [SECIO],
+        // peerDiscovery: [MulticastDNS],
+        // dht: DHT,
         pubsub: GossipSub,
       },
       config: {
@@ -75,15 +75,15 @@ class PubSub {
         //     active: true,
         //   },
         // },
-        dht: { // The DHT options (and defaults) can be found in its documentation
-          kBucketSize: 20,
-          enabled: true,
-          randomWalk: {
-            enabled: true, // Allows to disable discovery (enabled by default)
-            interval: 5e3,
-            timeout: 10e3,
-          },
-        },
+        // dht: { // The DHT options (and defaults) can be found in its documentation
+        //   kBucketSize: 20,
+        //   enabled: true,
+        //   randomWalk: {
+        //     enabled: true, // Allows to disable discovery (enabled by default)
+        //     interval: 15e3,
+        //     timeout: 10e3,
+        //   },
+        // },
       },
     })
 
