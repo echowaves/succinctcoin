@@ -17,4 +17,6 @@ To start project in dev, run `yarn dev`
 
 Package project as a mac, linux, or windows app, run `yarn dist:all`. This will generate the os specific bundles inside `dist` forlder.
 
+To run automated tests `yarn test`. And don't forget to periodically run `yarn lint`.
+
 Have fun.
