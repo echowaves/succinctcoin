@@ -18,7 +18,7 @@ const Room = require('ipfs-pubsub-room')
 
 const isDev = require("electron-is-dev")
 
-const devPrefix = isDev ? 'dev-' : ''
+const devPrefix = isDev ? 'DEV-' : ''
 // express app
 const CHANNELS = {
   TEST: `${devPrefix}TEST`,
