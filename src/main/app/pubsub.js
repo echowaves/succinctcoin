@@ -16,10 +16,14 @@ const GossipSub = require('libp2p-gossipsub')
 
 const Room = require('ipfs-pubsub-room')
 
+const isDev = require("electron-is-dev")
+
+const devPrefix = isDev ? 'dev-' : ''
+// express app
 const CHANNELS = {
-  TEST: 'TEST',
-  BLOCKCHAIN: 'BLOCKCHAIN',
-  TRANSACTION: 'TRANSACTION',
+  TEST: `${devPrefix}TEST`,
+  BLOCKCHAIN: `${devPrefix}BLOCKCHAIN`,
+  TRANSACTION: `${devPrefix}TRANSACTION`,
 }
 
 class PubSub {
@@ -118,18 +122,18 @@ class PubSub {
     })
 
     this.blockChainRoom.on('peer joined', peer => {
-      console.log(`Peer joined blockChainRoom  ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer joined ${CHANNELS.BLOCKCHAIN} room ${new Date()}`, peer) // eslint-disable-line no-console
       this.broadcastChain()
     })
     this.transactionRoom.on('peer joined', peer => {
-      console.log(`Peer joined transactionRoom ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer joined ${CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
     })
 
     this.blockChainRoom.on('peer left', peer => {
-      console.log(`Peer left blockChainRoom  ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer left ${CHANNELS.BLOCKCHAIN} room  ${new Date()}`, peer) // eslint-disable-line no-console
     })
     this.transactionRoom.on('peer left', peer => {
-      console.log(`Peer left transactionRoom ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer left ${CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
     })
   }
 
