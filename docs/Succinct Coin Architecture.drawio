@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-07-25T23:16:39.598Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="DBKVzhOT3kw7oWqLMg_z" version="13.5.3" type="github">
+<mxfile host="app.diagrams.net" modified="2020-07-25T23:16:54.777Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="Xorue7ilpF1gn9EPyzu-" version="13.5.3" type="github">
   <diagram id="6nGBWaBdYeNlFKXkY8Jf" name="Page-1">
     <mxGraphModel dx="1426" dy="923" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -119,9 +119,6 @@
         </mxCell>
         <mxCell id="Ddrl1aBnlt76yhukf08g-18" value="Genesis Block" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;dashed=1;dashPattern=1 4;sketch=0;" vertex="1" parent="1">
           <mxGeometry x="55" y="640" width="40" height="20" as="geometry" />
-        </mxCell>
-        <mxCell id="Ddrl1aBnlt76yhukf08g-19" value="Text" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;shadow=0;dashed=1;dashPattern=1 4;sketch=0;" vertex="1" parent="1">
-          <mxGeometry x="400" y="490" width="40" height="20" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
