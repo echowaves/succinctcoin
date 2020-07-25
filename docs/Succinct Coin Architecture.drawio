@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-07-25T21:37:28.705Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="kVbpO8wgoLQgCESMLbf_" version="13.5.3" type="github">
+<mxfile host="app.diagrams.net" modified="2020-07-25T21:47:42.099Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="9j4a3MDd2ph8o6hsQ54c" version="13.5.3" type="github">
   <diagram id="6nGBWaBdYeNlFKXkY8Jf" name="Page-1">
     <mxGraphModel dx="1426" dy="923" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -114,8 +114,8 @@
             <mxPoint x="215" y="485" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Ddrl1aBnlt76yhukf08g-17" value="&lt;h1&gt;General Principles&lt;/h1&gt;&lt;p&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Main BlockChain is persistent on Disk.&lt;/li&gt;&lt;li&gt;Validator Queue BlockChain is ephemeral stored in memory.&lt;/li&gt;&lt;li&gt;There are 2 ways to enter a queue&amp;nbsp;&lt;/li&gt;&lt;li&gt;The validator Queue must contain only unique validators&lt;/li&gt;&lt;/ul&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;shadow=0;dashed=1;dashPattern=1 4;sketch=1;" vertex="1" parent="1">
-          <mxGeometry x="425" y="440" width="385" height="360" as="geometry" />
+        <mxCell id="Ddrl1aBnlt76yhukf08g-17" value="&lt;h1&gt;General Principles&lt;/h1&gt;&lt;p&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Main BlockChain is persistent on Disk.&lt;/li&gt;&lt;li&gt;Validator Queue BlockChain is ephemeral stored in memory.&lt;/li&gt;&lt;li&gt;There are 2 ways to enter a queue&amp;nbsp;&lt;/li&gt;&lt;li&gt;The validator Queue must contain only unique validators&lt;/li&gt;&lt;li&gt;&lt;strike&gt;The validator queue size may be limited.&lt;/strike&gt;&lt;/li&gt;&lt;li&gt;Whoever has higher stake will win the right to enter the validator queue.&lt;/li&gt;&lt;li&gt;Each node will maintain list of active validators wishing to enter the queue, prioritized by the stake size.&lt;/li&gt;&lt;li&gt;Even heights are reserved for re-entering validators, odd ones are for the new validators from the pool.&lt;/li&gt;&lt;/ul&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;shadow=0;dashed=1;dashPattern=1 4;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="425" y="475" width="385" height="255" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
