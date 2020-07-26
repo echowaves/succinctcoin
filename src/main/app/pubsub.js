@@ -1,4 +1,3 @@
-// const redis = require('redis');
 const Libp2p = require('libp2p')
 const WebRTCStar = require('libp2p-webrtc-star')
 const wrtc = require('wrtc')
@@ -16,15 +15,9 @@ const GossipSub = require('libp2p-gossipsub')
 
 const Room = require('ipfs-pubsub-room')
 
-const isDev = require("electron-is-dev")
+const { CHANNELS } = require('../../config.js')
 
-const devPrefix = isDev ? 'DEV-' : ''
 // express app
-const CHANNELS = {
-  TEST: `${devPrefix}TEST`,
-  BLOCKCHAIN: `${devPrefix}BLOCKCHAIN`,
-  TRANSACTION: `${devPrefix}TRANSACTION`,
-}
 
 class PubSub {
   constructor({ blockchain, transactionPool, wallet }) {

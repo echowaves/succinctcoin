@@ -10,7 +10,7 @@ const { app, BrowserWindow } = electron
 
 const isDev = require("electron-is-dev") // express app
 
-const { DEFAULT_PORT } = require('../config')
+const { DEFAULT_PORT } = require('../config.js')
 
 let mainWindow
 
