@@ -1,71 +1,74 @@
-<mxfile host="app.diagrams.net" modified="2020-07-27T14:52:33.621Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="OwHwDzKm76XmFLrricBu" version="13.5.3" type="github">
+<mxfile host="app.diagrams.net" modified="2020-07-27T15:27:47.088Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="JPqG7h0FS-7FhQPfiQPe" version="13.5.3" type="github">
   <diagram id="UOPjFhgSH-NBCn5mMsvi" name="Page-1">
     <mxGraphModel dx="1426" dy="923" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="68P404522QT9SfdU48aJ-20" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" parent="1" source="68P404522QT9SfdU48aJ-1" target="68P404522QT9SfdU48aJ-11">
+        <mxCell id="68P404522QT9SfdU48aJ-20" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="68P404522QT9SfdU48aJ-1" target="68P404522QT9SfdU48aJ-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-1" value="sender:&lt;br&gt;pubic address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-1" value="sender:&lt;br&gt;pubic address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="60" y="260" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-21" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="68P404522QT9SfdU48aJ-2" target="68P404522QT9SfdU48aJ-11">
+        <mxCell id="68P404522QT9SfdU48aJ-21" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="68P404522QT9SfdU48aJ-2" target="68P404522QT9SfdU48aJ-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-2" value="recipient:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-2" value="recipient:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="60" y="330" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-23" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="68P404522QT9SfdU48aJ-3" target="68P404522QT9SfdU48aJ-12">
+        <mxCell id="68P404522QT9SfdU48aJ-23" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="68P404522QT9SfdU48aJ-3" target="68P404522QT9SfdU48aJ-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-3" value="amount:&lt;br&gt;should not exceed sender&#39;s account balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-3" value="amount:&lt;br&gt;should not exceed sender&#39;s account balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="60" y="400" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-19" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="68P404522QT9SfdU48aJ-6" target="68P404522QT9SfdU48aJ-13">
+        <mxCell id="68P404522QT9SfdU48aJ-19" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="68P404522QT9SfdU48aJ-6" target="68P404522QT9SfdU48aJ-13" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-6" value="id:&lt;br&gt;sender increments&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-6" value="id:&lt;br&gt;sender increments&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="60" y="190" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-7" value="signature:&lt;br&gt;confirms sender" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-7" value="signature:&lt;br&gt;confirms sender" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="60" y="540" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-9" value="Transaction" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-9" value="Transaction" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="125" y="160" width="40" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-10" value="Account" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-10" value="Account" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="622.5" y="160" width="40" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-11" value="publicKey:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-11" value="publicKey:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="550" y="260" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-12" value="balance:&lt;br&gt;current balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-12" value="balance:&lt;br&gt;current balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="550" y="330" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-13" value="lastTransactionId:&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-13" value="lastTransactionId:&lt;br&gt;" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="550" y="190" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-14" value="Wallet" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-14" value="Wallet" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="272.5" y="660" width="40" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-18" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;sketch=1;" edge="1" parent="1" source="68P404522QT9SfdU48aJ-15" target="68P404522QT9SfdU48aJ-11">
+        <mxCell id="68P404522QT9SfdU48aJ-18" style="edgeStyle=entityRelationEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;sketch=1;" parent="1" source="68P404522QT9SfdU48aJ-15" target="68P404522QT9SfdU48aJ-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-15" value="publicKey:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-15" value="publicKey:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="200" y="690" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-24" style="rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" edge="1" parent="1" source="68P404522QT9SfdU48aJ-16" target="68P404522QT9SfdU48aJ-7">
+        <mxCell id="68P404522QT9SfdU48aJ-24" style="rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;" parent="1" source="68P404522QT9SfdU48aJ-16" target="68P404522QT9SfdU48aJ-7" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-16" value="privateKey:&lt;br&gt;allows to sign transactions" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-16" value="privateKey:&lt;br&gt;allows to sign transactions" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="200" y="760" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-25" value="&lt;h1&gt;&lt;span&gt;General Principals&lt;/span&gt;&lt;/h1&gt;&lt;h1&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Succinct coin will be using a simplified variation of account based balance calculation used in Ethereum, instead of UTXO model, which is used in BitCoin.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Each transaction will contain auto incremented id which will be used to determine the order in which balance shall be subtracted&amp;nbsp;from&amp;nbsp;sender.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Each node will maintain Data-Base of accounts.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Current accounts state can be generated by re-playing all transactions stored in blockchain.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Wallet stores private key of current node which allows to sign the outgoing transactions.&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-25" value="&lt;h1&gt;&lt;span&gt;General Principals&lt;/span&gt;&lt;/h1&gt;&lt;h1&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Succinct coin will be using a simplified variation of account based balance calculation used in Ethereum, instead of UTXO model, which is used in BitCoin.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Each transaction will contain auto incremented id which will be used to determine the order in which balance shall be subtracted&amp;nbsp;from&amp;nbsp;sender.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Each node will maintain Data-Base of accounts.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Current accounts state can be generated by re-playing all transactions stored in blockchain.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;font-size: 12px ; font-weight: 400&quot;&gt;Wallet stores private key of current node which allows to sign the outgoing transactions.&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/h1&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="490" y="480" width="350" height="500" as="geometry" />
         </mxCell>
-        <mxCell id="68P404522QT9SfdU48aJ-26" value="fee:&lt;br&gt;will be added to block validator" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+        <mxCell id="68P404522QT9SfdU48aJ-26" value="fee:&lt;br&gt;will be added to block validator" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" parent="1" vertex="1">
           <mxGeometry x="60" y="470" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--2" value="stake:&lt;br&gt;staked balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="400" width="185" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
