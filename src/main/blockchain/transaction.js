@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 const { v4: uuidv4 } = require('uuid')
 
 const { verifySignature } = require('../util')
@@ -23,7 +25,7 @@ class Transaction {
 
   createInput({ senderWallet, outputMap }) {
     return {
-      timestamp: Date.now(),
+      timestamp: moment.utc(),
       amount: senderWallet.balance, // TODO: recalculate wallet balance on the fly instead of storing it on every transaction
       address: senderWallet.publicKey,
       signature: senderWallet.sign(outputMap),

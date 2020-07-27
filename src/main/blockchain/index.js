@@ -11,6 +11,18 @@ class Blockchain {
     ]
   }
 
+  getGenesisBlock() {
+
+  }
+
+  getNextBlock({ block }) {
+
+  }
+
+  getPrevBlock({ block }) {
+
+  }
+
   addBlock({ data }) {
     const newBlock = Block.mineBlock({
       lastBlock: this.chain[this.chain.length - 1],
