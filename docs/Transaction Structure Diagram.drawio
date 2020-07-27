@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-07-27T15:53:21.215Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="X8vV0ogS0qBKoVs-IC5p" version="13.5.3" type="github">
+<mxfile host="app.diagrams.net" modified="2020-07-27T17:12:10.006Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="BBamJxVUBk6cU9R5KtIa" version="13.5.3" type="github">
   <diagram id="UOPjFhgSH-NBCn5mMsvi" name="Page-1">
     <mxGraphModel dx="1426" dy="923" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -97,7 +97,7 @@
         <mxCell id="4BtgNt3Qppy4Z63vOar--11" value="data:&lt;br&gt;contains transactions list" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
           <mxGeometry x="900" y="680" width="185" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="4BtgNt3Qppy4Z63vOar--12" value="&lt;h1&gt;Validation rules&lt;/h1&gt;&lt;h2&gt;Transaction&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;qwe&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h2&gt;Block&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;qwe&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h2&gt;Chain&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;qwe&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;sketch=1;" vertex="1" parent="1">
+        <mxCell id="4BtgNt3Qppy4Z63vOar--12" value="&lt;h1&gt;Validation rules&lt;/h1&gt;&lt;h2&gt;Transaction&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;amount should not exceed sender&#39;s balance&lt;/li&gt;&lt;li&gt;amount should be &amp;gt; 0&lt;/li&gt;&lt;li&gt;should be signed by sender&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h2&gt;Block&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;height should be increment of 1 from previous block&lt;/li&gt;&lt;li&gt;should contain uuid&lt;/li&gt;&lt;li&gt;timestamp should be +- 3 minutes from now&lt;/li&gt;&lt;li&gt;lastHash should point to previous block with height smaller by 1&lt;/li&gt;&lt;li&gt;should contain verifiable hash&lt;/li&gt;&lt;li&gt;should contain non empty data&amp;nbsp;&amp;nbsp;&lt;/li&gt;&lt;li&gt;should contain validator&lt;/li&gt;&lt;li&gt;should validate signature of validator&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h2&gt;Chain&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;every block in the chain should be valid&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;sketch=1;" vertex="1" parent="1">
           <mxGeometry x="1130" y="80" width="540" height="500" as="geometry" />
         </mxCell>
       </root>
