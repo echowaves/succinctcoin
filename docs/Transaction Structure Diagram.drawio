@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-07-27T15:27:47.088Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="JPqG7h0FS-7FhQPfiQPe" version="13.5.3" type="github">
+<mxfile host="app.diagrams.net" modified="2020-07-27T15:53:21.215Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="X8vV0ogS0qBKoVs-IC5p" version="13.5.3" type="github">
   <diagram id="UOPjFhgSH-NBCn5mMsvi" name="Page-1">
     <mxGraphModel dx="1426" dy="923" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -69,6 +69,36 @@
         </mxCell>
         <mxCell id="4BtgNt3Qppy4Z63vOar--2" value="stake:&lt;br&gt;staked balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
           <mxGeometry x="550" y="400" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--3" value="height:&lt;br&gt;incremental number" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="190" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--4" value="Block" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="972.5" y="160" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--5" value="uuid:&lt;br&gt;randomly generated unique id" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="260" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--6" value="timestamp:&lt;br&gt;in UTC" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="330" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--7" value="lastHash:" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="400" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--8" value="hash:" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="470" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--9" value="validator:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="540" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--10" value="signature:" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="610" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--11" value="data:&lt;br&gt;contains transactions list" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="680" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--12" value="&lt;h1&gt;Validation rules&lt;/h1&gt;&lt;h2&gt;Transaction&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;qwe&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h2&gt;Block&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;qwe&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h2&gt;Chain&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;qwe&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;sketch=1;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="80" width="540" height="500" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
