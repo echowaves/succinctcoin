@@ -1,8 +1,6 @@
 import Account from './account'
-// const { verifySignature } = require('../util')
-// const { REWARD_INPUT, MINING_REWARD } = require('../config')
 
-describe.only('Account', () => {
+describe('Account', () => {
   const
     amount = 42,
     lastTransactionId = 123,

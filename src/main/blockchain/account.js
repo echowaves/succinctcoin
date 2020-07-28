@@ -1,6 +1,3 @@
-const { STARTING_BALANCE, REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
-const { ec, cryptoHash } = require('../util')
-
 class Account {
   constructor({ lastTransactionId, publicKey }) {
     this.lastTransactionId = lastTransactionId
@@ -45,19 +42,6 @@ class Account {
     newAccount.addBalance({ amount: balance })
     newAccount.addStake({ amount: stake })
     return newAccount
-  }
-
-  static calculateBalance({ chain, address }) {
-    const block = chain.getGenesisBlock()
-    const collectBlockFees = false
-    // do {
-    //   collectBlockFees = (address === block.validator)
-    //   const { transactions } = block.data
-    //
-    //   block = chain.getNextBlock(block)
-    // } while (block)
-    //
-    // return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal
   }
 }
 
