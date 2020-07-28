@@ -31,26 +31,34 @@ class Account {
     this.stake -= amount
   }
 
-  static parseAccount({ jsonString }) {
-
+  static stringify({ account }) {
+    return JSON.stringify({ account })
   }
 
-  static accountToString({ account }) {
+  static parse({ jsonAccount }) {
+    const { account } = JSON.parse(jsonAccount)
+    const {
+      lastTransactionId, publicKey, balance, stake,
+    } = account
 
+    const newAccount = new Account({ lastTransactionId, publicKey })
+    newAccount.addBalance({ amount: balance })
+    newAccount.addStake({ amount: stake })
+    return newAccount
   }
 
   static calculateBalance({ chain, address }) {
-    let block = chain.getGenesisBlock()
-    let collectBlockFees = false
-    do {
-      collectBlockFees = (address === block.validator)
-      const { transactions } = block.data
-
-      block = chain.getNextBlock(block)
-    } while (block)
-
-    return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal
+    const block = chain.getGenesisBlock()
+    const collectBlockFees = false
+    // do {
+    //   collectBlockFees = (address === block.validator)
+    //   const { transactions } = block.data
+    //
+    //   block = chain.getNextBlock(block)
+    // } while (block)
+    //
+    // return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal
   }
 }
 
-module.exports = Account
+export default Account

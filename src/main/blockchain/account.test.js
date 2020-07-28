@@ -1,10 +1,10 @@
-const Account = require('./account')
-
+import Account from './account'
 // const { verifySignature } = require('../util')
 // const { REWARD_INPUT, MINING_REWARD } = require('../config')
 
 describe.only('Account', () => {
   const
+    amount = 42,
     lastTransactionId = 123,
     publicKey = 321
   let account
@@ -44,7 +44,6 @@ describe.only('Account', () => {
 
   describe('methods', () => {
     describe('addBalance()', () => {
-      const amount = 42
       it('should add proper amount', () => {
         account.addBalance({ amount })
         expect(account.balance).toEqual(amount)
@@ -52,7 +51,6 @@ describe.only('Account', () => {
     })
 
     describe('subtractBalance()', () => {
-      const amount = 42
       beforeEach(() => {
         account.addBalance({ amount: amount * 2 })
       })
@@ -68,7 +66,6 @@ describe.only('Account', () => {
     })
 
     describe('addStake()', () => {
-      const amount = 42
       it('should add proper amount', () => {
         account.addStake({ amount })
         expect(account.stake).toEqual(amount)
@@ -76,7 +73,6 @@ describe.only('Account', () => {
     })
 
     describe('subtractStake()', () => {
-      const amount = 42
       beforeEach(() => {
         account.addStake({ amount: amount * 2 })
       })
@@ -88,6 +84,31 @@ describe.only('Account', () => {
         expect(() => {
           account.subtractStake({ amount: amount * 3 })
         }).toThrowError('trying to substract bigger amount than possible')
+      })
+    })
+
+    describe('stringify()', () => {
+      it('should generate valid JSON string representing the `Account`', () => {
+        account.addBalance({ amount })
+        account.addStake({ amount })
+        const jsonAccount = Account.stringify({ account })
+        expect(typeof jsonAccount).toBe('string')
+      })
+    })
+
+    describe('parse()', () => {
+      it('should generate an `Account` object from JSON', () => {
+        account.addBalance({ amount })
+        account.addStake({ amount })
+        const jsonAccount = Account.stringify({ account })
+        const generatedAccount = Account.parse({ jsonAccount })
+
+        expect(generatedAccount).toMatchObject(account)
+      })
+      it('should fail to generate an `Account` object from wrong JSON', () => {
+        expect(() => {
+          Account.parse({ jsonAccount: '{ some: json }' })
+        }).toThrowError('Unexpected token s in JSON at position 2')
       })
     })
   })
