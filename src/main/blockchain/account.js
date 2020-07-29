@@ -1,6 +1,5 @@
 class Account {
-  constructor({ lastTransactionId, publicKey }) {
-    this.lastTransactionId = lastTransactionId
+  constructor({ publicKey }) {
     this.publicKey = publicKey
     this.balance = 0
     this.stake = 0
@@ -35,10 +34,10 @@ class Account {
   static parse({ jsonAccount }) {
     const { account } = JSON.parse(jsonAccount)
     const {
-      lastTransactionId, publicKey, balance, stake,
+      publicKey, balance, stake,
     } = account
 
-    const newAccount = new Account({ lastTransactionId, publicKey })
+    const newAccount = new Account({ publicKey })
     newAccount.addBalance({ amount: balance })
     newAccount.addStake({ amount: stake })
     return newAccount

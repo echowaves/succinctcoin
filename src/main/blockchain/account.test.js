@@ -3,25 +3,18 @@ import Account from './account'
 describe('Account', () => {
   const
     amount = 42,
-    lastTransactionId = 123,
     publicKey = 321
   let account
 
   beforeEach(() => {
-    account = new Account({ lastTransactionId, publicKey })
+    account = new Account({ publicKey })
   })
 
   describe('properties', () => {
-    it('has an `lastTransactionId`, `publicKey`, `balance`, `stake`', () => {
-      expect(account).toHaveProperty('lastTransactionId')
+    it('has `publicKey`, `balance`, `stake`', () => {
       expect(account).toHaveProperty('publicKey')
       expect(account).toHaveProperty('balance')
       expect(account).toHaveProperty('stake')
-    })
-    describe('lastTransactionId', () => {
-      it('should be equal value from `Constructor`', () => {
-        expect(account.lastTransactionId).toEqual(lastTransactionId)
-      })
     })
     describe('publicKey', () => {
       it('should be equal value from `Constructor`', () => {
