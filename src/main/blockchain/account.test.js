@@ -65,11 +65,24 @@ describe('Account', () => {
     })
 
     describe('addStake()', () => {
-      it('should add proper amount', () => {
+      beforeEach(() => {
+        account.addBalance({ amount: amount * 2 })
+      })
+      it('should add proper amount to `stake`', () => {
         account.addStake({ amount })
         expect(account.stake).toEqual(amount)
       })
-      it('should add increment stakeTimestamp', async () => {
+      it('should substract proper amount from `balance`', () => {
+        account.addStake({ amount })
+        expect(account.balance).toEqual(amount)
+      })
+      it('should fail to add stake bigger than the `balance`', () => {
+        expect(() => {
+          account.addStake({ amount: amount * 3 })
+        }).toThrowError('trying to substract bigger amount than possible')
+      })
+
+      it('should add increment `stakeTimestamp`', async () => {
         const { stakeTimestamp } = account
         await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
         account.addStake({ amount })
@@ -80,11 +93,16 @@ describe('Account', () => {
 
     describe('subtractStake()', () => {
       beforeEach(() => {
-        account.addStake({ amount: amount * 2 })
+        account.addBalance({ amount: amount * 2 })
+        account.addStake({ amount })
       })
-      it('should substract proper amount', () => {
+      it('should substract proper amount from `stake`', () => {
         account.subtractStake({ amount })
-        expect(account.stake).toEqual(amount)
+        expect(account.stake).toEqual(0)
+      })
+      it('should add proper amount to `balance`', () => {
+        account.subtractStake({ amount })
+        expect(account.balance).toEqual(amount * 2)
       })
       it('should add increment stakeTimestamp', async () => {
         const { stakeTimestamp } = account

@@ -20,6 +20,7 @@ class Account {
   }
 
   addStake({ amount }) {
+    this.subtractBalance({ amount })
     this.stake += amount
     this.stakeTimestamp = moment.utc().valueOf()
   }
@@ -28,6 +29,7 @@ class Account {
     if (amount > this.stake) {
       throw new Error('trying to substract bigger amount than possible')
     }
+    this.addBalance({ amount })
     this.stake -= amount
     this.stakeTimestamp = moment.utc().valueOf()
   }
@@ -44,6 +46,7 @@ class Account {
 
     const newAccount = new Account({ publicKey })
     newAccount.addBalance({ amount: balance })
+    newAccount.addBalance({ amount: stake })
     newAccount.addStake({ amount: stake })
     newAccount.stakeTimestamp = stakeTimestamp
     return newAccount
