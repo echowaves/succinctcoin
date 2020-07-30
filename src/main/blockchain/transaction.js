@@ -1,56 +1,25 @@
 import moment from 'moment'
 
-const { v4: uuidv4 } = require('uuid')
+import Crypto from '../util/crypto'
 
-const { verifySignature } = require('../util')
 const { REWARD_INPUT, MINING_REWARD } = require('../config')
 
 class Transaction {
   constructor({
-    senderWallet, recipient, amount, outputMap, input,
+    wallet, sender, recipient, amount, fee,
   }) {
-    this.id = uuidv4()
-    this.outputMap = outputMap || this.createOutputMap({ senderWallet, recipient, amount })
-    this.input = input || this.createInput({ senderWallet, outputMap: this.outputMap })
+    this.wallet = wallet
+    this.sender = sender
+    this.recipient = recipient
+    this.amount = amount
+    this.fee = fee
+    this.timestamp = moment.utc().valueOf()
+    this.signature = wallet.sign({
+      sender, recipient, amount, fee, timestamp: this.timestamp,
+    })
   }
 
-  createOutputMap({ senderWallet, recipient, amount }) {
-    const outputMap = {}
-
-    outputMap[recipient] = amount
-    outputMap[senderWallet.publicKey] = senderWallet.balance - amount
-
-    return outputMap
-  }
-
-  createInput({ senderWallet, outputMap }) {
-    return {
-      timestamp: moment.utc(),
-      amount: senderWallet.balance, // TODO: recalculate wallet balance on the fly instead of storing it on every transaction
-      address: senderWallet.publicKey,
-      signature: senderWallet.sign(outputMap),
-    }
-  }
-
-  update({ senderWallet, recipient, amount }) {
-    if (amount > this.outputMap[senderWallet.publicKey]) {
-      throw new Error('Amount exceeds balance')
-    }
-
-    this.outputMap[recipient] = amount
-
-    let previousAmount = 0
-    if (this.outputMap[recipient]) {
-      previousAmount = this.outputMap[recipient]
-    }
-
-    this.outputMap[senderWallet.publicKey] += previousAmount
-    this.outputMap[senderWallet.publicKey] -= amount
-
-    this.input = this.createInput({ senderWallet, outputMap: this.outputMap })
-  }
-
-  static validTransaction(transaction) {
+  static validate(transaction) {
     const { input: { address, amount, signature }, outputMap } = transaction
 
     const outputTotal = Object.values(outputMap)
@@ -74,6 +43,24 @@ class Transaction {
       input: REWARD_INPUT,
       outputMap: { [minerWallet.publicKey]: MINING_REWARD },
     })
+  }
+
+  static stringify({ transaction }) {
+    return JSON.stringify({ transaction })
+  }
+
+  static parse({ jsonAccount }) {
+    // const { account } = JSON.parse(jsonAccount)
+    // const {
+    //   publicKey, balance, stake, stakeTimestamp,
+    // } = account
+    //
+    // const newAccount = new Account({ publicKey })
+    // newAccount.addBalance({ amount: balance })
+    // newAccount.addBalance({ amount: stake })
+    // newAccount.addStake({ amount: stake })
+    // newAccount.stakeTimestamp = stakeTimestamp
+    // return newAccount
   }
 }
 

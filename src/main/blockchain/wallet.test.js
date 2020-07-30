@@ -31,6 +31,8 @@ describe('Wallet', () => {
         })
       ).toBe(true)
     })
+    xit('verifies a signature regardless of the order of parameters', () => {
+    })
 
     it('does not verify an invalid signature', () => {
       expect(

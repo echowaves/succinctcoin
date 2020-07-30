@@ -9,8 +9,8 @@ class Wallet {
     this.publicKey = this.keyPair.getPublic().encode('hex')
   }
 
-  sign(data) {
-    return this.keyPair.sign(cryptoHash(data))
+  sign(...data) {
+    return this.keyPair.sign(cryptoHash(data.map(input => JSON.stringify(input)).sort().join(' ')))
   }
 
   createTransaction({ recipient, amount, chain }) {

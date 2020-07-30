@@ -142,5 +142,10 @@ describe('Account', () => {
         }).toThrowError('Unexpected token s in JSON at position 2')
       })
     })
+
+    describe('calculateBalance()', () => {
+      xit('should walk the chain and calculate the balance', () => {
+      })
+    })
   })
 })

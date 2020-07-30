@@ -51,6 +51,10 @@ class Account {
     newAccount.stakeTimestamp = stakeTimestamp
     return newAccount
   }
+
+  calculateBalance() {
+    // TODO: to implement
+  }
 }
 
 export default Account
