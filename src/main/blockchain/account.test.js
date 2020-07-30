@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 import Account from './account'
 
 describe('Account', () => {
@@ -11,10 +13,11 @@ describe('Account', () => {
   })
 
   describe('properties', () => {
-    it('has `publicKey`, `balance`, `stake`', () => {
+    it('has `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {
       expect(account).toHaveProperty('publicKey')
       expect(account).toHaveProperty('balance')
       expect(account).toHaveProperty('stake')
+      expect(account).toHaveProperty('stakeTimestamp')
     })
     describe('publicKey', () => {
       it('should be equal value from `Constructor`', () => {
@@ -29,6 +32,11 @@ describe('Account', () => {
     describe('stake', () => {
       it('initial value value should be 0', () => {
         expect(account.stake).toEqual(0)
+      })
+    })
+    describe('stakeTimestamp', () => {
+      it('initial value value should be 0', () => {
+        expect(account.stakeTimestamp).not.toEqual(0)
       })
     })
   })
@@ -61,6 +69,13 @@ describe('Account', () => {
         account.addStake({ amount })
         expect(account.stake).toEqual(amount)
       })
+      it('should add increment stakeTimestamp', async () => {
+        const { stakeTimestamp } = account
+        await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
+        account.addStake({ amount })
+        expect(account.stakeTimestamp).toBeGreaterThan(stakeTimestamp)
+        expect(account.stakeTimestamp).toBeLessThan(moment.utc(stakeTimestamp).add(1, 'second').valueOf())
+      })
     })
 
     describe('subtractStake()', () => {
@@ -70,6 +85,13 @@ describe('Account', () => {
       it('should substract proper amount', () => {
         account.subtractStake({ amount })
         expect(account.stake).toEqual(amount)
+      })
+      it('should add increment stakeTimestamp', async () => {
+        const { stakeTimestamp } = account
+        await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
+        account.subtractStake({ amount })
+        expect(account.stakeTimestamp).toBeGreaterThan(stakeTimestamp)
+        expect(account.stakeTimestamp).toBeLessThan(moment.utc(stakeTimestamp).add(1, 'second').valueOf())
       })
       it('should fail subtracting amount bigger than `stake`', () => {
         expect(() => {

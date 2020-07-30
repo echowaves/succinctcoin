@@ -1,8 +1,11 @@
+import moment from 'moment'
+
 class Account {
   constructor({ publicKey }) {
     this.publicKey = publicKey
     this.balance = 0
     this.stake = 0
+    this.stakeTimestamp = moment.utc().valueOf()
   }
 
   addBalance({ amount }) {
@@ -18,6 +21,7 @@ class Account {
 
   addStake({ amount }) {
     this.stake += amount
+    this.stakeTimestamp = moment.utc().valueOf()
   }
 
   subtractStake({ amount }) {
@@ -25,6 +29,7 @@ class Account {
       throw new Error('trying to substract bigger amount than possible')
     }
     this.stake -= amount
+    this.stakeTimestamp = moment.utc().valueOf()
   }
 
   static stringify({ account }) {
@@ -34,12 +39,13 @@ class Account {
   static parse({ jsonAccount }) {
     const { account } = JSON.parse(jsonAccount)
     const {
-      publicKey, balance, stake,
+      publicKey, balance, stake, stakeTimestamp,
     } = account
 
     const newAccount = new Account({ publicKey })
     newAccount.addBalance({ amount: balance })
     newAccount.addStake({ amount: stake })
+    newAccount.stakeTimestamp = stakeTimestamp
     return newAccount
   }
 }
