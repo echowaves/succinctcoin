@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2020-07-30T00:23:01.795Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="P0Gz5TJQvmNcmYfJMz3q" version="13.5.3" type="github">
+<mxfile host="app.diagrams.net" modified="2020-07-30T01:56:41.672Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36" etag="PP59B6Gu446SYgm-zWX7" version="13.5.3" type="github">
   <diagram id="UOPjFhgSH-NBCn5mMsvi" name="Page-1">
-    <mxGraphModel dx="1141" dy="738" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1296" dy="839" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -8,25 +8,25 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-1" value="sender:&lt;br&gt;pubic address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="60" y="260" width="185" height="60" as="geometry" />
+          <mxGeometry x="50" y="110" width="185" height="60" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-21" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" source="68P404522QT9SfdU48aJ-2" target="68P404522QT9SfdU48aJ-11" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-2" value="recipient:&lt;br&gt;public address" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="60" y="330" width="185" height="60" as="geometry" />
+          <mxGeometry x="50" y="180" width="185" height="60" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-23" style="edgeStyle=entityRelationEdgeStyle;rounded=0;sketch=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" source="68P404522QT9SfdU48aJ-3" target="68P404522QT9SfdU48aJ-12" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-3" value="amount:&lt;br&gt;should not exceed sender&#39;s account balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="60" y="400" width="185" height="60" as="geometry" />
+          <mxGeometry x="50" y="250" width="185" height="60" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-7" value="signature:&lt;br&gt;confirms sender" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="60" y="540" width="185" height="60" as="geometry" />
+          <mxGeometry x="50" y="460" width="185" height="60" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-9" value="Transaction" style="text;html=1;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="115" y="230" width="75" height="20" as="geometry" />
+          <mxGeometry x="105" y="80" width="75" height="20" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-10" value="Account" style="text;html=1;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;sketch=1;strokeColor=#000000;" parent="1" vertex="1">
           <mxGeometry x="603.75" y="150" width="77.5" height="20" as="geometry" />
@@ -56,7 +56,7 @@
           <mxGeometry x="480" y="480" width="360" height="550" as="geometry" />
         </mxCell>
         <mxCell id="68P404522QT9SfdU48aJ-26" value="fee:&lt;br&gt;will be added to block validator" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;strokeColor=#CC0000;fontColor=#CC0000;" parent="1" vertex="1">
-          <mxGeometry x="60" y="470" width="185" height="60" as="geometry" />
+          <mxGeometry x="50" y="320" width="185" height="60" as="geometry" />
         </mxCell>
         <mxCell id="4BtgNt3Qppy4Z63vOar--2" value="stake:&lt;br&gt;staked balance" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
           <mxGeometry x="550" y="320" width="185" height="60" as="geometry" />
@@ -96,6 +96,9 @@
         </mxCell>
         <mxCell id="4BtgNt3Qppy4Z63vOar--14" value="stakeTimestamp:&lt;br&gt;when it was staked last" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;" vertex="1" parent="1">
           <mxGeometry x="550" y="390" width="185" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4BtgNt3Qppy4Z63vOar--15" value="&lt;font color=&quot;#cc0000&quot;&gt;timestamp:&lt;br&gt;when it was added to the pool&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;sketch=1;strokeColor=#CC0000;" vertex="1" parent="1">
+          <mxGeometry x="50" y="390" width="185" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
