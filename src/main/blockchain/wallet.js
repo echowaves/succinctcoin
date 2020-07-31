@@ -6,18 +6,10 @@ const Transaction = require('./transaction')
 
 const { STARTING_BALANCE, STORE } = require('../config')
 
-// let's initialize wallet from the disk
-if (!fs.existsSync(STORE.WALLET)) {
-  const keyPair = Crypto.genKeyPair()
-  const wallet = new Wallet({ keyPair })
-  wallet.store()
-}
-
 class Wallet {
-  constructor({ keyPair }) {
+  constructor() {
     this.keyPair = Crypto.genKeyPair()
     this.publicKey = this.keyPair.getPublic().encode('hex')
-    this.privateKey = this.keyPair.get
   }
 
   sign(...data) {

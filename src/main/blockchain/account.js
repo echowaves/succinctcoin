@@ -40,16 +40,7 @@ class Account {
 
   static parse({ jsonAccount }) {
     const { account } = JSON.parse(jsonAccount)
-    const {
-      publicKey, balance, stake, stakeTimestamp,
-    } = account
-
-    const newAccount = new Account({ publicKey })
-    newAccount.addBalance({ amount: balance })
-    newAccount.addBalance({ amount: stake })
-    newAccount.addStake({ amount: stake })
-    newAccount.stakeTimestamp = stakeTimestamp
-    return newAccount
+    return Object.assign(new Account({ publicKey: '' }), account)
   }
 
   calculateBalance() {

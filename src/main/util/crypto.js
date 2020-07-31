@@ -24,9 +24,9 @@ class Crypto {
     let keyPair
     if (!fs.existsSync(STORE.KEY)) {
       keyPair = ec.genKeyPair()
-      fs.writeFileSync(path.resolve(STORE.KEY), JSON.stringify(keyPair))
+      fs.writeFileSync(path.resolve(STORE.KEYPAIR), JSON.stringify(keyPair))
     }
-    const readKey = JSON.parse(fs.readFileSync(path.resolve(STORE.KEY)))
+    const readKey = JSON.parse(fs.readFileSync(path.resolve(STORE.KEYPAIR)))
 
     keyPair = Object.assign(ec.genKeyPair(), readKey)
 
