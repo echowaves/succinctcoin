@@ -1,7 +1,9 @@
 import moment from 'moment'
+import Json2ObjHOC from '../util/json2obj-hoc'
 
 class Account {
-  constructor({ publicKey }) {
+  // have to make publicKey optional for json2Obj HOC to work
+  constructor({ publicKey } = { publicKey: '' }) {
     this.publicKey = publicKey
     this.balance = 0
     this.stake = 0
@@ -34,18 +36,9 @@ class Account {
     this.stakeTimestamp = moment.utc().valueOf()
   }
 
-  static stringify({ account }) {
-    return JSON.stringify({ account })
-  }
-
-  static parse({ jsonAccount }) {
-    const { account } = JSON.parse(jsonAccount)
-    return Object.assign(new Account({ publicKey: '' }), account)
-  }
-
   calculateBalance() {
     // TODO: to implement
   }
 }
 
-export default Account
+export default Json2ObjHOC(Account)
