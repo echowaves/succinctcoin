@@ -15,7 +15,9 @@ const GENESIS_DATA = {
 
 const STARTING_BALANCE = 0
 
-const ROOT = path.resolve(`.${name}`)
+const ROOT = (process.env.JEST_WORKER_ID === undefined)
+  ? path.resolve(`.${name}`) : path.resolve('.test')
+
 const STORE = {
   WALLET: path.resolve(ROOT, 'wallet'),
   KEY: path.resolve(ROOT, 'wallet'),

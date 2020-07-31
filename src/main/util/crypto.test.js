@@ -1,6 +1,6 @@
 import Crypto from './crypto'
 
-describe.only('Crypto', () => {
+describe('Crypto', () => {
   describe('Crypto.hash()', () => {
     it('generates a SHA-256 hashed output', () => {
       expect(Crypto.hash('foo'))
