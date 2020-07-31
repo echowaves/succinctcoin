@@ -30,7 +30,7 @@ class Transaction {
       return false
     }
 
-    if (!verifySignature({ publicKey: address, data: outputMap, signature })) {
+    if (!Crypto.verifySignature({ publicKey: address, data: outputMap, signature })) {
       console.error(`Invalid signature from ${address}`) // eslint-disable-line no-console
       return false
     }

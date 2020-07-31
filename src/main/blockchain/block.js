@@ -1,6 +1,6 @@
 const hexToBinary = require('hex-to-binary')
 const { GENESIS_DATA, MINE_RATE } = require('../config')
-const { cryptoHash } = require('../util')
+const Crypto = require('../util/crypto')
 
 class Block {
   constructor({
@@ -29,7 +29,7 @@ class Block {
       nonce++ // eslint-disable-line no-plusplus
       timestamp = Date.now()
       difficulty = Block.adjustDifficulty({ originalBlock: lastBlock, timestamp })
-      hash = cryptoHash(timestamp, lastHash, data, nonce, difficulty)
+      hash = Crypto.hash(timestamp, lastHash, data, nonce, difficulty)
     } while (hexToBinary(hash).substring(0, difficulty) !== '0'.repeat(difficulty))
 
     return new this({

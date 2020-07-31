@@ -1,7 +1,7 @@
 const Block = require('./block')
-const Transaction = require('../wallet/transaction')
-const Wallet = require('../wallet')
-const { cryptoHash } = require('../util')
+const Transaction = require('./transaction')
+const Wallet = require('./wallet')
+const Crypto = require('../util/crypto')
 const { REWARD_INPUT, MINING_REWARD } = require('../config')
 
 class Blockchain {
@@ -115,7 +115,7 @@ class Blockchain {
 
       if (lastHash !== actualLastHash) return false
 
-      const validatedHash = cryptoHash(timestamp, lastHash, data, nonce, difficulty)
+      const validatedHash = Crypto.hash(timestamp, lastHash, data, nonce, difficulty)
 
       if (hash !== validatedHash) return false
 

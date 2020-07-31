@@ -1,16 +1,27 @@
+import fs from 'fs'
+import Crypto from '../util/crypto'
+
 const Transaction = require('./transaction')
-const { STARTING_BALANCE } = require('../config')
-const { ec, cryptoHash } = require('../util')
+// const Account = require('./account')
+
+const { STARTING_BALANCE, STORE } = require('../config')
+
+// let's initialize wallet from the disk
+if (!fs.existsSync(STORE.WALLET)) {
+  const keyPair = Crypto.genKeyPair()
+  const wallet = new Wallet({ keyPair })
+  wallet.store()
+}
 
 class Wallet {
-  constructor() {
-    this.balance = STARTING_BALANCE
-    this.keyPair = ec.genKeyPair()
+  constructor({ keyPair }) {
+    this.keyPair = Crypto.genKeyPair()
     this.publicKey = this.keyPair.getPublic().encode('hex')
+    this.privateKey = this.keyPair.get
   }
 
   sign(...data) {
-    return this.keyPair.sign(cryptoHash(data.map(input => JSON.stringify(input)).sort().join(' ')))
+    return this.keyPair.sign(Crypto.hash(data.map(input => JSON.stringify(input)).sort().join(' ')))
   }
 
   createTransaction({ recipient, amount, chain }) {
