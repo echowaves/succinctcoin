@@ -1,5 +1,5 @@
 import moment from 'moment'
-import Json2ObjHOC from '../util/json2obj-hoc'
+import Json2ObjHOC from 'json2obj-hoc'
 
 class Account {
   // have to make publicKey optional for json2Obj HOC to work
