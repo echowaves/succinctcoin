@@ -19,7 +19,7 @@ const ROOT = (process.env.JEST_WORKER_ID === undefined)
   ? path.resolve(`.${name}`) : path.resolve('.test')
 
 const STORE = {
-  KEYPAIR: path.resolve(ROOT, 'keypair'),
+  WALLET: path.resolve(ROOT, 'wallet'),
   ACCOUNTS: path.resolve(ROOT, 'accounts'),
   BLOCKS: path.resolve(ROOT, 'blocks'),
 }

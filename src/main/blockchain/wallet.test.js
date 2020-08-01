@@ -1,16 +1,23 @@
+import Wallet from './wallet'
 // const Wallet = require('./wallet')
 // const Transaction = require('./transaction')
 // const Crypto = require('../util/crypto')
 // const Blockchain = require('../index')
 // const { STARTING_BALANCE } = require('../config')
 
-describe.skip('Wallet', () => {
+describe('Wallet', () => {
   let wallet
-  it('has a `publicKey`', () => {
+  beforeEach(() => {
+    wallet = new Wallet()
   })
-  // beforeEach(() => {
-  //   wallet = new Wallet()
-  // })
+
+  describe('properties', () => {
+    it('has `keyPair` and `publicKey`', () => {
+      expect(wallet).toHaveProperty('keyPair')
+      expect(wallet).toHaveProperty('publicKey')
+    })
+  })
+
   //
   // it('has a `balance`', () => {
   //   expect(wallet).toHaveProperty('balance')

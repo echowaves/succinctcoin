@@ -1,12 +1,7 @@
-const path = require('path')
-const fs = require('fs')
-
 const EC = require('elliptic').ec
 const crypto = require('crypto')
 
 const ec = new EC('secp256k1')
-
-const { STORE } = require('../config')
 
 class Crypto {
   static hash(...inputs) {
@@ -21,16 +16,7 @@ class Crypto {
   }
 
   static getKeyPair() {
-    let keyPair
-    if (!fs.existsSync(STORE.KEY)) {
-      keyPair = ec.genKeyPair()
-      fs.writeFileSync(path.resolve(STORE.KEYPAIR), JSON.stringify(keyPair))
-    } else {
-      const readKey = JSON.parse(fs.readFileSync(path.resolve(STORE.KEYPAIR)))
-      keyPair = Object.assign(ec.genKeyPair(), readKey)
-    }
-
-    return keyPair
+    return ec.genKeyPair()
   }
 }
 

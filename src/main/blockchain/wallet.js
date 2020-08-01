@@ -1,62 +1,73 @@
-import fs from 'fs'
+// import fs from 'fs'
+import Json2ObjHOC from 'json2obj-hoc'
 import Crypto from '../util/crypto'
 
-const Transaction = require('./transaction')
-// const Account = require('./account')
+const path = require('path')
+const fs = require('fs')
 
-const { STARTING_BALANCE, STORE } = require('../config')
+const { STORE } = require('../config')
 
 class Wallet {
   constructor() {
-    this.keyPair = Crypto.genKeyPair()
+    this.keyPair = Crypto.getKeyPair()
     this.publicKey = this.keyPair.getPublic().encode('hex')
   }
 
-  sign(...data) {
-    return this.keyPair.sign(Crypto.hash(data.map(input => JSON.stringify(input)).sort().join(' ')))
+  static myWallet() {
+    let wallet
+    if (!fs.existsSync(STORE.WALLET)) {
+      wallet = new Wallet()
+      fs.writeFileSync(path.resolve(STORE.WALLET), JSON.stringify(wallet))
+    } else {
+      wallet = Wallet.parse(fs.readFileSync(path.resolve(STORE.WALLET)))
+    }
   }
 
-  createTransaction({ recipient, amount, chain }) {
-    if (chain) {
-      this.balance = Wallet.calculateBalance({
-        chain,
-        address: this.publicKey,
-      })
-    }
+  // sign(...data) {
+  //   return this.keyPair.sign(Crypto.hash(data.map(input => JSON.stringify(input)).sort().join(' ')))
+  // }
 
-    if (amount > this.balance) {
-      throw new Error('Amount exceeds balance')
-    }
+  // createTransaction({ recipient, amount, chain }) {
+  //   if (chain) {
+  //     this.balance = Wallet.calculateBalance({
+  //       chain,
+  //       address: this.publicKey,
+  //     })
+  //   }
+  //
+  //   if (amount > this.balance) {
+  //     throw new Error('Amount exceeds balance')
+  //   }
+  //
+  //   return new Transaction({ senderWallet: this, recipient, amount })
+  // }
 
-    return new Transaction({ senderWallet: this, recipient, amount })
-  }
-
-  static calculateBalance({ chain, address }) {
-    let hasConductedTransaction = false
-    let outputsTotal = 0
-
-    for (let i = chain.length - 1; i > 0; i--) { // eslint-disable-line no-plusplus
-      const block = chain[i]
-
-      for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
-        if (transaction.input.address === address) {
-          hasConductedTransaction = true
-        }
-
-        const addressOutput = transaction.outputMap[address]
-
-        if (addressOutput) {
-          outputsTotal += addressOutput
-        }
-      }
-
-      if (hasConductedTransaction) {
-        break
-      }
-    }
-
-    return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal
-  }
+  // static calculateBalance({ chain, address }) {
+  //   let hasConductedTransaction = false
+  //   let outputsTotal = 0
+  //
+  //   for (let i = chain.length - 1; i > 0; i--) { // eslint-disable-line no-plusplus
+  //     const block = chain[i]
+  //
+  //     for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
+  //       if (transaction.input.address === address) {
+  //         hasConductedTransaction = true
+  //       }
+  //
+  //       const addressOutput = transaction.outputMap[address]
+  //
+  //       if (addressOutput) {
+  //         outputsTotal += addressOutput
+  //       }
+  //     }
+  //
+  //     if (hasConductedTransaction) {
+  //       break
+  //     }
+  //   }
+  //
+  //   return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal
+  // }
 }
 
-module.exports = Wallet
+export default Json2ObjHOC(Wallet)
