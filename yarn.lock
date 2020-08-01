@@ -8317,10 +8317,10 @@ json-text-sequence@~0.1.0:
   dependencies:
     delimit-stream "0.1.0"
 
-json2obj-hoc@1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/json2obj-hoc/-/json2obj-hoc-1.0.6.tgz#ea72f5e3443c99c107abb38bfa9cee2fa80b4bb2"
-  integrity sha512-Om08SiRsiDKSlSMPQUk2LE5+rRSw239YwNVkpOs2iF1VfSef68q7trUxdy6H4Hk8rhUjk/aBdECzBWFAjBcxbA==
+json2obj-hoc@1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/json2obj-hoc/-/json2obj-hoc-1.0.7.tgz#288c2b9c44eaed72748cb39845bc16bcf3fecad5"
+  integrity sha512-SZZ4PoOktqXtefp7XXWJS2LxWkz4ancoTOWN6mPVHnKETg6qOrhssTtu/Tjwv4HCMdpJK+Ny7sbygcbOysayvA==
 
 json3@^3.3.2:
   version "3.3.3"

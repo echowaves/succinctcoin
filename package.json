@@ -47,7 +47,7 @@
     "source-map-support": "0.5.19",
     "uuid": "8.2.0",
     "wrtc": "0.4.6",
-    "json2obj-hoc": "1.0.6"
+    "json2obj-hoc": "1.0.7"
   },
   "build": {
     "appId": "com.echowaves.SuccinctCoin",
