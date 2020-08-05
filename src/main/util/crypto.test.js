@@ -25,7 +25,6 @@ describe('Crypto', () => {
     it('generates a keyPair object', () => {
       expect(Crypto.getKeyPair().constructor.name)
         .toEqual('KeyPair')
-      console.log(Crypto.getKeyPair().getPublic().encode('hex'))
     })
   })
 })
