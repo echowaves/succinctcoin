@@ -132,12 +132,12 @@ describe('Account', () => {
         account.addBalance({ amount })
         account.addStake({ amount })
         const jsonAccount = account.stringify()
-        const generatedAccount = Account.parse(jsonAccount)
+        const generatedAccount = account.parse(jsonAccount)
         expect(generatedAccount).toMatchObject(account)
       })
       it('should fail to generate an `Account` object from wrong JSON', () => {
         expect(() => {
-          Account.parse('{ some: json }')
+          account.parse('{ some: json }')
         }).toThrowError('Unexpected token s in JSON at position 2')
       })
     })

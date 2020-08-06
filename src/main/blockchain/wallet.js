@@ -1,5 +1,5 @@
 // import fs from 'fs'
-import Json2ObjHOC from 'json2obj-hoc'
+import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 
 const path = require('path')
@@ -7,13 +7,11 @@ const fs = require('fs')
 
 const { STORE } = require('../config')
 
-class Wallet {
-  constructor() {
-    this.keyPair = Crypto.getKeyPair()
-    this.publicKey = this.keyPair.getPublic().encode('hex')
-  }
+function Wallet() {
+  this.keyPair = Crypto.getKeyPair()
+  this.publicKey = this.keyPair.getPublic().encode('hex')
 
-  static myWallet() {
+  Wallet.myWallet = function () {
     let wallet
     if (!fs.existsSync(STORE.WALLET)) {
       wallet = new Wallet()
@@ -68,6 +66,10 @@ class Wallet {
   //
   //   return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal
   // }
+  return Object.assign(
+    this,
+    Obj2fsHooks(this),
+  )
 }
 
-export default Json2ObjHOC(Wallet)
+export default Wallet
