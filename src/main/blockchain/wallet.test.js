@@ -1,9 +1,9 @@
 import Wallet from './wallet'
-// const Wallet = require('./wallet')
-// const Transaction = require('./transaction')
-// const Crypto = require('../util/crypto')
-// const Blockchain = require('../index')
-// const { STARTING_BALANCE } = require('../config')
+
+const fs = require('fs-extra')
+const path = require('path')
+
+const { STORE } = require('../config')
 
 describe('Wallet', () => {
   let wallet
@@ -12,13 +12,42 @@ describe('Wallet', () => {
   })
 
   describe('properties', () => {
-    it('has `keyPair` and `publicKey`', () => {
-      expect(wallet).toHaveProperty('keyPair')
+    it('has `priaveteKey`, `publicKey`, `keyPair`', () => {
+      expect(wallet).toHaveProperty('privateKey')
       expect(wallet).toHaveProperty('publicKey')
+      expect(wallet).toHaveProperty('keyPair')
     })
   })
 
-  //
+  describe('persistance', () => {
+    describe('instantiating new', () => {
+      beforeEach(() => {
+        // make sure there is no wallet on disk
+        fs.removeSync(path.resolve(STORE.WALLET))
+        wallet = wallet.retrieveOrNew(STORE.WALLET)
+      })
+
+      it('has `privateKey`, `publicKey`, keyPair that are not empty', () => {
+        expect(wallet.privateKey).toHaveLength(64)
+        expect(wallet.publicKey).toHaveLength(130)
+        expect(wallet.keyPair instanceof Object).toBeTruthy()
+      })
+    })
+    describe('loading from storage', () => {
+      beforeEach(() => {
+        wallet = wallet.retrieveOrNew(STORE.WALLET)
+      })
+      it('has `privateKey` and `publicKey` that are not empty', () => {
+        expect(wallet.privateKey).toHaveLength(64)
+        expect(wallet.publicKey).toHaveLength(130)
+        expect(wallet.keyPair instanceof Object).toBeTruthy()
+      })
+      it('reloads the same wallet when called again', () => {
+        const wallet2 = new Wallet().retrieveOrNew(STORE.WALLET)
+        expect(wallet2.stringify()).toBe(wallet.stringify())
+      })
+    })
+  }) //
   // it('has a `balance`', () => {
   //   expect(wallet).toHaveProperty('balance')
   // })

@@ -1,29 +1,18 @@
 // import fs from 'fs'
 import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
-
-const path = require('path')
-const fs = require('fs')
-
-const { STORE } = require('../config')
+//
+// const { STORE } = require('../config')
 
 function Wallet() {
-  this.keyPair = Crypto.getKeyPair()
-  this.publicKey = this.keyPair.getPublic().encode('hex')
+  const keyPair = Crypto.genKeyPair()
+  this.publicKey = keyPair.getPublic().encode('hex')
+  this.privateKey = keyPair.getPrivate()
+  this.keyPair = Object.assign(keyPair, { priv: this.privateKey, pub: this.publicKey })
 
-  Wallet.myWallet = function () {
-    let wallet
-    if (!fs.existsSync(STORE.WALLET)) {
-      wallet = new Wallet()
-      fs.writeFileSync(path.resolve(STORE.WALLET), JSON.stringify(wallet))
-    } else {
-      wallet = Wallet.parse(fs.readFileSync(path.resolve(STORE.WALLET)))
-    }
+  this.sign = function (...data) {
+    return this.keyPair.sign(Crypto.hash(data.map(input => JSON.stringify(input)).sort().join(' ')))
   }
-
-  // sign(...data) {
-  //   return this.keyPair.sign(Crypto.hash(data.map(input => JSON.stringify(input)).sort().join(' ')))
-  // }
 
   // createTransaction({ recipient, amount, chain }) {
   //   if (chain) {

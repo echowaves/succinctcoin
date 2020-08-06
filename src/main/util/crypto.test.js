@@ -21,9 +21,9 @@ describe('Crypto', () => {
     })
   })
 
-  describe('Crypto.getKeyPair()', () => {
+  describe('Crypto.genKeyPair()', () => {
     it('generates a keyPair object', () => {
-      expect(Crypto.getKeyPair().constructor.name)
+      expect(Crypto.genKeyPair().constructor.name)
         .toEqual('KeyPair')
     })
   })
