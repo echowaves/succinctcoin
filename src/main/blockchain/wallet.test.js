@@ -1,4 +1,5 @@
 import Wallet from './wallet'
+import Crypto from '../util/crypto'
 
 const fs = require('fs-extra')
 const path = require('path')
@@ -47,7 +48,46 @@ describe('Wallet', () => {
         expect(wallet2.stringify()).toBe(wallet.stringify())
       })
     })
-  }) //
+  })
+
+  describe('signing data', () => {
+    const data = 'foobuz'
+
+    it('does not verify an invalid signature', () => {
+      expect(
+        Crypto.verifySignature({
+          publicKey: wallet.publicKey,
+          data,
+          signature: new Wallet().sign(data),
+        })
+      ).toBe(false)
+    })
+    it('verifies a signature', () => {
+      const signature = wallet.sign(data)
+      expect(
+        Crypto.verifySignature({
+          publicKey: wallet.publicKey,
+          data,
+          signature,
+        })
+      ).toBe(true)
+    })
+    it('verifies a signature by the wallet that was retreived from disk', () => {
+      console.log(wallet.keyPair)
+      wallet = wallet.retrieveOrNew(STORE.WALLET)
+      console.log(wallet.keyPair)
+
+      const signature = wallet.sign(data)
+      expect(
+        Crypto.verifySignature({
+          publicKey: wallet.publicKey,
+          data,
+          signature,
+        })
+      ).toBe(true)
+    })
+  })
+
   // it('has a `balance`', () => {
   //   expect(wallet).toHaveProperty('balance')
   // })

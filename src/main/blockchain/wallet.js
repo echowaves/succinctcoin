@@ -10,8 +10,8 @@ function Wallet() {
   this.privateKey = keyPair.getPrivate()
   this.keyPair = Object.assign(keyPair, { priv: this.privateKey, pub: this.publicKey })
 
-  this.sign = function (...data) {
-    return this.keyPair.sign(Crypto.hash(data.map(input => JSON.stringify(input)).sort().join(' ')))
+  this.sign = function (data) {
+    return this.keyPair.sign(Crypto.hash(data))
   }
 
   // createTransaction({ recipient, amount, chain }) {
