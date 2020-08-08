@@ -24,7 +24,7 @@ function Wallet() {
   this.privateKey = privateKey
 
   this.sign = function (data) {
-    const sign = crypto.createSign('SHA256')
+    const sign = crypto.createSign('SHA512')
     sign.write(Crypto.hash(data))
     sign.end()
     const signature = sign.sign(privateKey, 'hex')

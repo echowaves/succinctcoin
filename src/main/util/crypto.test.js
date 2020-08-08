@@ -4,7 +4,7 @@ describe('Crypto', () => {
   describe('Crypto.hash()', () => {
     it('generates a SHA-256 hashed output', () => {
       expect(Crypto.hash('foo'))
-        .toEqual('b2213295d564916f89a6a42455567c87c3f480fcd7a1c15e220f17d7169a790b')
+        .toEqual('7822850fecc31ad84d42bc4dfad785dc1ba286202e19271979763f9c39aba48156a3374d8f483b0a7f0dd5d1b044d4452fba5d8495501f7bcf526db1ad1691f3')
     })
 
     it('produces the same hash with the same input arguments in any order', () => {
