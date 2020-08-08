@@ -47,7 +47,7 @@
     "uuid": "8.2.0",
     "wrtc": "0.4.6",
     "fs-extra": "9.0.1",
-    "obj2fs-hooks": "0.0.2"
+    "obj2fs-hooks": "0.0.3"
   },
   "build": {
     "appId": "com.echowaves.SuccinctCoin",

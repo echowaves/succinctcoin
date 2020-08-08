@@ -1,11 +1,13 @@
-// import fs from 'fs'
+import path from 'path'
+
 import Obj2fsHooks from 'obj2fs-hooks'
+
 import Crypto from '../util/crypto'
+import Transaction from './transaction'
+import Account from './account'
 
 const crypto = require('crypto')
-
-//
-// const { STORE } = require('../config')
+const { STORE } = require('../config')
 
 function Wallet() {
   const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
@@ -31,47 +33,41 @@ function Wallet() {
     return signature
   }
 
-  // createTransaction({ recipient, amount, chain }) {
-  //   if (chain) {
-  //     this.balance = Wallet.calculateBalance({
-  //       chain,
-  //       address: this.publicKey,
-  //     })
-  //   }
-  //
-  //   if (amount > this.balance) {
-  //     throw new Error('Amount exceeds balance')
-  //   }
-  //
-  //   return new Transaction({ senderWallet: this, recipient, amount })
-  // }
+  // this method is called to create transaction that goes into transaction pool,
+  // there is no other place to create new transaction,
+  // at this point the transaction should be signed and never modified.
+  this.createTransaction = function ({ recipient, amount, fee }) {
+    const account = new Account({
+      publicKey: this.publicKey,
+    }).retrieveOrNew(path.join(STORE.ACCOUNTS, Crypto.hash(this.publicKey)))
 
-  // static calculateBalance({ chain, address }) {
-  //   let hasConductedTransaction = false
-  //   let outputsTotal = 0
-  //
-  //   for (let i = chain.length - 1; i > 0; i--) { // eslint-disable-line no-plusplus
-  //     const block = chain[i]
-  //
-  //     for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
-  //       if (transaction.input.address === address) {
-  //         hasConductedTransaction = true
-  //       }
-  //
-  //       const addressOutput = transaction.outputMap[address]
-  //
-  //       if (addressOutput) {
-  //         outputsTotal += addressOutput
-  //       }
-  //     }
-  //
-  //     if (hasConductedTransaction) {
-  //       break
-  //     }
-  //   }
-  //
-  //   return hasConductedTransaction ? outputsTotal : STARTING_BALANCE + outputsTotal
-  // }
+    if (amount <= 0) {
+      throw new Error('Amount invalid')
+    }
+    if (fee < 0) {
+      throw new Error('Fee invalid')
+    }
+    // console.log(`${amount + fee} > ${account.balance}`)
+    if (amount + fee > account.balance) {
+      throw new Error('Amount exceeds balance')
+    }
+
+    const transaction = new Transaction({
+      sender: this.publicKey, recipient, amount, fee,
+    })
+
+    transaction.signature = this.sign(
+      transaction.uuid,
+      transaction.timestamp,
+      transaction.sender,
+      transaction.recipient,
+      transaction.ammount,
+      transaction.fee,
+    )
+
+    return transaction
+  }
+
   return Object.assign(
     this,
     Obj2fsHooks(this),

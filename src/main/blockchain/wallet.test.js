@@ -1,5 +1,7 @@
 import Wallet from './wallet'
+import Transaction from './transaction'
 import Crypto from '../util/crypto'
+import Account from './account'
 
 const fs = require('fs-extra')
 const path = require('path')
@@ -7,6 +9,8 @@ const path = require('path')
 const { STORE } = require('../config')
 
 describe('Wallet', () => {
+  fs.removeSync(path.resolve(STORE.ACCOUNTS))
+
   let wallet
   beforeEach(() => {
     wallet = new Wallet()
@@ -120,59 +124,73 @@ describe('Wallet', () => {
   //   })
   // })
   //
-  // describe('createTransaction()', () => {
-  //   describe('and the amount exceeds the balance', () => {
-  //     it('throws an error', () => {
-  //       expect(() => wallet.createTransaction({ amount: 999999, recipient: 'foo-recipient' }))
-  //         .toThrow('Amount exceeds balance')
-  //     })
-  //   })
-  //
-  //   describe('and the amount is valid', () => {
-  //     let transaction,
-  //       amount,
-  //       recipient
-  //
-  //     beforeEach(() => {
-  //       amount = 50
-  //       recipient = 'foo-recipient'
-  //       transaction = wallet.createTransaction({ amount, recipient })
-  //     })
-  //
-  //     it('creates an instance of `Transaction`', () => {
-  //       expect(transaction instanceof Transaction).toBe(true)
-  //     })
-  //
-  //     it('matches the transaction input with the wallet', () => {
-  //       expect(transaction.input.address).toEqual(wallet.publicKey)
-  //     })
-  //
-  //     it('outputs the amount the recipient', () => {
-  //       expect(transaction.outputMap[recipient]).toEqual(amount)
-  //     })
-  //   })
-  //
-  //   describe('and a chain is passed', () => {
-  //     it('calls `Wallet.calculateBalance`', () => {
-  //       const calculateBalanceMock = jest.fn()
-  //
-  //       const originalCalculateBalance = Wallet.calculateBalance
-  //
-  //       Wallet.calculateBalance = calculateBalanceMock
-  //
-  //       wallet.createTransaction({
-  //         recipient: 'foo',
-  //         amount: 10,
-  //         chain: new Blockchain().chain,
-  //       })
-  //
-  //       expect(calculateBalanceMock).toHaveBeenCalled()
-  //
-  //       Wallet.calculateBalance = originalCalculateBalance
-  //     })
-  //   })
-  // })
-  //
+  describe('createTransaction()', () => {
+    let account
+    beforeEach(() => {
+      // create account associated to wallet
+      account = new Account({
+        publicKey: wallet.publicKey,
+      }).retrieveOrNew(path.join(STORE.ACCOUNTS, Crypto.hash(wallet.publicKey)))
+      account.balance = 50
+      account.store(path.join(STORE.ACCOUNTS, Crypto.hash(wallet.publicKey)))
+    })
+
+    describe('and the amount exceeds the balance', () => {
+      it('throws an error', () => {
+        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 999999, fee: 0 }))
+          .toThrow('Amount exceeds balance')
+      })
+    })
+
+    describe('and the amount + fee exceeds the balance', () => {
+      it('throws an error', () => {
+        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 1, fee: 100 }))
+          .toThrow('Amount exceeds balance')
+      })
+    })
+
+    describe('and the amount is 0', () => {
+      it('throws an error', () => {
+        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: 0 }))
+          .toThrow('Amount invalid')
+      })
+    })
+
+    describe('and the amount is < 0', () => {
+      it('throws an error', () => {
+        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: -12, fee: 0 }))
+          .toThrow('Amount invalid')
+      })
+    })
+
+    describe('and the fee is < 0', () => {
+      it('throws an error', () => {
+        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: -12 }))
+          .toThrow('Amount invalid')
+      })
+    })
+
+    describe('and the amount is valid', () => {
+      let transaction,
+        amount,
+        recipient
+
+      beforeEach(() => {
+        amount = 50
+        recipient = 'foo-recipient'
+        transaction = wallet.createTransaction({ recipient, amount, fee: 0 })
+      })
+
+      it('creates an instance of `Transaction`', () => {
+        expect(transaction instanceof Transaction).toBe(true)
+      })
+
+      it('matches the transaction sender with the wallet address', () => {
+        expect(transaction.sender).toEqual(wallet.publicKey)
+      })
+    })
+  })
+
   // describe('calculateBalance()', () => {
   //   let blockchain
   //
