@@ -1,17 +1,34 @@
 // import fs from 'fs'
 import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
+
+const crypto = require('crypto')
+
 //
 // const { STORE } = require('../config')
 
 function Wallet() {
-  const keyPair = Crypto.genKeyPair()
-  this.publicKey = keyPair.getPublic().encode('hex')
-  this.privateKey = keyPair.getPrivate()
-  this.keyPair = Object.assign(keyPair, { priv: this.privateKey, pub: this.publicKey })
+  const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
+    namedCurve: 'secp256k1',
+    publicKeyEncoding: {
+      type: 'spki',
+      format: 'pem',
+    },
+    privateKeyEncoding: {
+      type: 'pkcs8',
+      format: 'pem',
+    },
+  })
+
+  this.publicKey = publicKey
+  this.privateKey = privateKey
 
   this.sign = function (data) {
-    return this.keyPair.sign(Crypto.hash(data))
+    const sign = crypto.createSign('SHA256')
+    sign.write(Crypto.hash(data))
+    sign.end()
+    const signature = sign.sign(privateKey, 'hex')
+    return signature
   }
 
   // createTransaction({ recipient, amount, chain }) {

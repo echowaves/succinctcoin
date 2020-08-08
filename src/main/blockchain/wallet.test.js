@@ -13,10 +13,9 @@ describe('Wallet', () => {
   })
 
   describe('properties', () => {
-    it('has `priaveteKey`, `publicKey`, `keyPair`', () => {
+    it('has `priaveteKey`, `publicKey`', () => {
       expect(wallet).toHaveProperty('privateKey')
       expect(wallet).toHaveProperty('publicKey')
-      expect(wallet).toHaveProperty('keyPair')
     })
   })
 
@@ -28,10 +27,9 @@ describe('Wallet', () => {
         wallet = wallet.retrieveOrNew(STORE.WALLET)
       })
 
-      it('has `privateKey`, `publicKey`, keyPair that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(64)
-        expect(wallet.publicKey).toHaveLength(130)
-        expect(wallet.keyPair instanceof Object).toBeTruthy()
+      it('has `privateKey`, `publicKey` that are not empty', () => {
+        expect(wallet.privateKey).toHaveLength(237)
+        expect(wallet.publicKey).toHaveLength(174)
       })
     })
     describe('loading from storage', () => {
@@ -39,9 +37,8 @@ describe('Wallet', () => {
         wallet = wallet.retrieveOrNew(STORE.WALLET)
       })
       it('has `privateKey` and `publicKey` that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(64)
-        expect(wallet.publicKey).toHaveLength(130)
-        expect(wallet.keyPair instanceof Object).toBeTruthy()
+        expect(wallet.privateKey).toHaveLength(237)
+        expect(wallet.publicKey).toHaveLength(174)
       })
       it('reloads the same wallet when called again', () => {
         const wallet2 = new Wallet().retrieveOrNew(STORE.WALLET)
@@ -73,14 +70,15 @@ describe('Wallet', () => {
       ).toBe(true)
     })
     it('verifies a signature by the wallet that was retreived from disk', () => {
-      console.log(wallet.keyPair)
-      wallet = wallet.retrieveOrNew(STORE.WALLET)
-      console.log(wallet.keyPair)
+      fs.removeSync(path.resolve(STORE.WALLET))
+      wallet = new Wallet()
+      wallet.store(STORE.WALLET)
+      const wallet2 = new Wallet().retrieveOrNew(STORE.WALLET)
 
       const signature = wallet.sign(data)
       expect(
         Crypto.verifySignature({
-          publicKey: wallet.publicKey,
+          publicKey: wallet2.publicKey,
           data,
           signature,
         })

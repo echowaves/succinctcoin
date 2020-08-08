@@ -20,11 +20,4 @@ describe('Crypto', () => {
       expect(Crypto.hash(foo)).not.toEqual(originalHash)
     })
   })
-
-  describe('Crypto.genKeyPair()', () => {
-    it('generates a keyPair object', () => {
-      expect(Crypto.genKeyPair().constructor.name)
-        .toEqual('KeyPair')
-    })
-  })
 })
