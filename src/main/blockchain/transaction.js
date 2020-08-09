@@ -14,20 +14,6 @@ function Transaction({
   // the parameters passed at the time of transaction creation when it's added to the pool
   sender, recipient, amount, fee,
 }) {
-  // expected the sender account already in the system -- simply retreive it
-  const account = new Account().retrieve(path.join(STORE.ACCOUNTS, Crypto.hash(sender)))
-
-  if (amount <= 0) {
-    throw new Error('Amount invalid')
-  }
-  if (fee < 0) {
-    throw new Error('Fee invalid')
-  }
-  // console.log(`${amount + fee} > ${account.balance}`)
-  if (amount + fee > account.balance) {
-    throw new Error('Amount exceeds balance')
-  }
-
   this.uuid = uuidv4()
   this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
   this.sender = sender
@@ -36,6 +22,20 @@ function Transaction({
   this.fee = fee
 
   this.validate = function () {
+    // expected the sender account already in the system -- simply retreive it
+    const account = new Account().retrieve(path.join(STORE.ACCOUNTS, Crypto.hash(this.sender)))
+
+    if (this.amount <= 0) {
+      throw new Error('Amount invalid')
+    }
+    if (this.fee < 0) {
+      throw new Error('Fee invalid')
+    }
+    // console.log(`${amount + fee} > ${account.balance}`)
+    if (this.amount + this.fee > account.balance) {
+      throw new Error('Amount exceeds balance')
+    }
+
     if (!Crypto.verifySignature({
       publicKey: this.sender,
       data: [

@@ -137,35 +137,40 @@ describe('Wallet', () => {
 
     describe('and the amount exceeds the balance', () => {
       it('throws an error', () => {
-        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 999999, fee: 0 }))
+        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 999999, fee: 0 })
+        expect(() => transaction.validate())
           .toThrow('Amount exceeds balance')
       })
     })
 
     describe('and the amount + fee exceeds the balance', () => {
       it('throws an error', () => {
-        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 1, fee: 100 }))
+        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 1, fee: 100 })
+        expect(() => transaction.validate())
           .toThrow('Amount exceeds balance')
       })
     })
 
     describe('and the amount is 0', () => {
       it('throws an error', () => {
-        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: 0 }))
+        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: 0 })
+        expect(() => transaction.validate())
           .toThrow('Amount invalid')
       })
     })
 
     describe('and the amount is < 0', () => {
       it('throws an error', () => {
-        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: -12, fee: 0 }))
+        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: -12, fee: 0 })
+        expect(() => transaction.validate())
           .toThrow('Amount invalid')
       })
     })
 
     describe('and the fee is < 0', () => {
       it('throws an error', () => {
-        expect(() => wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: -12 }))
+        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: -12 })
+        expect(() => transaction.validate())
           .toThrow('Amount invalid')
       })
     })
