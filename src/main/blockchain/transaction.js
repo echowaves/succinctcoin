@@ -1,3 +1,4 @@
+import path from 'path'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -5,19 +6,34 @@ import Obj2fsHooks from 'obj2fs-hooks'
 
 import Crypto from '../util/crypto'
 
+import Account from './account'
+
+const { STORE } = require('../config')
+
 function Transaction({
   // the parameters passed at the time of transaction creation when it's added to the pool
   sender, recipient, amount, fee,
 }) {
-  // only initialize when parameters passed, otherwise will be deserialized from JSON
-  if (sender) {
-    this.uuid = uuidv4()
-    this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
-    this.sender = sender
-    this.recipient = recipient
-    this.amount = amount
-    this.fee = fee
+  // expected the sender account already in the system -- simply retreive it
+  const account = new Account().retrieve(path.join(STORE.ACCOUNTS, Crypto.hash(sender)))
+
+  if (amount <= 0) {
+    throw new Error('Amount invalid')
   }
+  if (fee < 0) {
+    throw new Error('Fee invalid')
+  }
+  // console.log(`${amount + fee} > ${account.balance}`)
+  if (amount + fee > account.balance) {
+    throw new Error('Amount exceeds balance')
+  }
+
+  this.uuid = uuidv4()
+  this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
+  this.sender = sender
+  this.recipient = recipient
+  this.amount = amount
+  this.fee = fee
 
   this.validate = function () {
     if (!Crypto.verifySignature({

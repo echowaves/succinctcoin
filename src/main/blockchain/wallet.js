@@ -1,13 +1,9 @@
-import path from 'path'
-
 import Obj2fsHooks from 'obj2fs-hooks'
 
 import Crypto from '../util/crypto'
 import Transaction from './transaction'
-import Account from './account'
 
 const crypto = require('crypto')
-const { STORE } = require('../config')
 
 function Wallet() {
   const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
@@ -37,21 +33,6 @@ function Wallet() {
   // there is no other place to create new transaction,
   // at this point the transaction should be signed and never modified.
   this.createTransaction = function ({ recipient, amount, fee }) {
-    const account = new Account({
-      publicKey: this.publicKey,
-    }).retrieveOrNew(path.join(STORE.ACCOUNTS, Crypto.hash(this.publicKey)))
-
-    if (amount <= 0) {
-      throw new Error('Amount invalid')
-    }
-    if (fee < 0) {
-      throw new Error('Fee invalid')
-    }
-    // console.log(`${amount + fee} > ${account.balance}`)
-    if (amount + fee > account.balance) {
-      throw new Error('Amount exceeds balance')
-    }
-
     const transaction = new Transaction({
       sender: this.publicKey, recipient, amount, fee,
     })
