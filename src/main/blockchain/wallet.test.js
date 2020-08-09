@@ -175,7 +175,7 @@ describe('Wallet', () => {
       })
     })
 
-    describe('and the amount is valid', () => {
+    describe('and the amount and fee are valid', () => {
       let transaction,
         amount,
         recipient
@@ -188,10 +188,19 @@ describe('Wallet', () => {
 
       it('creates an instance of `Transaction`', () => {
         expect(transaction instanceof Transaction).toBe(true)
+        expect(transaction.validate()).toBe(true)
       })
 
       it('matches the transaction sender with the wallet address', () => {
         expect(transaction.sender).toEqual(wallet.publicKey)
+        expect(transaction.validate()).toBe(true)
+      })
+      describe('and the signature is wrong', () => {
+        it('throws an error', () => {
+          transaction.signature = `.${transaction.signature}`// alter signature
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
+        })
       })
     })
   })

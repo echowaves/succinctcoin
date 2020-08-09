@@ -47,8 +47,8 @@ function Transaction({
         this.fee],
       signature: this.signature,
     })) {
-      console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
-      return false
+      // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
+      throw new Error('Invalid signature')
     }
     return true
   }

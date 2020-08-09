@@ -36,16 +36,14 @@ function Wallet() {
     const transaction = new Transaction({
       sender: this.publicKey, recipient, amount, fee,
     })
-
-    transaction.signature = this.sign(
+    transaction.signature = this.sign([
       transaction.uuid,
       transaction.timestamp,
       transaction.sender,
       transaction.recipient,
       transaction.ammount,
       transaction.fee,
-    )
-
+    ])
     return transaction
   }
 
