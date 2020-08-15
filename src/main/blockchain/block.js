@@ -1,51 +1,62 @@
-const hexToBinary = require('hex-to-binary')
-const { GENESIS_DATA, MINE_RATE } = require('../config')
+import { v4 as uuidv4 } from 'uuid'
+import moment from 'moment'
+
+import Obj2fsHooks from 'obj2fs-hooks'
+
+const { GENESIS_DATA } = require('../config')
 const Crypto = require('../util/crypto')
 
-class Block {
-  constructor({
-    timestamp, lastHash, hash, data, nonce, difficulty,
-  }) {
-    this.timestamp = timestamp
-    this.lastHash = lastHash
-    this.hash = hash
-    this.data = data
-    this.nonce = nonce
-    this.difficulty = difficulty
-  }
+function Block({ height, lastBlock, data } = { height: '', lastBlock: null, data: '' }) {
+  this.height = height
+  this.uuid = uuidv4()
+  this.timestamp = moment.utc().valueOf() // assigned when block is created
+  this.validator = ''
+  this.lastHash = lastBlock ? lastBlock.hash : ''
+  this.hash = ''
+  this.data = data
+  this.signature = ''
 
-  static genesis() {
+  Block.genesis = function () {
     return new this(GENESIS_DATA)
   }
 
-  static mineBlock({ lastBlock, data }) {
-    const lastHash = lastBlock.hash
-    let hash,
-      timestamp
-    let { difficulty } = lastBlock
-    let nonce = 0
-
-    do {
-      nonce++ // eslint-disable-line no-plusplus
-      timestamp = Date.now()
-      difficulty = Block.adjustDifficulty({ originalBlock: lastBlock, timestamp })
-      hash = Crypto.hash(timestamp, lastHash, data, nonce, difficulty)
-    } while (hexToBinary(hash).substring(0, difficulty) !== '0'.repeat(difficulty))
-
-    return new this({
-      timestamp, lastHash, data, difficulty, nonce, hash,
-    })
+  // this function should generate hash and sign the block
+  this.mineBlock = function ({ wallet }) {
+    this.hash = Crypto.hash(this.heigh, this.uuid, this.timestamp, this.validator, this.lastHash, this.data)
+    this.signature = wallet.sign([
+      this.heigh,
+      this.uuid,
+      this.timestamp,
+      this.validator,
+      this.lastHash,
+      this.hash,
+      this.data,
+    ])
   }
 
-  static adjustDifficulty({ originalBlock, timestamp }) {
-    const { difficulty } = originalBlock
-
-    if (difficulty < 1) return 1
-
-    if ((timestamp - originalBlock.timestamp) > MINE_RATE) return difficulty - 1
-
-    return difficulty + 1
+  this.validate = function () {
+    if (!Crypto.verifySignature({
+      publicKey: this.sender,
+      data: [
+        this.heigh,
+        this.uuid,
+        this.timestamp,
+        this.validator,
+        this.lastHash,
+        this.hash,
+        this.data,
+      ],
+      signature: this.signature,
+    })) {
+      throw new Error('Invalid signature')
+    }
+    return true
   }
+
+  return Object.assign(
+    this,
+    Obj2fsHooks(this),
+  )
 }
 
-module.exports = Block
+export default Block

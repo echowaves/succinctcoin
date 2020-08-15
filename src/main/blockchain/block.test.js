@@ -1,4 +1,3 @@
-const hexToBinary = require('hex-to-binary')
 const Block = require('./block')
 const Crypto = require('../util/crypto')
 

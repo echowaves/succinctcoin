@@ -6,11 +6,14 @@ const { name } = require('../../package.json')
 const VALIDATION_RATE = 1000 // how often to generate a block, how may transactions
 
 const GENESIS_DATA = {
-  timestamp: 1,
-  lastHash: '-----',
-  hash: 'hash-one',
-  nonce: 0,
+  height: 0n,
+  uuid: 'GENESIS',
+  timestamp: 0,
+  validator: 'GENESIS',
+  lastHash: 'GENESIS',
+  hash: 'GENESIS',
   data: [],
+  signature: 'GENESIS',
 }
 
 const STARTING_BALANCE = 0

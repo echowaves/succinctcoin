@@ -28,7 +28,6 @@
     "cors": "2.8.5",
     "electron-is-dev": "1.2.0",
     "express": "4.17.1",
-    "hex-to-binary": "1.0.1",
     "ipfs": "0.48.1",
     "ipfs-pubsub-room": "2.0.1",
     "libp2p": "0.28.8",
