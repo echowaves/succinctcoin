@@ -1,6 +1,10 @@
 import moment from 'moment'
 
 import Account from './account'
+import Crypto from '../util/crypto'
+
+const path = require('path')
+const { STORE } = require('../config')
 
 describe('Account', () => {
   const
@@ -13,12 +17,17 @@ describe('Account', () => {
   })
 
   describe('properties', () => {
-    it('has `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {
+    it('has `KEY`, `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {
       expect(account).toHaveProperty('KEY')
       expect(account).toHaveProperty('publicKey')
       expect(account).toHaveProperty('balance')
       expect(account).toHaveProperty('stake')
       expect(account).toHaveProperty('stakeTimestamp')
+    })
+    describe('KEY', () => {
+      it('it should have correct `KEY`, which should be derived from `publicKey`', () => {
+        expect(account.KEY).toEqual(path.join(STORE.ACCOUNTS, Crypto.hash(account.publicKey)))
+      })
     })
     describe('publicKey', () => {
       it('should be equal value from `Constructor`', () => {

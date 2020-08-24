@@ -1,4 +1,3 @@
-import path from 'path'
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -7,8 +6,6 @@ import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 
 import Account from './account'
-
-const { STORE } = require('../config')
 
 function Transaction({
   // the parameters passed at the time of transaction creation when it's added to the pool
