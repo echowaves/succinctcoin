@@ -1,5 +1,4 @@
 import Wallet from './wallet'
-import Transaction from './transaction'
 import Crypto from '../util/crypto'
 import Account from './account'
 

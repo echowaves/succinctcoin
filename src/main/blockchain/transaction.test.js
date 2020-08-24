@@ -2,6 +2,8 @@ import Wallet from './wallet'
 import Account from './account'
 import Transaction from './transaction'
 
+const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
+
 describe('Transaction', () => {
   let transaction,
     senderWallet,
@@ -43,6 +45,15 @@ describe('Transaction', () => {
       })
       it('creates an instance of `Transaction`', () => {
         expect(transaction instanceof Transaction).toBe(true)
+      })
+
+      describe('for reward transaction', () => {
+        beforeEach(() => {
+          transaction.sender = REWARD_ADDRESS
+        })
+        it.only('returns true', () => {
+          expect(transaction.validate()).toBe(true)
+        })
       })
     })
 
