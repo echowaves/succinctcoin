@@ -17,7 +17,7 @@ describe('Transaction', () => {
   beforeEach(() => {
     senderWallet = new Wallet()
     recipient = 'recipient-public-key'
-    amount = 50
+    amount = 49
     fee = 1
     transaction = senderWallet.createTransaction({ recipient, amount, fee })
   })
@@ -33,40 +33,43 @@ describe('Transaction', () => {
     })
   })
 
-  describe('validTransaction()', () => {
+  describe('validate()', () => {
     let account
     beforeEach(() => {
-      // create account associated with wallet
+      // create account associated with wallet (sender's account)
       account = new Account({ publicKey: senderWallet.publicKey })
-      account.balance = 51
-      account.store(path.join(STORE.ACCOUNTS, Crypto.hash(senderWallet.publicKey)))
+      account.balance = 50
+      account.store()
     })
 
     describe('when the transaction is valid', () => {
-      // it('returns true', () => {
-      //   expect(transaction.validTransaction()).toBe(true)
-      // })
+      it('returns true', () => {
+        expect(transaction.validate()).toBe(true)
+      })
     })
 
-    // describe('when the transaction is invalid', () => {
-    //   describe('and a transaction outputMap value is invalid', () => {
-    //     it('returns false and logs an error', () => {
-    //       transaction.outputMap[senderWallet.publicKey] = 999999
-    //
-    //       expect(Transaction.validTransaction(transaction)).toBe(false)
-    //       expect(errorMock).toHaveBeenCalled()
-    //     })
-    //   })
-    //
-    //   describe('and the transaction input signature is invalid', () => {
-    //     it('returns false and logs an error', () => {
-    //       transaction.input.signature = new Wallet().sign('data')
-    //
-    //       expect(Transaction.validTransaction(transaction)).toBe(false)
-    //       expect(errorMock).toHaveBeenCalled()
-    //     })
-    //   })
-    // })
+    describe('when the transaction is invalid', () => {
+      describe('because sender account is invalid', () => {
+        beforeEach(() => {
+          transaction.sender = 'invalid public key'
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('No such key or file name found on disk')
+        })
+      })
+
+      describe('because `amount` + `fee` exceeds senders balance', () => {
+        beforeEach(() => {
+          transaction.amount = 50
+          transaction.fee = 1
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Amount exceeds balance')
+        })
+      })
+    })
   })
 
   // describe('rewardTransaction()', () => {

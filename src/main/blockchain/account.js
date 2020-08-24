@@ -46,7 +46,7 @@ function Account({ publicKey } = { publicKey: '' }) {
     this,
     Obj2fsHooks(this),
   )
-  // the key is derived from the publicKey, no need to expicitely set it
+  // the key is derived from the publicKey when constructor is called, no need to expicitely set it
   this.setKey(path.join(STORE.ACCOUNTS, Crypto.hash(this.publicKey)))
   return this
 }
