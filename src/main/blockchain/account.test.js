@@ -14,6 +14,7 @@ describe('Account', () => {
 
   describe('properties', () => {
     it('has `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {
+      expect(account).toHaveProperty('KEY')
       expect(account).toHaveProperty('publicKey')
       expect(account).toHaveProperty('balance')
       expect(account).toHaveProperty('stake')

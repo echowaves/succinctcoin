@@ -1,5 +1,9 @@
 import moment from 'moment'
 import Obj2fsHooks from 'obj2fs-hooks'
+import Crypto from '../util/crypto'
+
+const path = require('path')
+const { STORE } = require('../config')
 
 function Account({ publicKey } = { publicKey: '' }) {
   // have to make publicKey optional
@@ -38,10 +42,13 @@ function Account({ publicKey } = { publicKey: '' }) {
     // TODO: to implement
   }
 
-  return Object.assign(
+  Object.assign(
     this,
     Obj2fsHooks(this),
   )
+  // the key is derived from the publicKey, no need to expicitely set it
+  this.setKey(path.join(STORE.ACCOUNTS, Crypto.hash(this.publicKey)))
+  return this
 }
 
 export default Account

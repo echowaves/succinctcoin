@@ -28,7 +28,7 @@ describe('Wallet', () => {
       beforeEach(() => {
         // make sure there is no wallet on disk
         fs.removeSync(path.resolve(STORE.WALLET))
-        wallet = wallet.retrieveOrNew(STORE.WALLET)
+        wallet = wallet.retrieveOrNew()
       })
 
       it('has `privateKey`, `publicKey` that are not empty', () => {
@@ -38,14 +38,14 @@ describe('Wallet', () => {
     })
     describe('loading from storage', () => {
       beforeEach(() => {
-        wallet = wallet.retrieveOrNew(STORE.WALLET)
+        wallet = wallet.retrieveOrNew()
       })
       it('has `privateKey` and `publicKey` that are not empty', () => {
         expect(wallet.privateKey).toHaveLength(237)
         expect(wallet.publicKey).toHaveLength(174)
       })
       it('reloads the same wallet when called again', () => {
-        const wallet2 = new Wallet().retrieveOrNew(STORE.WALLET)
+        const wallet2 = new Wallet().retrieveOrNew()
         expect(wallet2.stringify()).toBe(wallet.stringify())
       })
     })
@@ -76,8 +76,8 @@ describe('Wallet', () => {
     it('verifies a signature by the wallet that was retreived from disk', () => {
       fs.removeSync(path.resolve(STORE.WALLET))
       wallet = new Wallet()
-      wallet.store(STORE.WALLET)
-      const wallet2 = new Wallet().retrieveOrNew(STORE.WALLET)
+      wallet.store()
+      const wallet2 = new Wallet().retrieveOrNew()
 
       const signature = wallet.sign(data)
       expect(
@@ -127,12 +127,12 @@ describe('Wallet', () => {
   describe('createTransaction()', () => {
     let account
     beforeEach(() => {
-      // create account associated to wallet
+      // create account associated with wallet
       account = new Account({
         publicKey: wallet.publicKey,
-      }).retrieveOrNew(path.join(STORE.ACCOUNTS, Crypto.hash(wallet.publicKey)))
+      }).retrieveOrNew()
       account.balance = 50
-      account.store(path.join(STORE.ACCOUNTS, Crypto.hash(wallet.publicKey)))
+      account.store()
     })
 
     describe('and the amount exceeds the balance', () => {
