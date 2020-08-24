@@ -52,14 +52,14 @@ describe('Account', () => {
   })
 
   describe('methods', () => {
-    describe('addBalance()', () => {
+    describe('account.addBalance()', () => {
       it('should add proper amount', () => {
         account.addBalance({ amount })
         expect(account.balance).toEqual(amount)
       })
     })
 
-    describe('subtractBalance()', () => {
+    describe('account.subtractBalance()', () => {
       beforeEach(() => {
         account.addBalance({ amount: amount * 2 })
       })
@@ -74,7 +74,7 @@ describe('Account', () => {
       })
     })
 
-    describe('addStake()', () => {
+    describe('account.addStake()', () => {
       beforeEach(() => {
         account.addBalance({ amount: amount * 2 })
       })
@@ -101,7 +101,7 @@ describe('Account', () => {
       })
     })
 
-    describe('subtractStake()', () => {
+    describe('account.subtractStake()', () => {
       beforeEach(() => {
         account.addBalance({ amount: amount * 2 })
         account.addStake({ amount })
@@ -128,7 +128,7 @@ describe('Account', () => {
       })
     })
 
-    describe('stringify()', () => {
+    describe('account.stringify()', () => {
       it('should generate valid JSON string representing the `Account`', () => {
         account.addBalance({ amount })
         account.addStake({ amount })
@@ -137,7 +137,7 @@ describe('Account', () => {
       })
     })
 
-    describe('parse()', () => {
+    describe('account.parse()', () => {
       it('should generate an `Account` instance from JSON', () => {
         account.addBalance({ amount })
         account.addStake({ amount })
@@ -152,9 +152,9 @@ describe('Account', () => {
       })
     })
 
-    describe('calculateBalance()', () => {
-      xit('should walk the chain and calculate the balance', () => {
-      })
-    })
+    // describe('calculateBalance()', () => {
+    //   xit('should walk the chain and calculate the balance', () => {
+    //   })
+    // })
   })
 })

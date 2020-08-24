@@ -90,7 +90,7 @@ describe('Wallet', () => {
     })
   })
 
-  describe('createTransaction()', () => {
+  describe('wallet.createTransaction()', () => {
     let account
     beforeEach(() => {
       // create account associated with wallet
@@ -99,46 +99,6 @@ describe('Wallet', () => {
       }).retrieveOrNew()
       account.balance = 50
       account.store()
-    })
-
-    describe('and the amount exceeds the balance', () => {
-      it('throws an error', () => {
-        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 999999, fee: 0 })
-        expect(() => transaction.validate())
-          .toThrow('Amount exceeds balance')
-      })
-    })
-
-    describe('and the amount + fee exceeds the balance', () => {
-      it('throws an error', () => {
-        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 1, fee: 100 })
-        expect(() => transaction.validate())
-          .toThrow('Amount exceeds balance')
-      })
-    })
-
-    describe('and the amount is 0', () => {
-      it('throws an error', () => {
-        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: 0 })
-        expect(() => transaction.validate())
-          .toThrow('Amount invalid')
-      })
-    })
-
-    describe('and the amount is < 0', () => {
-      it('throws an error', () => {
-        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: -12, fee: 0 })
-        expect(() => transaction.validate())
-          .toThrow('Amount invalid')
-      })
-    })
-
-    describe('and the fee is < 0', () => {
-      it('throws an error', () => {
-        const transaction = wallet.createTransaction({ recipient: 'foo-recipient', amount: 0, fee: -12 })
-        expect(() => transaction.validate())
-          .toThrow('Amount invalid')
-      })
     })
 
     describe('and the amount and fee are valid', () => {
@@ -152,21 +112,9 @@ describe('Wallet', () => {
         transaction = wallet.createTransaction({ recipient, amount, fee: 0 })
       })
 
-      it('creates an instance of `Transaction`', () => {
-        expect(transaction instanceof Transaction).toBe(true)
-        expect(transaction.validate()).toBe(true)
-      })
-
       it('matches the transaction sender with the wallet address', () => {
         expect(transaction.sender).toEqual(wallet.publicKey)
         expect(transaction.validate()).toBe(true)
-      })
-      describe('and the signature is wrong', () => {
-        it('throws an error', () => {
-          transaction.signature = `.${transaction.signature}`// alter signature
-          expect(() => transaction.validate())
-            .toThrow('Invalid signature')
-        })
       })
     })
   })

@@ -1,11 +1,6 @@
 import Wallet from './wallet'
-import Transaction from './transaction'
 import Account from './account'
-
-import Crypto from '../util/crypto'
-
-const path = require('path')
-const { STORE } = require('../config')
+import Transaction from './transaction'
 
 describe('Transaction', () => {
   let transaction,
@@ -33,7 +28,7 @@ describe('Transaction', () => {
     })
   })
 
-  describe('validate()', () => {
+  describe('transaction.validate()', () => {
     let account
     beforeEach(() => {
       // create account associated with wallet (sender's account)
@@ -45,6 +40,9 @@ describe('Transaction', () => {
     describe('when the transaction is valid', () => {
       it('returns true', () => {
         expect(transaction.validate()).toBe(true)
+      })
+      it('creates an instance of `Transaction`', () => {
+        expect(transaction instanceof Transaction).toBe(true)
       })
     })
 
@@ -67,6 +65,46 @@ describe('Transaction', () => {
         it('throws an error', () => {
           expect(() => transaction.validate())
             .toThrow('Amount exceeds balance')
+        })
+      })
+
+      describe('because the `amount` is 0', () => {
+        beforeEach(() => {
+          transaction.amount = 0
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Amount invalid')
+        })
+      })
+
+      describe('because the `amount` is < 0', () => {
+        beforeEach(() => {
+          transaction.amount = -1
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Amount invalid')
+        })
+      })
+
+      describe('because the `fee` is < 0', () => {
+        beforeEach(() => {
+          transaction.fee = -1
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Fee invalid')
+        })
+      })
+
+      describe('because the signature is wrong', () => {
+        beforeEach(() => {
+          transaction.signature = `.${transaction.signature}`// alter signature
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
         })
       })
     })
