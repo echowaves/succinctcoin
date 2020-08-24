@@ -25,7 +25,7 @@ describe('Account', () => {
       expect(account).toHaveProperty('stakeTimestamp')
     })
     describe('KEY', () => {
-      it('it should have correct `KEY`, which should be derived from `publicKey`', () => {
+      it('shold have correct `KEY` derived from `publicKey`', () => {
         expect(account.KEY).toEqual(path.join(STORE.ACCOUNTS, Crypto.hash(account.publicKey)))
       })
     })
