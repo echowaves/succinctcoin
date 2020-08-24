@@ -1,4 +1,5 @@
 import Crypto from './crypto'
+import Wallet from '../blockchain/wallet'
 
 describe('Crypto', () => {
   describe('Crypto.hash()', () => {
@@ -18,6 +19,28 @@ describe('Crypto', () => {
       foo.a = 'a'
 
       expect(Crypto.hash(foo)).not.toEqual(originalHash)
+    })
+  })
+
+  describe('Crypto.isPublicKey()', () => {
+    let wallet
+    beforeEach(() => {
+      wallet = new Wallet()
+    })
+    it('returns `true` when key is valid', () => {
+      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(true)
+    })
+    it('returns `false` when length is not correct', () => {
+      wallet.publicKey += '.'
+      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(false)
+    })
+    it('returns `false` when starts with wrong string', () => {
+      wallet.publicKey = wallet.publicKey.replace("BEGIN", "begin")
+      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(false)
+    })
+    it('returns `false` when ends with wrong string', () => {
+      wallet.publicKey = wallet.publicKey.replace("END", "end")
+      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(false)
     })
   })
 })

@@ -14,4 +14,15 @@ Crypto.verifySignature = function ({ publicKey, data, signature }) {
   return verify.verify(publicKey, signature, 'hex')
 }
 
+Crypto.isPublicKey = function ({ publicKey }) {
+  if (
+    publicKey.length === 174
+  && publicKey.startsWith("-----BEGIN PUBLIC KEY-----\n")
+  && publicKey.endsWith("\n-----END PUBLIC KEY-----\n")
+  ) {
+    return true
+  }
+  return false
+}
+
 export default Crypto

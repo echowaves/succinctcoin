@@ -9,17 +9,17 @@ const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
 
 describe('Transaction', () => {
   let transaction,
-    senderWallet,
+    wallet,
     recipient,
     amount,
     fee
 
   beforeEach(() => {
-    senderWallet = new Wallet()
+    wallet = new Wallet()
     recipient = 'recipient-public-key'
     amount = 49
     fee = 1
-    transaction = senderWallet.createTransaction({ recipient, amount, fee })
+    transaction = wallet.createTransaction({ recipient, amount, fee })
   })
 
   describe('properties', () => {
@@ -37,7 +37,7 @@ describe('Transaction', () => {
     let account
     beforeEach(() => {
       // create account associated with wallet (sender's account)
-      account = new Account({ publicKey: senderWallet.publicKey })
+      account = new Account({ publicKey: wallet.publicKey })
       account.balance = 50
       account.store()
     })
@@ -52,11 +52,20 @@ describe('Transaction', () => {
 
       describe('for reward transaction', () => {
         beforeEach(() => {
-          transaction.recipient = REWARD_ADDRESS
+          transaction = wallet.createTransaction({ REWARD_ADDRESS, amount, fee })
         })
-        // it.only('returns true', () => {
-        //   expect(transaction.validate()).toBe(true)
-        // })
+        it('returns true', () => {
+          expect(transaction.validate()).toBe(true)
+        })
+      })
+
+      describe('for stake transaction', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ STAKE_ADDRESS, amount, fee })
+        })
+        it('returns true', () => {
+          expect(transaction.validate()).toBe(true)
+        })
       })
     })
 
