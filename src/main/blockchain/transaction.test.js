@@ -1,3 +1,6 @@
+import { v4 as uuidv4 } from 'uuid'
+import moment from 'moment'
+
 import Wallet from './wallet'
 import Account from './account'
 import Transaction from './transaction'
@@ -49,11 +52,11 @@ describe('Transaction', () => {
 
       describe('for reward transaction', () => {
         beforeEach(() => {
-          transaction.sender = REWARD_ADDRESS
+          transaction.recipient = REWARD_ADDRESS
         })
-        it.only('returns true', () => {
-          expect(transaction.validate()).toBe(true)
-        })
+        // it.only('returns true', () => {
+        //   expect(transaction.validate()).toBe(true)
+        // })
       })
     })
 
@@ -109,9 +112,77 @@ describe('Transaction', () => {
         })
       })
 
-      describe('because the signature is wrong', () => {
+      describe('because the signature is altered', () => {
         beforeEach(() => {
           transaction.signature = `.${transaction.signature}`// alter signature
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
+        })
+      })
+
+      describe('when `uuid` is altered', () => {
+        beforeEach(() => {
+          transaction.uuid = uuidv4()// alter uuid
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
+        })
+      })
+
+      describe('when `timestamp` is altered', () => {
+        beforeEach(() => {
+          transaction.timestamp = moment.utc().valueOf() // alter timestamp
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
+        })
+      })
+
+      describe('when `sender` is altered', () => {
+        beforeEach(() => {
+          account = new Account({ publicKey: new Wallet().publicKey })
+          account.balance = 50
+          account.store()
+
+          transaction.sender = account.publicKey // alter sender
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
+        })
+      })
+
+      describe('when `recipient` is altered', () => {
+        beforeEach(() => {
+          account = new Account({ publicKey: new Wallet().publicKey })
+          account.balance = 50
+          account.store()
+
+          transaction.recipient = account.publicKey // alter recipient
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
+        })
+      })
+
+      describe('when `ammount` is altered', () => {
+        beforeEach(() => {
+          transaction.ammount = 1 // alter ammount
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid signature')
+        })
+      })
+
+      describe('when `fee` is altered', () => {
+        beforeEach(() => {
+          transaction.fee = 0.5 // alter fee
         })
         it('throws an error', () => {
           expect(() => transaction.validate())

@@ -2,12 +2,8 @@ import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 
 import Obj2fsHooks from 'obj2fs-hooks'
-
 import Crypto from '../util/crypto'
-
 import Account from './account'
-
-const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
 
 function Transaction({
   // the parameters passed at the time of transaction creation when it's added to the pool
@@ -21,18 +17,18 @@ function Transaction({
   this.fee = fee
 
   this.validate = function () {
-    if (this.sender !== REWARD_ADDRESS) {
     // expected the sender account already in the system -- simply retreive it
-      const account = new Account({ publicKey: this.sender }).retrieve()
-      if (this.amount + this.fee > account.balance) {
-        throw new Error('Amount exceeds balance')
-      }
-    }
+    const account = new Account({ publicKey: this.sender }).retrieve()
+
     if (this.amount <= 0) {
       throw new Error('Amount invalid')
     }
     if (this.fee < 0) {
       throw new Error('Fee invalid')
+    }
+    // console.log(`${amount + fee} > ${account.balance}`)
+    if (this.amount + this.fee > account.balance) {
+      throw new Error('Amount exceeds balance')
     }
 
     if (!Crypto.verifySignature({
