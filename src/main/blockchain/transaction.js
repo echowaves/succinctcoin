@@ -23,7 +23,7 @@ function Transaction({
 
   this.validate = function () {
     // expected the sender account already in the system -- simply retreive it
-    const account = new Account().setKey(path.join(STORE.ACCOUNTS, Crypto.hash(this.sender))).retrieve()
+    const account = new Account({ publicKey: this.sender }).retrieve()
 
     if (this.amount <= 0) {
       throw new Error('Amount invalid')
