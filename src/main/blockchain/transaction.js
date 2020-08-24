@@ -49,7 +49,7 @@ function Transaction({
     }
     return true
   }
-
+  // transaction should not be stored on disk as a separate file, as such there is no need to define KEY
   return Object.assign(
     this,
     Obj2fsHooks(this),
