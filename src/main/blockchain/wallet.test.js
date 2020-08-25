@@ -107,7 +107,7 @@ describe('Wallet', () => {
 
       beforeEach(() => {
         amount = 50
-        recipient = 'foo-recipient'
+        recipient = new Wallet().publicKey
         transaction = wallet.createTransaction({ recipient, amount, fee: 0 })
       })
 

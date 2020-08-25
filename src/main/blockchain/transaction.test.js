@@ -16,7 +16,7 @@ describe('Transaction', () => {
 
   beforeEach(() => {
     wallet = new Wallet()
-    recipient = 'recipient-public-key'
+    recipient = new Wallet().publicKey
     amount = 49
     fee = 1
     transaction = wallet.createTransaction({ recipient, amount, fee })
@@ -52,7 +52,7 @@ describe('Transaction', () => {
 
       describe('for reward transaction', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ REWARD_ADDRESS, amount, fee })
+          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount, fee })
         })
         it('returns true', () => {
           expect(transaction.validate()).toBe(true)
@@ -61,7 +61,7 @@ describe('Transaction', () => {
 
       describe('for stake transaction', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ STAKE_ADDRESS, amount, fee })
+          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount, fee })
         })
         it('returns true', () => {
           expect(transaction.validate()).toBe(true)
@@ -70,13 +70,43 @@ describe('Transaction', () => {
     })
 
     describe('when the transaction is invalid', () => {
-      describe('because sender account is invalid', () => {
+      describe('because `sender` account does not exist', () => {
+        beforeEach(() => {
+          transaction.sender = new Wallet().publicKey
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('No such key or file name found on disk')
+        })
+      })
+
+      describe('because `sender` account is invalid', () => {
         beforeEach(() => {
           transaction.sender = 'invalid public key'
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('No such key or file name found on disk')
+            .toThrow('Sender invalid')
+        })
+      })
+
+      describe('because `sender` & `recipient` are the same', () => {
+        beforeEach(() => {
+          transaction.recipient = wallet.publicKey
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Sender and Recipient are the same')
+        })
+      })
+
+      describe('because recipient account is invalid', () => {
+        beforeEach(() => {
+          transaction.recipient = 'invalid public key'
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Recipient invalid')
         })
       })
 

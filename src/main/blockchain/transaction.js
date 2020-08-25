@@ -5,6 +5,8 @@ import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 import Account from './account'
 
+const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
+
 function Transaction({
   // the parameters passed at the time of transaction creation when it's added to the pool
   sender, recipient, amount, fee,
@@ -17,6 +19,20 @@ function Transaction({
   this.fee = fee
 
   this.validate = function () {
+    if (!Crypto.isPublicKey({ publicKey: this.sender })) {
+      throw new Error('Sender invalid')
+    }
+
+    if (!Crypto.isPublicKey({ publicKey: this.recipient })
+        && this.recipient !== REWARD_ADDRESS
+        && this.recipient !== STAKE_ADDRESS) {
+      throw new Error('Recipient invalid')
+    }
+
+    if (this.sender === this.recipient) {
+      throw new Error('Sender and Recipient are the same')
+    }
+
     // expected the sender account already in the system -- simply retreive it
     const account = new Account({ publicKey: this.sender }).retrieve()
 
