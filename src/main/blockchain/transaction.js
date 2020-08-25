@@ -29,11 +29,20 @@ function Transaction({
       throw new Error('Recipient invalid')
     }
 
+    if (this.recipient === REWARD_ADDRESS && this.amount <= 0) {
+      throw new Error('Invalid reward amount')
+    }
+
+    if (this.recipient === STAKE_ADDRESS && this.amount === 0) {
+      throw new Error('Invalid stake amount')
+    }
+
     if (this.sender === this.recipient) {
       throw new Error('Sender and Recipient are the same')
     }
 
     // expected the sender account already in the system -- simply retreive it
+    // this will throw 'No such key or file name found on disk' if the account does not exist on disk
     const account = new Account({ publicKey: this.sender }).retrieve()
 
     if (this.amount <= 0) {

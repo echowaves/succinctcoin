@@ -69,7 +69,7 @@ describe('Transaction', () => {
       })
     })
 
-    describe('when the transaction is invalid', () => {
+    describe('when the `transaction` is invalid', () => {
       describe('because `sender` account does not exist', () => {
         beforeEach(() => {
           transaction.sender = new Wallet().publicKey
@@ -228,24 +228,26 @@ describe('Transaction', () => {
             .toThrow('Invalid signature')
         })
       })
+
+      describe('when reward amount is invalid', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: -1, fee })
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid reward amount')
+        })
+      })
+
+      describe('when stake amount is invalid', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 0, fee })
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrow('Invalid stake amount')
+        })
+      })
     })
   })
-
-  // describe('rewardTransaction()', () => {
-  //   let rewardTransaction,
-  //     minerWallet
-  //
-  //   beforeEach(() => {
-  //     minerWallet = new Wallet()
-  //     rewardTransaction = Transaction.rewardTransaction({ minerWallet })
-  //   })
-  //
-  //   it('creates a transaction with the reward input', () => {
-  //     expect(rewardTransaction.input).toEqual(REWARD_INPUT)
-  //   })
-  //
-  //   it('creates one transaction for the miner with the `MINING_REWARD`', () => {
-  //     expect(rewardTransaction.outputMap[minerWallet.publicKey]).toEqual(MINING_REWARD)
-  //   })
-  // })
 })
