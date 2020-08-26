@@ -1,9 +1,13 @@
 import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
+import { FlashStore } from 'flash-store'
 
 import Wallet from './wallet'
 import Account from './account'
 import Transaction from './transaction'
+
+const fs = require('fs-extra')
+const path = require('path')
 
 const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
 
@@ -20,6 +24,24 @@ describe('Transaction', () => {
     amount = 49
     fee = 1
     transaction = wallet.createTransaction({ recipient, amount, fee })
+  })
+
+  describe('flash-store', () => {
+    xit('check how storage works', async () => {
+      // fs.removeSync(path.resolve('flashstore.workdir', 'sqlite.db'))
+
+      const flashStore = new FlashStore('flashstore.workdir')
+      console.log(await flashStore.size)
+
+      const times = 5000000
+      // while (times--) {
+      //   const uuid = uuidv4()
+      //   if (await flashStore.has(uuid)) {
+      //     console.log(`duplicate id: ${uuid}`)
+      //   }
+      //   await flashStore.set(uuid, times)
+      // }
+    })
   })
 
   describe('properties', () => {
@@ -76,7 +98,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('No such key or file name found on disk')
+            .toThrowError('No such key or file name found on disk')
         })
       })
 
@@ -86,7 +108,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Sender invalid')
+            .toThrowError('Sender invalid')
         })
       })
 
@@ -96,7 +118,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Sender and Recipient are the same')
+            .toThrowError('Sender and Recipient are the same')
         })
       })
 
@@ -106,7 +128,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Recipient invalid')
+            .toThrowError('Recipient invalid')
         })
       })
 
@@ -117,7 +139,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Amount exceeds balance')
+            .toThrowError('Amount exceeds balance')
         })
       })
 
@@ -127,7 +149,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Amount invalid')
+            .toThrowError('Amount invalid')
         })
       })
 
@@ -137,7 +159,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Amount invalid')
+            .toThrowError('Amount invalid')
         })
       })
 
@@ -147,7 +169,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Fee invalid')
+            .toThrowError('Fee invalid')
         })
       })
 
@@ -157,7 +179,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid signature')
+            .toThrowError('Invalid signature')
         })
       })
 
@@ -167,7 +189,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid signature')
+            .toThrowError('Invalid signature')
         })
       })
 
@@ -177,7 +199,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid signature')
+            .toThrowError('Invalid signature')
         })
       })
 
@@ -191,7 +213,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid signature')
+            .toThrowError('Invalid signature')
         })
       })
 
@@ -205,7 +227,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid signature')
+            .toThrowError('Invalid signature')
         })
       })
 
@@ -215,7 +237,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid signature')
+            .toThrowError('Invalid signature')
         })
       })
 
@@ -225,7 +247,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid signature')
+            .toThrowError('Invalid signature')
         })
       })
 
@@ -235,7 +257,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid reward amount')
+            .toThrowError('Invalid reward amount')
         })
       })
 
@@ -245,7 +267,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrow('Invalid stake amount')
+            .toThrowError('Invalid stake amount')
         })
       })
     })
@@ -272,7 +294,7 @@ describe('Transaction', () => {
         })
         it('should fail', () => {
           expect(() => transaction.validate())
-            .toThrow('Stake too high')
+            .toThrowError('Stake too high')
         })
       })
       describe('when trying to release less than currently staked', () => {
@@ -289,7 +311,7 @@ describe('Transaction', () => {
         })
         it('should fail', () => {
           expect(() => transaction.validate())
-            .toThrow('Not enough stake')
+            .toThrowError('Not enough stake')
         })
       })
     })
