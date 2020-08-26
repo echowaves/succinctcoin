@@ -18,6 +18,7 @@ function Transaction({
   this.amount = amount
   this.fee = fee
 
+  // TODO: do a better grouping of related validation logic blocks
   this.validate = function () {
     if (!Crypto.isPublicKey({ publicKey: this.sender })) {
       throw new Error('Sender invalid')
