@@ -1,10 +1,10 @@
 # succinctcoin
 
-Minimalistic crypto currency which can be used as a reference implementatino for easily starting a bkockchain project. 
+Minimalistic crypto currency which can be used as a reference implementatino for easily starting a bkockchain project.
 
 ## getting started
 
-Clone the project 
+Clone the project
 ```
 git clone git@github.com:echowaves/succinctcoin.git
 cd succinctcoin
@@ -20,3 +20,7 @@ Package project as a mac, linux, or windows app, run `yarn dist:all`. This will 
 To run automated tests `yarn test`. And don't forget to periodically run `yarn lint`.
 
 Have fun.
+
+
+TODO:
+https://www.npmjs.com/package/flash-store

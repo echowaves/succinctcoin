@@ -42,7 +42,7 @@ describe('Transaction', () => {
       account.store()
     })
 
-    describe('when the transaction is valid', () => {
+    describe('when the `transaction` is valid', () => {
       it('returns true', () => {
         expect(transaction.validate()).toBe(true)
       })
@@ -50,7 +50,7 @@ describe('Transaction', () => {
         expect(transaction instanceof Transaction).toBe(true)
       })
 
-      describe('for reward transaction', () => {
+      describe('for reward `transaction`', () => {
         beforeEach(() => {
           transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount, fee })
         })
@@ -59,9 +59,9 @@ describe('Transaction', () => {
         })
       })
 
-      describe('for stake transaction', () => {
+      describe('for stake `transaction`', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount, fee })
+          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 5, fee })
         })
         it('returns true', () => {
           expect(transaction.validate()).toBe(true)
@@ -229,7 +229,7 @@ describe('Transaction', () => {
         })
       })
 
-      describe('when reward amount is invalid', () => {
+      describe('when reward `amount` is invalid', () => {
         beforeEach(() => {
           transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: -1, fee })
         })
@@ -239,13 +239,57 @@ describe('Transaction', () => {
         })
       })
 
-      describe('when stake amount is invalid', () => {
+      describe('when stake `amount` is invalid', () => {
         beforeEach(() => {
           transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 0, fee })
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
             .toThrow('Invalid stake amount')
+        })
+      })
+    })
+
+    describe('stake `transaction`', () => {
+      beforeEach(() => {
+        // create account associated with wallet (sender's account)
+        account.balance = 100
+        account.stake = 5 // can't have more than 10% of the amount in stake
+        account.store()
+      })
+
+      describe('when trying to stake less or equals than 1/10 of the account value', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 5, fee: 0 })
+        })
+        it('should succeed', () => {
+          expect(transaction.validate()).toBe(true)
+        })
+      })
+      describe('when trying to stake more than 1/10 of the account value', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 6, fee: 0 })
+        })
+        it('should fail', () => {
+          expect(() => transaction.validate())
+            .toThrow('Stake too high')
+        })
+      })
+      describe('when trying to release less than currently staked', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: -4, fee: 0 })
+        })
+        it('should succeed', () => {
+          expect(transaction.validate()).toBe(true)
+        })
+      })
+      describe('when trying to release more than currently staked', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: -6, fee: 0 })
+        })
+        it('should fail', () => {
+          expect(() => transaction.validate())
+            .toThrow('Not enough stake')
         })
       })
     })

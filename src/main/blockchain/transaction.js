@@ -45,7 +45,18 @@ function Transaction({
     // this will throw 'No such key or file name found on disk' if the account does not exist on disk
     const account = new Account({ publicKey: this.sender }).retrieve()
 
-    if (this.amount <= 0) {
+    if (this.recipient === STAKE_ADDRESS
+      && (this.amount + account.stake) > account.balance / 10) {
+      // console.log(`(${this.amount} + ${account.stake}) > ${account.balance} / 10)`)
+      throw new Error('Stake too high')
+    }
+    if (this.recipient === STAKE_ADDRESS
+      && (account.stake + this.amount) < 0) {
+      // console.log(`(${this.amount} + ${account.stake}) > ${account.balance} / 10)`)
+      throw new Error('Not enough stake')
+    }
+
+    if (this.amount <= 0 && this.recipient !== STAKE_ADDRESS) {
       throw new Error('Amount invalid')
     }
     if (this.fee < 0) {
