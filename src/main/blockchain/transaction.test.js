@@ -8,6 +8,7 @@ import Transaction from './transaction'
 
 const fs = require('fs-extra')
 const path = require('path')
+const { STORE } = require('../config')
 
 const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
 
@@ -27,20 +28,20 @@ describe('Transaction', () => {
   })
 
   describe('flash-store', () => {
-    xit('check how storage works', async () => {
-      // fs.removeSync(path.resolve('flashstore.workdir', 'sqlite.db'))
+    it('check how storage works', async () => {
+      fs.removeSync(path.resolve(STORE.UUID, 'sqlite.db'))
 
-      const flashStore = new FlashStore('flashstore.workdir')
+      const flashStore = new FlashStore(STORE.UUID)
       console.log(await flashStore.size)
 
-      const times = 5000000
-      // while (times--) {
-      //   const uuid = uuidv4()
-      //   if (await flashStore.has(uuid)) {
-      //     console.log(`duplicate id: ${uuid}`)
-      //   }
-      //   await flashStore.set(uuid, times)
-      // }
+      let times = 50000
+      while (times--) {
+        const uuid = uuidv4()
+        if (await flashStore.has(uuid)) {
+          console.log(`duplicate id: ${uuid}`)
+        }
+        await flashStore.set(uuid, times)
+      }
     })
   })
 

@@ -25,6 +25,7 @@ const STORE = {
   WALLET: path.resolve(ROOT, 'wallet'),
   ACCOUNTS: path.resolve(ROOT, 'accounts'),
   BLOCKS: path.resolve(ROOT, 'blocks'),
+  UUID: path.resolve(ROOT, 'uuid'),
 }
 
 if (!fs.existsSync(ROOT)) {
