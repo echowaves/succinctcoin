@@ -27,23 +27,23 @@ describe('Transaction', () => {
     transaction = wallet.createTransaction({ recipient, amount, fee })
   })
 
-  describe('flash-store', () => {
-    it('check how storage works', async () => {
-      fs.removeSync(path.resolve(STORE.UUID, 'sqlite.db'))
-
-      const flashStore = new FlashStore(STORE.UUID)
-      console.log(await flashStore.size)
-
-      let times = 50000
-      while (times--) {
-        const uuid = uuidv4()
-        if (await flashStore.has(uuid)) {
-          console.log(`duplicate id: ${uuid}`)
-        }
-        await flashStore.set(uuid, times)
-      }
-    })
-  })
+  // describe('flash-store', () => {
+  //   it('check how storage works', async () => {
+  //     fs.removeSync(path.resolve(STORE.UUID, 'sqlite.db'))
+  //
+  //     const flashStore = new FlashStore(STORE.UUID)
+  //     console.log(await flashStore.size)
+  //
+  //     let times = 50000
+  //     while (times--) {
+  //       const uuid = uuidv4()
+  //       if (await flashStore.has(uuid)) {
+  //         console.log(`duplicate id: ${uuid}`)
+  //       }
+  //       await flashStore.set(uuid, times)
+  //     }
+  //   })
+  // })
 
   describe('properties', () => {
     it('has `uuid`, `timestamp`, `sender`, `recipient`, `amount`, `fee`', () => {
@@ -184,71 +184,68 @@ describe('Transaction', () => {
         })
       })
 
-      describe('when `uuid` is altered', () => {
-        beforeEach(() => {
-          transaction.uuid = uuidv4()// alter uuid
+      describe('because failed to validate signature', () => {
+        describe('when `uuid` is altered', () => {
+          beforeEach(() => {
+            transaction.uuid = uuidv4()// alter uuid
+          })
+          it('throws an error', () => {
+            expect(() => transaction.validate())
+              .toThrowError('Invalid signature')
+          })
         })
-        it('throws an error', () => {
-          expect(() => transaction.validate())
-            .toThrowError('Invalid signature')
+        describe('when `timestamp` is altered', () => {
+          beforeEach(() => {
+            transaction.timestamp = moment.utc().valueOf() // alter timestamp
+          })
+          it('throws an error', () => {
+            expect(() => transaction.validate())
+              .toThrowError('Invalid signature')
+          })
         })
-      })
+        describe('when `sender` is altered', () => {
+          beforeEach(() => {
+            account = new Account({ publicKey: new Wallet().publicKey })
+            account.balance = 50
+            account.store()
 
-      describe('when `timestamp` is altered', () => {
-        beforeEach(() => {
-          transaction.timestamp = moment.utc().valueOf() // alter timestamp
+            transaction.sender = account.publicKey // alter sender
+          })
+          it('throws an error', () => {
+            expect(() => transaction.validate())
+              .toThrowError('Invalid signature')
+          })
         })
-        it('throws an error', () => {
-          expect(() => transaction.validate())
-            .toThrowError('Invalid signature')
-        })
-      })
+        describe('when `recipient` is altered', () => {
+          beforeEach(() => {
+            account = new Account({ publicKey: new Wallet().publicKey })
+            account.balance = 50
+            account.store()
 
-      describe('when `sender` is altered', () => {
-        beforeEach(() => {
-          account = new Account({ publicKey: new Wallet().publicKey })
-          account.balance = 50
-          account.store()
-
-          transaction.sender = account.publicKey // alter sender
+            transaction.recipient = account.publicKey // alter recipient
+          })
+          it('throws an error', () => {
+            expect(() => transaction.validate())
+              .toThrowError('Invalid signature')
+          })
         })
-        it('throws an error', () => {
-          expect(() => transaction.validate())
-            .toThrowError('Invalid signature')
+        describe('when `ammount` is altered', () => {
+          beforeEach(() => {
+            transaction.ammount = 1 // alter ammount
+          })
+          it('throws an error', () => {
+            expect(() => transaction.validate())
+              .toThrowError('Invalid signature')
+          })
         })
-      })
-
-      describe('when `recipient` is altered', () => {
-        beforeEach(() => {
-          account = new Account({ publicKey: new Wallet().publicKey })
-          account.balance = 50
-          account.store()
-
-          transaction.recipient = account.publicKey // alter recipient
-        })
-        it('throws an error', () => {
-          expect(() => transaction.validate())
-            .toThrowError('Invalid signature')
-        })
-      })
-
-      describe('when `ammount` is altered', () => {
-        beforeEach(() => {
-          transaction.ammount = 1 // alter ammount
-        })
-        it('throws an error', () => {
-          expect(() => transaction.validate())
-            .toThrowError('Invalid signature')
-        })
-      })
-
-      describe('when `fee` is altered', () => {
-        beforeEach(() => {
-          transaction.fee = 0.5 // alter fee
-        })
-        it('throws an error', () => {
-          expect(() => transaction.validate())
-            .toThrowError('Invalid signature')
+        describe('when `fee` is altered', () => {
+          beforeEach(() => {
+            transaction.fee = 0.5 // alter fee
+          })
+          it('throws an error', () => {
+            expect(() => transaction.validate())
+              .toThrowError('Invalid signature')
+          })
         })
       })
 
