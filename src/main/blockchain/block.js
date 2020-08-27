@@ -23,13 +23,14 @@ function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
   // this function should generate hash and sign the block
   this.mineBlock = function ({ wallet }) {
     this.validator = wallet.publicKey
+
     this.hash = Crypto.hash(
-      this.heigh,
+      this.height,
       this.uuid,
       this.timestamp,
       this.validator,
       this.lastHash,
-      this.data
+      this.data,
     )
     this.signature = wallet.sign(this.hash)
     return this
