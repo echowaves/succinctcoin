@@ -1,5 +1,7 @@
 import Block from './block'
-// import Crypto from '../util/crypto'
+import Wallet from './wallet'
+import Crypto from '../util/crypto'
+
 const { GENESIS_DATA } = require('../config')
 
 describe('Block', () => {
@@ -24,6 +26,14 @@ describe('Block', () => {
     expect(block).toHaveProperty('data')
   })
 
+  it('references the last block', () => {
+    expect(block.height).toBe(genesisBlock.height + 1)
+    expect(block.uuid).not.toBe(genesisBlock.uuid)
+    expect(block.timestamp).not.toBe(genesisBlock.timestamp)
+    expect(block.lastHash).toBe(genesisBlock.hash)
+    expect(block.hash).not.toBe(genesisBlock.hash)
+  })
+
   describe('genesis()', () => {
     it('returns a Block instance', () => {
       expect(genesisBlock instanceof Block).toBe(true)
@@ -34,40 +44,47 @@ describe('Block', () => {
     })
   })
 
-  // describe('mineBlock()', () => {
-  //   const lastBlock = Block.genesis()
-  //   const data = 'mined data'
-  //   const minedBlock = Block.mineBlock({ lastBlock, data })
-  //
-  //   it('returns a Block instance', () => {
-  //     expect(minedBlock instanceof Block).toBe(true)
-  //   })
-  //
-  //   it('sets the `lastHash` to be the `hash` of the lastBlock', () => {
-  //     expect(minedBlock.lastHash).toEqual(lastBlock.hash)
-  //   })
-  //
-  //   it('sets the `data`', () => {
-  //     expect(minedBlock.data).toEqual(data)
-  //   })
-  //
-  //   it('sets a `timestamp`', () => {
-  //     expect(minedBlock.timestamp).not.toEqual(undefined)
-  //   })
-  //
-  //   it('creates a SHA-256 `hash` based on the proper inputs', () => {
-  //     expect(minedBlock.hash)
-  //       .toEqual(
-  //         Crypto.hash(
-  //           minedBlock.timestamp,
-  //           minedBlock.nonce,
-  //           minedBlock.difficulty,
-  //           lastBlock.hash,
-  //           data
-  //         )
-  //       )
-  //   })
-  //
+  describe('mineBlock()', () => {
+    const lastBlock = Block.genesis()
+    const data = 'mined data'
+    const wallet = new Wallet()
+
+    const minedBlock = new Block({ lastBlock, data }).mineBlock({ wallet })
+
+    it('returns a Block instance', () => {
+      expect(minedBlock instanceof Block).toBe(true)
+    })
+
+    it('sets the `lastHash` to be the `hash` of the lastBlock', () => {
+      expect(minedBlock.lastHash).toEqual(lastBlock.hash)
+    })
+
+    it('sets the `data`', () => {
+      expect(minedBlock.data).toEqual(data)
+    })
+
+    it('sets a `timestamp`', () => {
+      expect(minedBlock.timestamp).not.toEqual(undefined)
+    })
+
+    it('sets a `validator` to `wallet` publicKey', () => {
+      expect(minedBlock.validator).toEqual(wallet.publicKey)
+    })
+
+    // it('creates a SHA512 `hash` based on the proper inputs', () => {
+    //   expect(minedBlock.hash)
+    //     .toEqual(
+    //       Crypto.hash(
+    //         minedBlock.height,
+    //         minedBlock.uuid,
+    //         minedBlock.timestamp,
+    //         lastBlock.validator,
+    //         lastBlock.lastHash,
+    //         data
+    //       )
+    //     )
+    // })
+
   //   it('sets a `hash` that matches the difficulty criteria', () => {
   //     expect(hexToBinary(minedBlock.hash).substring(0, minedBlock.difficulty))
   //       .toEqual('0'.repeat(minedBlock.difficulty))
@@ -101,5 +118,5 @@ describe('Block', () => {
   //
   //     expect(Block.adjustDifficulty({ originalBlock: block })).toEqual(1)
   //   })
-  // })
+  })
 })

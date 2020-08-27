@@ -6,7 +6,7 @@ const { name } = require('../../package.json')
 const VALIDATION_RATE = 1000 // how often to generate a block, how may transactions
 
 const GENESIS_DATA = {
-  height: 0n,
+  height: 0,
   uuid: 'GENESIS',
   timestamp: 0,
   validator: 'GENESIS',
