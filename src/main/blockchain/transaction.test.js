@@ -1,14 +1,15 @@
 import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
-import { FlashStore } from 'flash-store'
 
 import Wallet from './wallet'
 import Account from './account'
 import Transaction from './transaction'
 
-const fs = require('fs-extra')
-const path = require('path')
-const { STORE } = require('../config')
+// import { FlashStore } from 'flash-store'
+
+// const fs = require('fs-extra')
+// const path = require('path')
+// const { STORE } = require('../config')
 
 const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
 

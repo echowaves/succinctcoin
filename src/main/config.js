@@ -12,7 +12,7 @@ const GENESIS_DATA = {
   validator: 'GENESIS',
   lastHash: 'GENESIS',
   hash: 'GENESIS',
-  data: [],
+  data: ['GENESIS'],
   signature: 'GENESIS',
 }
 

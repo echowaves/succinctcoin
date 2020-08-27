@@ -3,49 +3,34 @@ import moment from 'moment'
 
 import Obj2fsHooks from 'obj2fs-hooks'
 
+const path = require('path')
+
 const { GENESIS_DATA } = require('../config')
 const Crypto = require('../util/crypto')
 
-function Block({ height, lastBlock, data } = { height: '', lastBlock: null, data: '' }) {
-  this.height = height
+const { STORE } = require('../config')
+
+function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
+  this.height = lastBlock ? lastBlock.height + 1n : 0n
   this.uuid = uuidv4()
   this.timestamp = moment.utc().valueOf() // assigned when block is created
-  this.validator = ''
   this.lastHash = lastBlock ? lastBlock.hash : ''
   this.hash = ''
-  this.data = data
+  this.validator = ''
   this.signature = ''
-
-  Block.genesis = function () {
-    return new this(GENESIS_DATA)
-  }
+  this.data = data
 
   // this function should generate hash and sign the block
   this.mineBlock = function ({ wallet }) {
+    this.validator = wallet.publicKey
     this.hash = Crypto.hash(this.heigh, this.uuid, this.timestamp, this.validator, this.lastHash, this.data)
-    this.signature = wallet.sign([
-      this.heigh,
-      this.uuid,
-      this.timestamp,
-      this.validator,
-      this.lastHash,
-      this.hash,
-      this.data,
-    ])
+    this.signature = wallet.sign(this.hash)
   }
 
   this.validate = function () {
     if (!Crypto.verifySignature({
-      publicKey: this.sender,
-      data: [
-        this.heigh,
-        this.uuid,
-        this.timestamp,
-        this.validator,
-        this.lastHash,
-        this.hash,
-        this.data,
-      ],
+      publicKey: this.validator,
+      data: [this.hash],
       signature: this.signature,
     })) {
       throw new Error('Invalid signature')
@@ -53,10 +38,17 @@ function Block({ height, lastBlock, data } = { height: '', lastBlock: null, data
     return true
   }
 
-  return Object.assign(
+  Object.assign(
     this,
     Obj2fsHooks(this),
   )
+  // the key is derived from the publicKey when constructor is called, no need to expicitely set it
+  this.setKey(path.join(STORE.BLOCKS, this.height.toString().padStart(64, 0)))
+  return this
+}
+
+Block.genesis = function () {
+  return Object.assign(new Block(), GENESIS_DATA)
 }
 
 export default Block
