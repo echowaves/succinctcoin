@@ -103,12 +103,14 @@ describe('Wallet', () => {
     describe('and the amount and fee are valid', () => {
       let transaction,
         amount,
+        fee,
         recipient
 
       beforeEach(() => {
-        amount = 50
+        amount = 49
+        fee = amount / 1000
         recipient = new Wallet().publicKey
-        transaction = wallet.createTransaction({ recipient, amount, fee: 0 })
+        transaction = wallet.createTransaction({ recipient, amount, fee })
       })
 
       it('matches the transaction sender with the wallet address', () => {

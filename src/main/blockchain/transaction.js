@@ -60,7 +60,7 @@ function Transaction({
     if (this.amount <= 0 && this.recipient !== STAKE_ADDRESS) {
       throw new Error('Amount invalid')
     }
-    if (this.fee < 0) {
+    if (this.fee < this.amount / 1000) {
       throw new Error('Fee invalid')
     }
     // console.log(`${amount + fee} > ${account.balance}`)

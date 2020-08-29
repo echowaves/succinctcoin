@@ -117,7 +117,11 @@ describe('Block', () => {
       })
       it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
       })
-      it('the timestamp of the reward transaction must be equal to the block timestamp', () => {
+      it('should contain only valid transactions', () => {
+      })
+      it('should have the `timestamp` equal to the `timestamp` of the reward `transaction`', () => {
+      })
+      it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
       })
     })
     describe('when block is invalid', () => {
