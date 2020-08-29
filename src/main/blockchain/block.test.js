@@ -85,4 +85,42 @@ describe('Block', () => {
         )
     })
   })
+
+  describe('validate()', () => {
+    const wallet = new Wallet()
+    const genesisBlock = Block.genesis()
+    const data = 'mined data'
+    const minedBlock = new Block({ genesisBlock, data }).mineBlock({ wallet })
+
+    describe('when block is valid', () => {
+      it('should have `height`that is greater by 1 than the previous block `height`', () => {
+      })
+      it('should contain `uuid` that is unique across all blocks', () => {
+      })
+      it('should have `lastHash` that points to previous block', () => {
+      })
+      it('should contain verifiable `hash`', () => {
+      })
+      it('should contain non empty `data`', () => {
+      })
+      it('should always contain a reward `transaction`', () => {
+      })
+      it('should contain at least one non reward `transaction`', () => {
+      })
+      it('should have transactions that are ordered ASC by `timestamp`', () => {
+      })
+      it('should contain `validator` that is valid public key of an existing `account`', () => {
+      })
+      it('should be signed by `validator`', () => {
+      })
+      it('`timestamp` should be +- 3 minutes from now', () => {
+      })
+      it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
+      })
+      it('the timestamp of the reward transaction must be equal to the block timestamp', () => {
+      })
+    })
+    describe('when block is invalid', () => {
+    })
+  })
 })
