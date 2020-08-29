@@ -3,6 +3,8 @@ import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 import Transaction from './transaction'
 
+const Big = require('big.js')
+
 const crypto = require('crypto')
 
 const path = require('path')
@@ -46,8 +48,8 @@ function Wallet() {
       transaction.timestamp,
       transaction.sender,
       transaction.recipient,
-      transaction.ammount,
-      transaction.fee,
+      Big(transaction.ammount).valueOf(),
+      Big(transaction.fee).valueOf(),
     ])
     return transaction
   }

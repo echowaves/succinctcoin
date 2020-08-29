@@ -23,28 +23,10 @@ describe('Transaction', () => {
   beforeEach(() => {
     wallet = new Wallet()
     recipient = new Wallet().publicKey
-    amount = 49
-    fee = 1
+    amount = '49'
+    fee = '1'
     transaction = wallet.createTransaction({ recipient, amount, fee })
   })
-
-  // describe('flash-store', () => {
-  //   it('check how storage works', async () => {
-  //     fs.removeSync(path.resolve(STORE.UUID, 'sqlite.db'))
-  //
-  //     const flashStore = new FlashStore(STORE.UUID)
-  //     console.log(await flashStore.size)
-  //
-  //     let times = 50000
-  //     while (times--) {
-  //       const uuid = uuidv4()
-  //       if (await flashStore.has(uuid)) {
-  //         console.log(`duplicate id: ${uuid}`)
-  //       }
-  //       await flashStore.set(uuid, times)
-  //     }
-  //   })
-  // })
 
   describe('properties', () => {
     it('has `uuid`, `timestamp`, `sender`, `recipient`, `amount`, `fee`', () => {
@@ -62,7 +44,7 @@ describe('Transaction', () => {
     beforeEach(() => {
       // create account associated with wallet (sender's account)
       account = new Account({ publicKey: wallet.publicKey })
-      account.balance = 50
+      account.balance = '50'
       account.store()
     })
 

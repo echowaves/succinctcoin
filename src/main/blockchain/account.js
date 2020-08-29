@@ -3,38 +3,40 @@ import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 
 const path = require('path')
+const Big = require('big.js')
+
 const { STORE } = require('../config')
 
 function Account({ publicKey } = { publicKey: '' }) {
   // have to make publicKey optional
   this.publicKey = publicKey
-  this.balance = 0
-  this.stake = 0
+  this.balance = '0'
+  this.stake = '0'
   this.stakeTimestamp = moment.utc().valueOf()
 
   this.addBalance = function ({ amount }) {
-    this.balance += amount
+    this.balance = Big(this.balance).plus(amount).valueOf()
   }
 
   this.subtractBalance = function ({ amount }) {
-    if (amount > this.balance) {
+    if (Big(amount).gt(this.balance)) {
       throw new Error('trying to substract bigger amount than possible')
     }
-    this.balance -= amount
+    this.balance = Big(this.balance).minus(amount).valueOf()
   }
 
   this.addStake = function ({ amount }) {
     this.subtractBalance({ amount })
-    this.stake += amount
+    this.stake = Big(this.stake).plus(amount).valueOf()
     this.stakeTimestamp = moment.utc().valueOf()
   }
 
   this.subtractStake = function ({ amount }) {
-    if (amount > this.stake) {
+    if (Big(amount).gt(this.stake)) {
       throw new Error('trying to substract bigger amount than possible')
     }
     this.addBalance({ amount })
-    this.stake -= amount
+    this.stake = Big(this.stake).minus(amount).valueOf()
     this.stakeTimestamp = moment.utc().valueOf()
   }
 

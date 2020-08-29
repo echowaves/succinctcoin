@@ -4,12 +4,14 @@ import Account from './account'
 import Crypto from '../util/crypto'
 
 const path = require('path')
+const Big = require('big.js')
+
 const { STORE } = require('../config')
 
 describe('Account', () => {
   const
-    amount = 42,
-    publicKey = 321
+    amount = '42',
+    publicKey = '321'
   let account
 
   beforeEach(() => {
@@ -36,12 +38,12 @@ describe('Account', () => {
     })
     describe('balance', () => {
       it('initial value value should be 0', () => {
-        expect(account.balance).toEqual(0)
+        expect(account.balance).toEqual('0')
       })
     })
     describe('stake', () => {
       it('initial value value should be 0', () => {
-        expect(account.stake).toEqual(0)
+        expect(account.stake).toEqual('0')
       })
     })
     describe('stakeTimestamp', () => {
@@ -69,14 +71,14 @@ describe('Account', () => {
       })
       it('should fail subtracting amount bigger than `balance`', () => {
         expect(() => {
-          account.subtractBalance({ amount: amount * 3 })
+          account.subtractBalance({ amount: Big(amount).times(3).valueOf() })
         }).toThrowError('trying to substract bigger amount than possible')
       })
     })
 
     describe('account.addStake()', () => {
       beforeEach(() => {
-        account.addBalance({ amount: amount * 2 })
+        account.addBalance({ amount: Big(amount).times(2).valueOf() })
       })
       it('should add proper amount to `stake`', () => {
         account.addStake({ amount })
@@ -88,7 +90,7 @@ describe('Account', () => {
       })
       it('should fail to add stake bigger than the `balance`', () => {
         expect(() => {
-          account.addStake({ amount: amount * 3 })
+          account.addStake({ amount: Big(amount).times(3).valueOf() })
         }).toThrowError('trying to substract bigger amount than possible')
       })
 
@@ -103,16 +105,16 @@ describe('Account', () => {
 
     describe('account.subtractStake()', () => {
       beforeEach(() => {
-        account.addBalance({ amount: amount * 2 })
+        account.addBalance({ amount: Big(amount).times(2).valueOf() })
         account.addStake({ amount })
       })
       it('should substract proper amount from `stake`', () => {
         account.subtractStake({ amount })
-        expect(account.stake).toEqual(0)
+        expect(account.stake).toBe('0')
       })
       it('should add proper amount to `balance`', () => {
         account.subtractStake({ amount })
-        expect(account.balance).toEqual(amount * 2)
+        expect(account.balance).toEqual(Big(amount).times(2).valueOf())
       })
       it('should add increment stakeTimestamp', async () => {
         const { stakeTimestamp } = account
@@ -123,7 +125,7 @@ describe('Account', () => {
       })
       it('should fail subtracting amount bigger than `stake`', () => {
         expect(() => {
-          account.subtractStake({ amount: amount * 3 })
+          account.subtractStake({ amount: Big(amount).times(3).valueOf() })
         }).toThrowError('trying to substract bigger amount than possible')
       })
     })

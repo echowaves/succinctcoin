@@ -5,6 +5,8 @@ import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 import Account from './account'
 
+const Big = require('big.js')
+
 const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
 
 function Transaction({
@@ -30,11 +32,11 @@ function Transaction({
       throw new Error('Recipient invalid')
     }
 
-    if (this.recipient === REWARD_ADDRESS && this.amount !== 100) {
+    if (this.recipient === REWARD_ADDRESS && !Big(this.amount).eq(100)) {
       throw new Error('Invalid reward amount')
     }
 
-    if (this.recipient === STAKE_ADDRESS && this.amount === 0) {
+    if (this.recipient === STAKE_ADDRESS && Big(this.amount).eq(0)) {
       throw new Error('Invalid stake amount')
     }
 
@@ -47,24 +49,24 @@ function Transaction({
     const account = new Account({ publicKey: this.sender }).retrieve()
 
     if (this.recipient === STAKE_ADDRESS
-      && (this.amount + account.stake) > account.balance / 10) {
+      && (Big(this.amount).plus(account.stake)).gt(Big(account.balance).div(10))) {
       // console.log(`(${this.amount} + ${account.stake}) > ${account.balance} / 10)`)
       throw new Error('Stake too high')
     }
     if (this.recipient === STAKE_ADDRESS
-      && (account.stake + this.amount) < 0) {
+      && (Big(account.stake).plus(this.amount).lt(0))) {
       // console.log(`(${this.amount} + ${account.stake}) > ${account.balance} / 10)`)
       throw new Error('Not enough stake')
     }
 
-    if (this.amount <= 0 && this.recipient !== STAKE_ADDRESS) {
+    if (Big(this.amount).lte(0) && this.recipient !== STAKE_ADDRESS) {
       throw new Error('Amount invalid')
     }
-    if (this.fee < this.amount / 1000) {
+    if (Big(this.fee).lt(Big(this.amount).div(1000))) {
       throw new Error('Fee invalid')
     }
     // console.log(`${amount + fee} > ${account.balance}`)
-    if (this.amount + this.fee > account.balance && this.recipient !== REWARD_ADDRESS) {
+    if (Big(this.amount).plus(this.fee).gt(account.balance) && this.recipient !== REWARD_ADDRESS) {
       throw new Error('Amount exceeds balance')
     }
 
@@ -75,8 +77,9 @@ function Transaction({
         this.timestamp,
         this.sender,
         this.recipient,
-        this.ammount,
-        this.fee],
+        Big(this.ammount).valueOf(),
+        Big(this.fee).valueOf(),
+      ],
       signature: this.signature,
     })) {
       // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
