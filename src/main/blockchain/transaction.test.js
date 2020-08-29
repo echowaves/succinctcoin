@@ -76,7 +76,7 @@ describe('Transaction', () => {
 
       describe('for reward `transaction`', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount, fee })
+          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: 100, fee })
         })
         it('returns true', () => {
           expect(transaction.validate()).toBe(true)

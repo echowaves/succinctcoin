@@ -30,7 +30,7 @@ function Transaction({
       throw new Error('Recipient invalid')
     }
 
-    if (this.recipient === REWARD_ADDRESS && this.amount <= 0) {
+    if (this.recipient === REWARD_ADDRESS && this.amount !== 100) {
       throw new Error('Invalid reward amount')
     }
 
@@ -64,7 +64,7 @@ function Transaction({
       throw new Error('Fee invalid')
     }
     // console.log(`${amount + fee} > ${account.balance}`)
-    if (this.amount + this.fee > account.balance) {
+    if (this.amount + this.fee > account.balance && this.recipient !== REWARD_ADDRESS) {
       throw new Error('Amount exceeds balance')
     }
 
