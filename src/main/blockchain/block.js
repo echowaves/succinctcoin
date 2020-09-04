@@ -11,6 +11,7 @@ const { GENESIS_DATA } = require('../config')
 const { STORE } = require('../config')
 
 function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
+  // this.lastBlock = lastBlock
   this.height = lastBlock ? lastBlock.height + 1 : 0
   this.uuid = uuidv4()
   this.timestamp = moment.utc().valueOf() // assigned when block is created
@@ -39,11 +40,16 @@ function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
   this.validate = function () {
     if (!Crypto.verifySignature({
       publicKey: this.validator,
-      data: [this.hash],
+      data: this.hash,
       signature: this.signature,
     })) {
       throw new Error('Invalid signature')
     }
+
+    if (lastBlock.height + 1 !== this.height) {
+      throw new Error('Invalid height')
+    }
+
     return true
   }
 

@@ -90,18 +90,35 @@ describe('Block', () => {
     const wallet = new Wallet()
     const genesisBlock = Block.genesis()
     const data = 'mined data'
-    const minedBlock = new Block({ genesisBlock, data }).mineBlock({ wallet })
+    const minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
+    const minedBlock2 = new Block({ lastBlock: minedBlock1, data }).mineBlock({ wallet })
 
     describe('when block is valid', () => {
       it('should have `height`that is greater by 1 than the previous block `height`', () => {
+        expect(minedBlock2.validate()).toBe(true)
+        expect(minedBlock2.height).toEqual(minedBlock1.height + 1)
       })
-      it('should contain `uuid` that is unique across all blocks', () => {
-      })
+      // it('should contain `uuid` that is unique across all blocks', () => {
+      // })
       it('should have `lastHash` that points to previous block', () => {
+        expect(minedBlock2.lastHash).toEqual(minedBlock1.hash)
       })
       it('should contain verifiable `hash`', () => {
+        expect(minedBlock2.validate()).toBe(true)
+        expect(Crypto.hash(
+          minedBlock2.height,
+          minedBlock2.uuid,
+          minedBlock2.timestamp,
+          minedBlock2.validator,
+          minedBlock2.lastHash,
+          minedBlock2.data,
+        )).toBe(minedBlock2.hash)
       })
       it('should contain non empty `data`', () => {
+        expect(minedBlock2.validate()).toBe(true)
+        expect(JSON.stringify(minedBlock2.data)).toBeDefined()
+        expect(minedBlock2.data).not.toBeNull()
+        expect(JSON.stringify(minedBlock2.data)).not.toBe('{}')
       })
       it('should always contain a reward `transaction`', () => {
       })
