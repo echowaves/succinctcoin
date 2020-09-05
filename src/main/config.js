@@ -41,7 +41,7 @@ if (!fs.existsSync(STORE.BLOCKS)) {
 const REWARD_ADDRESS = { address: '*authorized-reward*' }
 const STAKE_ADDRESS = { address: '*authorized-stake*' }
 
-const REWARD_AMOUNT = 50
+const REWARD_AMOUNT = 100
 
 module.exports = {
   GENESIS_DATA,

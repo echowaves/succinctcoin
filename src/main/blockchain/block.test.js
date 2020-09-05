@@ -90,10 +90,13 @@ describe('Block', () => {
     const wallet = new Wallet()
     const genesisBlock = Block.genesis()
     const data = 'mined data'
+
     const minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
     const minedBlock2 = new Block({ lastBlock: minedBlock1, data }).mineBlock({ wallet })
 
     describe('when block is valid', () => {
+      // every tedt in this group should start with foloowing line
+      // expect(minedBlock2.validate()).toBe(true)
       it('should have `height`that is greater by 1 than the previous block `height`', () => {
         expect(minedBlock2.validate()).toBe(true)
         expect(minedBlock2.height).toEqual(minedBlock1.height + 1)

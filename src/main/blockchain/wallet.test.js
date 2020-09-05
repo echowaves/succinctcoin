@@ -1,5 +1,4 @@
 import Wallet from './wallet'
-import Crypto from '../util/crypto'
 import Account from './account'
 
 const fs = require('fs-extra')
@@ -50,41 +49,28 @@ describe('Wallet', () => {
     })
   })
 
-  describe('signing data', () => {
-    const data = 'foobuz'
+  describe('signing transaction', () => {
+    let recipient
+    let amount
+    let fee
+    let transaction
+
+    beforeEach(() => {
+      recipient = new Wallet().publicKey
+      amount = '49'
+      fee = '1'
+      transaction = wallet.createTransaction({ recipient, amount, fee })
+    })
 
     it('does not verify an invalid signature', () => {
+      transaction.signature = 'invalid signature'
       expect(
-        Crypto.verifySignature({
-          publicKey: wallet.publicKey,
-          data,
-          signature: new Wallet().sign(data),
-        })
+        transaction.verifySignature()
       ).toBe(false)
     })
     it('verifies a signature', () => {
-      const signature = wallet.sign(data)
       expect(
-        Crypto.verifySignature({
-          publicKey: wallet.publicKey,
-          data,
-          signature,
-        })
-      ).toBe(true)
-    })
-    it('verifies a signature by the wallet that was retreived from disk', () => {
-      fs.removeSync(path.resolve(STORE.WALLET))
-      wallet = new Wallet()
-      wallet.store()
-      const wallet2 = new Wallet().retrieveOrNew()
-
-      const signature = wallet.sign(data)
-      expect(
-        Crypto.verifySignature({
-          publicKey: wallet2.publicKey,
-          data,
-          signature,
-        })
+        transaction.verifySignature()
       ).toBe(true)
     })
   })

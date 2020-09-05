@@ -12,6 +12,7 @@ import Transaction from './transaction'
 // const { STORE } = require('../config')
 
 const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
+const { REWARD_AMOUNT } = require('../config')
 
 describe('Transaction', () => {
   let transaction,
@@ -58,7 +59,7 @@ describe('Transaction', () => {
 
       describe('for reward `transaction`', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: 100, fee })
+          transaction = wallet.createRewardTransaction()
         })
         it('returns true', () => {
           expect(transaction.validate()).toBe(true)
@@ -234,11 +235,21 @@ describe('Transaction', () => {
 
       describe('when reward `amount` is invalid', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: -1, fee })
+          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: REWARD_AMOUNT - 1, fee })
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
             .toThrowError('Invalid reward amount')
+        })
+      })
+
+      describe('when reward `fee` is invalid', () => {
+        beforeEach(() => {
+          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: REWARD_AMOUNT, fee: 1 })
+        })
+        it('throws an error', () => {
+          expect(() => transaction.validate())
+            .toThrowError('Invalid reward fee')
         })
       })
 

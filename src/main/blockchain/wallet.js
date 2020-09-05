@@ -10,6 +10,8 @@ const crypto = require('crypto')
 const path = require('path')
 
 const { STORE } = require('../config')
+const { REWARD_ADDRESS /* STAKE_ADDRESS */ } = require('../config')
+const { REWARD_AMOUNT } = require('../config')
 
 function Wallet() {
   const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
@@ -31,7 +33,18 @@ function Wallet() {
     const sign = crypto.createSign('SHA512')
     sign.write(Crypto.hash(data))
     sign.end()
-    const signature = sign.sign(privateKey, 'hex')
+    return sign.sign(this.privateKey, 'hex')
+  }
+
+  this.transactionSignature = function ({ transaction }) {
+    const signature = this.sign([
+      transaction.uuid,
+      transaction.timestamp,
+      transaction.sender,
+      transaction.recipient,
+      Big(transaction.ammount).valueOf(),
+      Big(transaction.fee).valueOf(),
+    ])
     return signature
   }
 
@@ -43,14 +56,17 @@ function Wallet() {
     const transaction = new Transaction({
       sender: this.publicKey, recipient, amount, fee,
     })
-    transaction.signature = this.sign([
-      transaction.uuid,
-      transaction.timestamp,
-      transaction.sender,
-      transaction.recipient,
-      Big(transaction.ammount).valueOf(),
-      Big(transaction.fee).valueOf(),
-    ])
+    transaction.signature = this.transactionSignature({ transaction })
+    return transaction
+  }
+
+  // this creates a reward transaction for this wallet.
+  // This transaction does not have to be added to the pool
+  this.createRewardTransaction = function () {
+    const transaction = new Transaction({
+      sender: this.publicKey, recipient: REWARD_ADDRESS, amount: REWARD_AMOUNT, fee: 0,
+    })
+    transaction.signature = this.transactionSignature({ transaction })
     return transaction
   }
 

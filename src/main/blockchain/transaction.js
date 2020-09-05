@@ -8,6 +8,7 @@ import Account from './account'
 const Big = require('big.js')
 
 const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
+const { REWARD_AMOUNT } = require('../config')
 
 function Transaction({
   // the parameters passed at the time of transaction creation when it's added to the pool
@@ -32,7 +33,7 @@ function Transaction({
       throw new Error('Recipient invalid')
     }
 
-    if (this.recipient === REWARD_ADDRESS && !Big(this.amount).eq(100)) {
+    if (this.recipient === REWARD_ADDRESS && !Big(this.amount).eq(REWARD_AMOUNT)) {
       throw new Error('Invalid reward amount')
     }
 
@@ -62,15 +63,28 @@ function Transaction({
     if (Big(this.amount).lte(0) && this.recipient !== STAKE_ADDRESS) {
       throw new Error('Amount invalid')
     }
-    if (Big(this.fee).lt(Big(this.amount).div(1000))) {
-      throw new Error('Fee invalid')
-    }
-    // console.log(`${amount + fee} > ${account.balance}`)
-    if (Big(this.amount).plus(this.fee).gt(account.balance) && this.recipient !== REWARD_ADDRESS) {
-      throw new Error('Amount exceeds balance')
+
+    if (this.recipient !== REWARD_ADDRESS) {
+      if (Big(this.fee).lt(Big(this.amount).div(1000))) {
+        throw new Error('Fee invalid')
+      }
+      // console.log(`${amount + fee} > ${account.balance}`)
+      if (Big(this.amount).plus(this.fee).gt(account.balance) && this.recipient !== REWARD_ADDRESS) {
+        throw new Error('Amount exceeds balance')
+      }
+    } else if (!Big(this.fee).eq(0)) { // this.recipient === REWARD_ADDRESS
+      throw new Error('Invalid reward fee')
     }
 
-    if (!Crypto.verifySignature({
+    if (!this.verifySignature()) {
+      // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
+      throw new Error('Invalid signature')
+    }
+    return true
+  }
+
+  this.verifySignature = function () {
+    return Crypto.verifySignature({
       publicKey: this.sender,
       data: [
         this.uuid,
@@ -81,11 +95,7 @@ function Transaction({
         Big(this.fee).valueOf(),
       ],
       signature: this.signature,
-    })) {
-      // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
-      throw new Error('Invalid signature')
-    }
-    return true
+    })
   }
   // transaction should not be stored on disk as a separate file, as such there is no need to define KEY
   return Object.assign(
