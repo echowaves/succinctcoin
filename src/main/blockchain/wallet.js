@@ -10,7 +10,7 @@ const crypto = require('crypto')
 const path = require('path')
 
 const { STORE } = require('../config')
-const { REWARD_ADDRESS /* STAKE_ADDRESS */ } = require('../config')
+const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
 const { REWARD_AMOUNT } = require('../config')
 
 function Wallet() {
@@ -65,6 +65,14 @@ function Wallet() {
   this.createRewardTransaction = function () {
     const transaction = new Transaction({
       sender: this.publicKey, recipient: REWARD_ADDRESS, amount: REWARD_AMOUNT, fee: 0,
+    })
+    transaction.signature = this.transactionSignature({ transaction })
+    return transaction
+  }
+
+  this.createStakeTransaction = function ({ amount, fee }) {
+    const transaction = new Transaction({
+      sender: this.publicKey, recipient: STAKE_ADDRESS, amount, fee,
     })
     transaction.signature = this.transactionSignature({ transaction })
     return transaction

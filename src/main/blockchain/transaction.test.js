@@ -11,7 +11,7 @@ import Transaction from './transaction'
 // const path = require('path')
 // const { STORE } = require('../config')
 
-const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
+const { REWARD_ADDRESS } = require('../config')
 const { REWARD_AMOUNT } = require('../config')
 
 describe('Transaction', () => {
@@ -68,7 +68,7 @@ describe('Transaction', () => {
 
       describe('for stake `transaction`', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 5, fee })
+          transaction = wallet.createStakeTransaction({ amount: 5, fee })
         })
         it('returns true', () => {
           expect(transaction.validate()).toBe(true)
@@ -255,7 +255,7 @@ describe('Transaction', () => {
 
       describe('when stake `amount` is invalid', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 0, fee })
+          transaction = wallet.createStakeTransaction({ amount: 0, fee })
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
@@ -274,7 +274,7 @@ describe('Transaction', () => {
 
       describe('when trying to stake less or equals than 1/10 of the account value', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 5, fee: 1 })
+          transaction = wallet.createStakeTransaction({ amount: 5, fee: 1 })
         })
         it('should succeed', () => {
           expect(transaction.validate()).toBe(true)
@@ -282,7 +282,7 @@ describe('Transaction', () => {
       })
       describe('when trying to stake more than 1/10 of the account value', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: 6, fee: 1 })
+          transaction = wallet.createStakeTransaction({ amount: 6, fee: 1 })
         })
         it('should fail', () => {
           expect(() => transaction.validate())
@@ -291,7 +291,7 @@ describe('Transaction', () => {
       })
       describe('when trying to release less than currently staked', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: -4, fee: 1 })
+          transaction = wallet.createStakeTransaction({ amount: -4, fee: 1 })
         })
         it('should succeed', () => {
           expect(transaction.validate()).toBe(true)
@@ -299,7 +299,7 @@ describe('Transaction', () => {
       })
       describe('when trying to release more than currently staked', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: STAKE_ADDRESS, amount: -6, fee: 1 })
+          transaction = wallet.createStakeTransaction({ amount: -6, fee: 1 })
         })
         it('should fail', () => {
           expect(() => transaction.validate())
