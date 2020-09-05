@@ -87,12 +87,21 @@ describe('Block', () => {
   })
 
   describe('validate()', () => {
-    const wallet = new Wallet()
-    const genesisBlock = Block.genesis()
-    const data = 'mined data'
+    let wallet
+    let genesisBlock
+    let data
 
-    const minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
-    const minedBlock2 = new Block({ lastBlock: minedBlock1, data }).mineBlock({ wallet })
+    let minedBlock1
+    let minedBlock2
+
+    beforeEach(() => {
+      wallet = new Wallet()
+      genesisBlock = Block.genesis()
+      data = 'mined data'
+
+      minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
+      minedBlock2 = new Block({ lastBlock: minedBlock1, data }).mineBlock({ wallet })
+    })
 
     describe('when block is valid', () => {
       // every tedt in this group should start with foloowing line
