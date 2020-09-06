@@ -3,6 +3,7 @@ import Wallet from './wallet'
 import Crypto from '../util/crypto'
 
 const { GENESIS_DATA } = require('../config')
+const { REWARD_ADDRESS /* , STAKE_ADDRESS */ } = require('../config')
 
 describe('Block', () => {
   const genesisBlock = Block.genesis()
@@ -88,19 +89,30 @@ describe('Block', () => {
 
   describe('validate()', () => {
     let wallet
+    let recipient
     let genesisBlock
     let data
-
     let minedBlock1
+
+    let transactions2
     let minedBlock2
 
     beforeEach(() => {
       wallet = new Wallet()
+      recipient = new Wallet().publicKey
+
       genesisBlock = Block.genesis()
       data = 'mined data'
 
       minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
-      minedBlock2 = new Block({ lastBlock: minedBlock1, data }).mineBlock({ wallet })
+
+      transactions2 = []
+
+      transactions2.push(wallet.createRewardTransaction())
+      transactions2.push(wallet.createStakeTransaction({ amount: 5, fee: 1 }))
+      transactions2.push(wallet.createTransaction(wallet.createTransaction({ recipient, amount: 10, fee: 1 })))
+
+      minedBlock2 = new Block({ lastBlock: minedBlock1, data: transactions2 }).mineBlock({ wallet })
     })
 
     describe('when block is valid', () => {
@@ -132,11 +144,19 @@ describe('Block', () => {
         expect(minedBlock2.data).not.toBeNull()
         expect(JSON.stringify(minedBlock2.data)).not.toBe('{}')
       })
-      it('should always contain a reward `transaction`', () => {
+      it('should always contain 1 reward `transaction`', () => {
+        const transactions = minedBlock2.data
+        expect(transactions.filter(transaction => transaction.recipient === REWARD_ADDRESS)).toHaveLength(1)
       })
       it('should contain at least one non reward `transaction`', () => {
+        const transactions = minedBlock2.data
+        expect(transactions.filter(transaction => transaction.recipient !== REWARD_ADDRESS).length).toBeGreaterThan(0)
       })
       it('should have transactions that are ordered ASC by `timestamp`', () => {
+        const transactions = minedBlock2.data
+        const sortedTransaction = [...transactions]
+        sortedTransaction.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
+        expect(transactions).toStrictEqual(sortedTransaction)
       })
       it('should contain `validator` that is valid public key of an existing `account`', () => {
       })
