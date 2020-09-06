@@ -154,11 +154,12 @@ describe('Block', () => {
       })
       it('should have transactions that are ordered ASC by `timestamp`', () => {
         const transactions = minedBlock2.data
-        const sortedTransaction = [...transactions]
+        const sortedTransaction = [...transactions] // create a clone of transactions before sorting it
         sortedTransaction.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
         expect(transactions).toStrictEqual(sortedTransaction)
       })
       it('should contain `validator` that is valid public key of an existing `account`', () => {
+        expect(Crypto.isPublicKey({ publicKey: minedBlock2.validator })).toBe(true)
       })
       it('should be signed by `validator`', () => {
       })
