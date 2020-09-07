@@ -194,9 +194,10 @@ describe('Block', () => {
     })
     describe('when block is invalid', () => {
       it('should have `height`that is not greater by 1 than the previous block `height`', () => {
-        // minedBlock2.height += 1
-        // expect(minedBlock2.validate()).toBe(true)
-        // expect(minedBlock2.height).toEqual(minedBlock1.height + 1)
+        minedBlock2.height += 1
+        expect(minedBlock2.height).toEqual(minedBlock1.height + 2)
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid hash')
       })
       // it('should contain `uuid` that is unique across all blocks', () => {
       // })
