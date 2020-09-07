@@ -18,13 +18,13 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
   // this.timestamp = moment.utc().valueOf() // assigned when block is created
   this.lastHash = lastBlock ? lastBlock.hash : ''
   this.hash = ''
-  this.validator = ''
+  this.miner = ''
   this.signature = ''
   this.data = [...data]
 
   // this function should generate hash and sign the block
   this.mineBlock = function ({ wallet }) {
-    this.validator = wallet.publicKey
+    this.miner = wallet.publicKey
 
     // add reward transaction and
     // make blocks timestamp to be equal the timestamp of reward transaction
@@ -38,7 +38,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       this.height,
       this.uuid,
       this.timestamp,
-      this.validator,
+      this.miner,
       this.lastHash,
       this.data,
     )
@@ -53,7 +53,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
         this.height,
         this.uuid,
         this.timestamp,
-        this.validator,
+        this.miner,
         this.lastHash,
         this.data,
       )
@@ -62,7 +62,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     }
 
     if (!Crypto.verifySignature({
-      publicKey: this.validator,
+      publicKey: this.miner,
       data: this.hash,
       signature: this.signature,
     })) {

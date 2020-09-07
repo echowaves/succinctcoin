@@ -17,13 +17,13 @@ describe('Block', () => {
     lastBlock: genesisBlock, data,
   })
 
-  it('has a `height`, `uuid`, `lastHash`, `hash`, `validator`, `signature` and `data` property', () => {
+  it('has a `height`, `uuid`, `lastHash`, `hash`, `miner`, `signature` and `data` property', () => {
     expect(block).toHaveProperty('height')
     expect(block).toHaveProperty('uuid')
     expect(block).not.toHaveProperty('timestamp')// timestamp is assigned when the block is mined
     expect(block).toHaveProperty('lastHash')
     expect(block).toHaveProperty('hash')
-    expect(block).toHaveProperty('validator')
+    expect(block).toHaveProperty('miner')
     expect(block).toHaveProperty('signature')
     expect(block).toHaveProperty('data')
   })
@@ -71,8 +71,8 @@ describe('Block', () => {
       expect(minedBlock.timestamp).not.toEqual(undefined)
     })
 
-    it('sets a `validator` to `wallet` publicKey', () => {
-      expect(minedBlock.validator).toEqual(wallet.publicKey)
+    it('sets a `miner` to `wallet` publicKey', () => {
+      expect(minedBlock.miner).toEqual(wallet.publicKey)
     })
 
     it('creates a SHA512 `hash` based on the proper inputs', () => {
@@ -82,7 +82,7 @@ describe('Block', () => {
             minedBlock.height,
             minedBlock.uuid,
             minedBlock.timestamp,
-            minedBlock.validator,
+            minedBlock.miner,
             minedBlock.lastHash,
             minedBlock.data,
           )
@@ -145,7 +145,7 @@ describe('Block', () => {
           minedBlock2.height,
           minedBlock2.uuid,
           minedBlock2.timestamp,
-          minedBlock2.validator,
+          minedBlock2.miner,
           minedBlock2.lastHash,
           minedBlock2.data,
         )).toBe(minedBlock2.hash)
@@ -170,8 +170,8 @@ describe('Block', () => {
         sortedTransaction.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
         expect(transactions).toStrictEqual(sortedTransaction)
       })
-      it('should contain `validator` that is valid public key of an existing `account`', () => {
-        expect(Crypto.isPublicKey({ publicKey: minedBlock2.validator })).toBe(true)
+      it('should contain `miner` that is valid public key of an existing `account`', () => {
+        expect(Crypto.isPublicKey({ publicKey: minedBlock2.miner })).toBe(true)
       })
       it('should contain only valid transactions', () => {
         // the impementatino is a bit smelly
@@ -209,9 +209,9 @@ describe('Block', () => {
       })
       it('should have transactions that are not ordered DESC by `timestamp`', () => {
       })
-      it('should contain `validator` that is not valid public key of an existing `account`', () => {
+      it('should contain `miner` that is not valid public key of an existing `account`', () => {
       })
-      it('should be signed by someone other than `validator`', () => {
+      it('should be signed by someone other than `miner`', () => {
       })
       // it('`timestamp` should be +- 3 minutes from now', () => {
       // })
