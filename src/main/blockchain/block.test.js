@@ -184,7 +184,12 @@ describe('Block', () => {
         expect(minedBlock2.timestamp).toBe(rewardTrasaction.timestamp)
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
-
+        // timestamp of each transaction must be less than timestamp of block
+        minedBlock2.data.forEach(transaction => {
+          if (transaction.recipient !== REWARD_ADDRESS) {
+            expect(minedBlock2.timestamp).toBeGreaterThan(transaction.timestamp)
+          }
+        })
       })
     })
     describe('when block is invalid', () => {
