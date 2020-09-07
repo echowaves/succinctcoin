@@ -3,7 +3,9 @@ import moment from 'moment'
 import Account from './account'
 import Crypto from '../util/crypto'
 
+const fs = require('fs-extra')
 const path = require('path')
+
 const Big = require('big.js')
 
 const { STORE } = require('../config')
@@ -17,6 +19,8 @@ describe('Account', () => {
   beforeEach(() => {
     account = new Account({ publicKey })
   })
+
+  afterAll(() => fs.removeSync(path.resolve(STORE.ACCOUNTS)))
 
   describe('properties', () => {
     it('has `KEY`, `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {

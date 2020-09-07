@@ -7,12 +7,12 @@ const path = require('path')
 const { STORE } = require('../config')
 
 describe('Wallet', () => {
-  fs.removeSync(path.resolve(STORE.ACCOUNTS))
-
   let wallet
   beforeEach(() => {
     wallet = new Wallet()
   })
+
+  afterAll(() => fs.removeSync(path.resolve(STORE.WALLET)))
 
   describe('properties', () => {
     it('has `priaveteKey`, `publicKey`', () => {
@@ -25,7 +25,7 @@ describe('Wallet', () => {
     describe('instantiating new', () => {
       beforeEach(() => {
         // make sure there is no wallet on disk
-        fs.removeSync(path.resolve(STORE.WALLET))
+        // fs.removeSync(path.resolve(STORE.WALLET))
         wallet = wallet.retrieveOrNew()
       })
 
