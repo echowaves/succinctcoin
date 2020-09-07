@@ -38,6 +38,19 @@ function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
   }
 
   this.validate = function () {
+    if (
+      Crypto.hash(
+        this.height,
+        this.uuid,
+        this.timestamp,
+        this.validator,
+        this.lastHash,
+        this.data,
+      )
+      !== this.hash) {
+      throw new Error('Invalid hash')
+    }
+
     if (!Crypto.verifySignature({
       publicKey: this.validator,
       data: this.hash,
