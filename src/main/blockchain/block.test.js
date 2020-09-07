@@ -17,10 +17,10 @@ describe('Block', () => {
     lastBlock: genesisBlock, data,
   })
 
-  it('has a `height`, `uuid`, `timestamp`, `lastHash`, `hash`, `validator`, `signature` and `data` property', () => {
+  it('has a `height`, `uuid`, `lastHash`, `hash`, `validator`, `signature` and `data` property', () => {
     expect(block).toHaveProperty('height')
     expect(block).toHaveProperty('uuid')
-    expect(block).toHaveProperty('timestamp')
+    expect(block).not.toHaveProperty('timestamp')// timestamp is assigned when the block is mined
     expect(block).toHaveProperty('lastHash')
     expect(block).toHaveProperty('hash')
     expect(block).toHaveProperty('validator')
@@ -48,7 +48,7 @@ describe('Block', () => {
 
   describe('mineBlock()', () => {
     const lastBlock = Block.genesis()
-    const data = 'mined data'
+    const data = [1, 2, 3]
     const wallet = new Wallet()
 
     const minedBlock = new Block({ lastBlock, data }).mineBlock({ wallet })
@@ -62,7 +62,9 @@ describe('Block', () => {
     })
 
     it('sets the `data`', () => {
-      expect(minedBlock.data).toEqual(data)
+      expect(minedBlock.data).toEqual(
+        expect.arrayContaining(data)
+      )
     })
 
     it('sets a `timestamp`', () => {
@@ -96,7 +98,7 @@ describe('Block', () => {
     let minedBlock1
 
     let transactions2
-    let minedBlock2
+    let minedBlock2 // this will be a correct block
 
     beforeEach(() => {
       wallet = new Wallet()
@@ -111,13 +113,12 @@ describe('Block', () => {
       recipient = new Wallet().publicKey
 
       genesisBlock = Block.genesis()
-      data = 'mined data'
+      data = [1, 2, 3] // it has to be an array
 
       minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
 
       transactions2 = []
 
-      transactions2.push(wallet.createRewardTransaction())
       transactions2.push(wallet.createStakeTransaction({ amount: 5, fee: 1 }))
       transactions2.push(wallet.createTransaction(wallet.createTransaction({ recipient, amount: 10, fee: 1 })))
 
@@ -176,6 +177,9 @@ describe('Block', () => {
         expect(minedBlock2.validate()).toBe(true)
       })
       it('should have the `timestamp` equal to the `timestamp` of the reward `transaction`', () => {
+        const transactions = minedBlock2.data
+        const rewardTrasaction = transactions.filter(transaction => transaction.recipient === REWARD_ADDRESS)[0]
+        expect(minedBlock2.timestamp).toBe(rewardTrasaction.timestamp)
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
       })

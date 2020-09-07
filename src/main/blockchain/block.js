@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import moment from 'moment'
+// import moment from 'moment'
 
 import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
@@ -9,21 +9,28 @@ const path = require('path')
 const { GENESIS_DATA } = require('../config')
 
 const { STORE } = require('../config')
+// const { REWARD_ADDRESS/* , STAKE_ADDRESS */ } = require('../config')
 
-function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
+function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
   // this.lastBlock = lastBlock
   this.height = lastBlock ? lastBlock.height + 1 : 0
   this.uuid = uuidv4()
-  this.timestamp = moment.utc().valueOf() // assigned when block is created
+  // this.timestamp = moment.utc().valueOf() // assigned when block is created
   this.lastHash = lastBlock ? lastBlock.hash : ''
   this.hash = ''
   this.validator = ''
   this.signature = ''
-  this.data = data
+  this.data = [...data]
 
   // this function should generate hash and sign the block
   this.mineBlock = function ({ wallet }) {
     this.validator = wallet.publicKey
+
+    // add reward transaction and
+    // make blocks timestamp to be equal the timestamp of reward transaction
+    const rewardTrasaction = wallet.createRewardTransaction()
+    this.data.push(rewardTrasaction)
+    this.timestamp = rewardTrasaction.timestamp
 
     this.hash = Crypto.hash(
       this.height,
@@ -34,6 +41,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
       this.data,
     )
     this.signature = wallet.sign(this.hash)
+
     return this
   }
 
