@@ -50,6 +50,11 @@ function Block({ lastBlock, data } = { lastBlock: null, data: '' }) {
       throw new Error('Invalid height')
     }
 
+    // every transaction must be valid
+    this.data.forEach(transaction => {
+      transaction.validate()
+    })
+
     return true
   }
 

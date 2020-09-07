@@ -1,5 +1,6 @@
 import Block from './block'
 import Wallet from './wallet'
+import Account from './account'
 import Crypto from '../util/crypto'
 
 const { GENESIS_DATA } = require('../config')
@@ -99,6 +100,14 @@ describe('Block', () => {
 
     beforeEach(() => {
       wallet = new Wallet()
+      wallet.store()
+      // sender account should contain balance
+      const account = new Account({
+        publicKey: wallet.publicKey,
+      })
+      account.balance = 50
+      account.store()
+
       recipient = new Wallet().publicKey
 
       genesisBlock = Block.genesis()
@@ -161,6 +170,35 @@ describe('Block', () => {
       it('should contain `validator` that is valid public key of an existing `account`', () => {
         expect(Crypto.isPublicKey({ publicKey: minedBlock2.validator })).toBe(true)
       })
+      it('should contain only valid transactions', () => {
+        // the impementatino is a bit smelly
+        minedBlock2.data.forEach(transaction => transaction.validate())
+        expect(minedBlock2.validate()).toBe(true)
+      })
+      it('should have the `timestamp` equal to the `timestamp` of the reward `transaction`', () => {
+      })
+      it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
+      })
+    })
+    describe('when block is invalid', () => {
+      it('should have `height`that is greater by 1 than the previous block `height`', () => {
+      })
+      // it('should contain `uuid` that is unique across all blocks', () => {
+      // })
+      it('should have `lastHash` that points to previous block', () => {
+      })
+      it('should contain verifiable `hash`', () => {
+      })
+      it('should contain non empty `data`', () => {
+      })
+      it('should always contain 1 reward `transaction`', () => {
+      })
+      it('should contain at least one non reward `transaction`', () => {
+      })
+      it('should have transactions that are ordered ASC by `timestamp`', () => {
+      })
+      it('should contain `validator` that is valid public key of an existing `account`', () => {
+      })
       it('should be signed by `validator`', () => {
       })
       it('`timestamp` should be +- 3 minutes from now', () => {
@@ -173,8 +211,6 @@ describe('Block', () => {
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
       })
-    })
-    describe('when block is invalid', () => {
     })
   })
 })

@@ -45,18 +45,18 @@ function Transaction({
       throw new Error('Sender and Recipient are the same')
     }
 
-    // expected the sender account already in the system -- simply retreive it
-    // this will throw 'No such key or file name found on disk' if the account does not exist on disk
-    const account = new Account({ publicKey: this.sender }).retrieve()
+    // expected the sender senderAccount already in the system -- simply retreive it
+    // this will throw 'No such key or file name found on disk' if the senderAccount does not exist on disk
+    const senderAccount = new Account({ publicKey: this.sender }).retrieve()
 
     if (this.recipient === STAKE_ADDRESS
-      && (Big(this.amount).plus(account.stake)).gt(Big(account.balance).div(10))) {
-      // console.log(`(${this.amount} + ${account.stake}) > ${account.balance} / 10)`)
+      && (Big(this.amount).plus(senderAccount.stake)).gt(Big(senderAccount.balance).div(10))) {
+      // console.log(`(${this.amount} + ${senderAccount.stake}) > ${senderAccount.balance} / 10)`)
       throw new Error('Stake too high')
     }
     if (this.recipient === STAKE_ADDRESS
-      && (Big(account.stake).plus(this.amount).lt(0))) {
-      // console.log(`(${this.amount} + ${account.stake}) > ${account.balance} / 10)`)
+      && (Big(senderAccount.stake).plus(this.amount).lt(0))) {
+      // console.log(`(${this.amount} + ${senderAccount.stake}) > ${senderAccount.balance} / 10)`)
       throw new Error('Not enough stake')
     }
 
@@ -69,7 +69,7 @@ function Transaction({
         throw new Error('Fee invalid')
       }
       // console.log(`${amount + fee} > ${account.balance}`)
-      if (Big(this.amount).plus(this.fee).gt(account.balance) && this.recipient !== REWARD_ADDRESS) {
+      if (Big(this.amount).plus(this.fee).gt(senderAccount.balance) && this.recipient !== REWARD_ADDRESS) {
         throw new Error('Amount exceeds balance')
       }
     } else if (!Big(this.fee).eq(0)) { // this.recipient === REWARD_ADDRESS
