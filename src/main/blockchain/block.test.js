@@ -202,6 +202,10 @@ describe('Block', () => {
       // it('should contain `uuid` that is unique across all blocks', () => {
       // })
       it('should have `lastHash` that does not point to previous block', () => {
+        minedBlock2.lastHash = 'lastHash'
+        expect(minedBlock2.lastHash).toEqual('lastHash')
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid hash')
       })
       it('should contain non verifiable `hash`', () => {
       })
