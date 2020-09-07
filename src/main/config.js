@@ -38,8 +38,8 @@ if (!fs.existsSync(STORE.BLOCKS)) {
   fs.mkdirSync(STORE.BLOCKS)
 }
 
-const REWARD_ADDRESS = { address: '*authorized-reward*' }
-const STAKE_ADDRESS = { address: '*authorized-stake*' }
+const REWARD_ADDRESS = '*authorized-reward*'
+const STAKE_ADDRESS = '*authorized-stake*'
 
 const REWARD_AMOUNT = 100
 

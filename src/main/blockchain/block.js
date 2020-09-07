@@ -9,7 +9,7 @@ const path = require('path')
 const { GENESIS_DATA } = require('../config')
 
 const { STORE } = require('../config')
-// const { REWARD_ADDRESS/* , STAKE_ADDRESS */ } = require('../config')
+const { REWARD_ADDRESS/* , STAKE_ADDRESS */ } = require('../config')
 
 function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
   // this.lastBlock = lastBlock
@@ -31,6 +31,8 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     const rewardTrasaction = wallet.createRewardTransaction()
     this.data.push(rewardTrasaction)
     this.timestamp = rewardTrasaction.timestamp
+    // order transactions
+    this.data.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
 
     this.hash = Crypto.hash(
       this.height,
@@ -74,6 +76,13 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     // every transaction must be valid
     this.data.forEach(transaction => {
       transaction.validate()
+    })
+
+    // timestamp of each transaction must be less than timestamp of block
+    this.data.forEach(transaction => {
+      if (this.timestamp <= transaction.timestamp && transaction.recipient !== REWARD_ADDRESS) {
+        throw new Error('Invalid transaction timestamp')
+      }
     })
 
     return true

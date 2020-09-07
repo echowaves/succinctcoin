@@ -100,7 +100,7 @@ describe('Block', () => {
     let transactions2
     let minedBlock2 // this will be a correct block
 
-    beforeEach(() => {
+    beforeEach(async () => {
       wallet = new Wallet()
       wallet.store()
       // sender account should contain balance
@@ -120,8 +120,10 @@ describe('Block', () => {
       transactions2 = []
 
       transactions2.push(wallet.createStakeTransaction({ amount: 5, fee: 1 }))
+      await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
       transactions2.push(wallet.createTransaction(wallet.createTransaction({ recipient, amount: 10, fee: 1 })))
-
+      await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
+      // this will also generate reward transaction
       minedBlock2 = new Block({ lastBlock: minedBlock1, data: transactions2 }).mineBlock({ wallet })
     })
 
@@ -162,7 +164,7 @@ describe('Block', () => {
         const transactions = minedBlock2.data
         expect(transactions.filter(transaction => transaction.recipient !== REWARD_ADDRESS).length).toBeGreaterThan(0)
       })
-      it('should have transactions that are ordered ASC by `timestamp`', () => {
+      it('should have transactions that are ordered DESC by `timestamp`', () => {
         const transactions = minedBlock2.data
         const sortedTransaction = [...transactions] // create a clone of transactions before sorting it
         sortedTransaction.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
@@ -182,36 +184,42 @@ describe('Block', () => {
         expect(minedBlock2.timestamp).toBe(rewardTrasaction.timestamp)
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
+
       })
     })
     describe('when block is invalid', () => {
-      it('should have `height`that is greater by 1 than the previous block `height`', () => {
+      it('should have `height`that is not greater by 1 than the previous block `height`', () => {
+        // minedBlock2.height += 1
+        // expect(minedBlock2.validate()).toBe(true)
+        // expect(minedBlock2.height).toEqual(minedBlock1.height + 1)
       })
       // it('should contain `uuid` that is unique across all blocks', () => {
       // })
-      it('should have `lastHash` that points to previous block', () => {
+      it('should have `lastHash` that does not point to previous block', () => {
       })
-      it('should contain verifiable `hash`', () => {
+      it('should contain non verifiable `hash`', () => {
       })
-      it('should contain non empty `data`', () => {
+      it('should contain empty `data`', () => {
       })
-      it('should always contain 1 reward `transaction`', () => {
+      it('should contain 0 reward `transaction`', () => {
       })
-      it('should contain at least one non reward `transaction`', () => {
+      it('should contain more than 1 reward `transaction`', () => {
       })
-      it('should have transactions that are ordered ASC by `timestamp`', () => {
+      it('should contain 0 non reward `transaction`', () => {
       })
-      it('should contain `validator` that is valid public key of an existing `account`', () => {
+      it('should have transactions that are not ordered DESC by `timestamp`', () => {
       })
-      it('should be signed by `validator`', () => {
+      it('should contain `validator` that is not valid public key of an existing `account`', () => {
       })
-      it('`timestamp` should be +- 3 minutes from now', () => {
+      it('should be signed by someone other than `validator`', () => {
       })
-      it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
+      // it('`timestamp` should be +- 3 minutes from now', () => {
+      // })
+      // it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
+      // })
+      it('should contain not only valid transactions', () => {
       })
-      it('should contain only valid transactions', () => {
-      })
-      it('should have the `timestamp` equal to the `timestamp` of the reward `transaction`', () => {
+      it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', () => {
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
       })
