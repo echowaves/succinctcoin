@@ -48,13 +48,25 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
   }
 
   this.validate = function () {
-    // console.log(this.data)
     if (this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}' || this.data.length === 0) {
       throw new Error('Bad data')
     }
 
+    // check the the data contains non empty array
     if (this.data.length === 1 && this.data[0].recipient === REWARD_ADDRESS) {
       throw new Error('Empty data')
+    }
+
+    // check that there is only 1 reward transaction per block
+    if (this.data.filter(transaction => transaction.recipient === REWARD_ADDRESS).length !== 1) {
+      throw new Error('Invalid number of rewards')
+    }
+
+    // check for duplciate transactions
+    if (this.data.filter((transaction, index, self) => index === self.findIndex(t => (
+      t.uuid === transaction.uuid
+    ))).length < this.data.length) {
+      throw new Error('Duplicate transactions')
     }
 
     if (
@@ -68,14 +80,6 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       )
       !== this.hash) {
       throw new Error('Invalid hash')
-    }
-
-    if (!Crypto.verifySignature({
-      publicKey: this.miner,
-      data: this.hash,
-      signature: this.signature,
-    })) {
-      throw new Error('Invalid signature')
     }
 
     if (lastBlock.height + 1 !== this.height) {
@@ -93,6 +97,14 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
         throw new Error('Invalid transaction timestamp')
       }
     })
+
+    if (!Crypto.verifySignature({
+      publicKey: this.miner,
+      data: this.hash,
+      signature: this.signature,
+    })) {
+      throw new Error('Invalid signature')
+    }
 
     return true
   }

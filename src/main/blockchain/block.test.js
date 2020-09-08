@@ -227,8 +227,15 @@ describe('Block', () => {
           .toThrowError('Empty data')
       })
       it('should contain 0 reward `transaction`', () => {
+        minedBlock2.data = minedBlock2.data.filter(transaction => transaction.recipient !== REWARD_ADDRESS)
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid number of rewards')
       })
       it('should contain more than 1 reward `transaction`', () => {
+        const rewardTrasaction = wallet.createRewardTransaction()
+        minedBlock2.data.push(rewardTrasaction) // add dup rewardTrasaction
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid number of rewards')
       })
       it('should contain 0 non reward `transaction`', () => {
       })
@@ -247,6 +254,8 @@ describe('Block', () => {
       it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', () => {
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
+      })
+      it('should contain duplicate transactions', () => {
       })
     })
   })
