@@ -69,19 +69,6 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       throw new Error('Duplicate transactions')
     }
 
-    if (
-      Crypto.hash(
-        this.height,
-        this.uuid,
-        this.timestamp,
-        this.miner,
-        this.lastHash,
-        this.data,
-      )
-      !== this.hash) {
-      throw new Error('Invalid hash')
-    }
-
     if (lastBlock.height + 1 !== this.height) {
       throw new Error('Invalid height')
     }
@@ -97,6 +84,28 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
         throw new Error('Invalid transaction timestamp')
       }
     })
+
+    // transaction must be ordered by timestamp ASC (reward transaction always last)
+    let currentIteratorTimestamp = 0
+    this.data.forEach(transaction => {
+      if (currentIteratorTimestamp > transaction.timestamp) {
+        throw new Error('Invalid sort order')
+      }
+      currentIteratorTimestamp = transaction.timestamp
+    })
+
+    if (
+      Crypto.hash(
+        this.height,
+        this.uuid,
+        this.timestamp,
+        this.miner,
+        this.lastHash,
+        this.data,
+      )
+      !== this.hash) {
+      throw new Error('Invalid hash')
+    }
 
     if (!Crypto.verifySignature({
       publicKey: this.miner,

@@ -199,7 +199,7 @@ describe('Block', () => {
         minedBlock2.height += 1
         expect(minedBlock2.height).toEqual(minedBlock1.height + 2)
         expect(() => minedBlock2.validate())
-          .toThrowError('Invalid hash')
+          .toThrowError('Invalid height')
       })
       // it('should contain `uuid` that is unique across all blocks', () => {
       // })
@@ -238,8 +238,14 @@ describe('Block', () => {
           .toThrowError('Invalid number of rewards')
       })
       it('should contain 0 non reward `transaction`', () => {
+        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
+        expect(() => minedBlock3.validate())
+          .toThrowError('Empty data')
       })
-      it('should have transactions that are not ordered DESC by `timestamp`', () => {
+      it('should have transactions that are not ordered ASC by `timestamp`', () => {
+        minedBlock2.data.sort((a, b) => (a.timestamp <= b.timestamp ? 1 : -1))
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid sort order')
       })
       it('should contain `miner` that is not valid public key of an existing `account`', () => {
       })
