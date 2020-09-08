@@ -48,6 +48,15 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
   }
 
   this.validate = function () {
+    // console.log(this.data)
+    if (this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}' || this.data.length === 0) {
+      throw new Error('Bad data')
+    }
+
+    if (this.data.length === 1 && this.data[0].recipient === REWARD_ADDRESS) {
+      throw new Error('Empty data')
+    }
+
     if (
       Crypto.hash(
         this.height,

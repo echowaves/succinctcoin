@@ -152,8 +152,10 @@ describe('Block', () => {
       })
       it('should contain non empty `data`', () => {
         expect(minedBlock2.validate()).toBe(true)
-        expect(JSON.stringify(minedBlock2.data)).toBeDefined()
+        expect(minedBlock2.data).toBeDefined()
         expect(minedBlock2.data).not.toBeNull()
+        expect(minedBlock2.data).not.toHaveLength(0)
+        expect(minedBlock2.data).not.toBe([])
         expect(JSON.stringify(minedBlock2.data)).not.toBe('{}')
       })
       it('should always contain 1 reward `transaction`', () => {
@@ -208,8 +210,21 @@ describe('Block', () => {
           .toThrowError('Invalid hash')
       })
       it('should contain non verifiable `hash`', () => {
+        minedBlock2.hash = 'hash'
+        expect(minedBlock2.hash).toEqual('hash')
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid hash')
+      })
+      it('should contain bad `data`', () => {
+        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
+        minedBlock3.data = []
+        expect(() => minedBlock3.validate())
+          .toThrowError('Bad data')
       })
       it('should contain empty `data`', () => {
+        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
+        expect(() => minedBlock3.validate())
+          .toThrowError('Empty data')
       })
       it('should contain 0 reward `transaction`', () => {
       })
