@@ -164,7 +164,7 @@ describe('Transaction', () => {
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
-            .toThrowError('Invalid signature')
+            .toThrowError('Invalid transaction signature')
         })
       })
 
@@ -175,7 +175,7 @@ describe('Transaction', () => {
           })
           it('throws an error', () => {
             expect(() => transaction.validate())
-              .toThrowError('Invalid signature')
+              .toThrowError('Invalid transaction signature')
           })
         })
         describe('when `timestamp` is altered', () => {
@@ -184,7 +184,7 @@ describe('Transaction', () => {
           })
           it('throws an error', () => {
             expect(() => transaction.validate())
-              .toThrowError('Invalid signature')
+              .toThrowError('Invalid transaction signature')
           })
         })
         describe('when `sender` is altered', () => {
@@ -197,7 +197,7 @@ describe('Transaction', () => {
           })
           it('throws an error', () => {
             expect(() => transaction.validate())
-              .toThrowError('Invalid signature')
+              .toThrowError('Invalid transaction signature')
           })
         })
         describe('when `recipient` is altered', () => {
@@ -210,7 +210,7 @@ describe('Transaction', () => {
           })
           it('throws an error', () => {
             expect(() => transaction.validate())
-              .toThrowError('Invalid signature')
+              .toThrowError('Invalid transaction signature')
           })
         })
         describe('when `ammount` is altered', () => {
@@ -219,7 +219,7 @@ describe('Transaction', () => {
           })
           it('throws an error', () => {
             expect(() => transaction.validate())
-              .toThrowError('Invalid signature')
+              .toThrowError('Invalid transaction signature')
           })
         })
         describe('when `fee` is altered', () => {
@@ -228,7 +228,7 @@ describe('Transaction', () => {
           })
           it('throws an error', () => {
             expect(() => transaction.validate())
-              .toThrowError('Invalid signature')
+              .toThrowError('Invalid transaction signature')
           })
         })
       })

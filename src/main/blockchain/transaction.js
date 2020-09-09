@@ -78,7 +78,7 @@ function Transaction({
 
     if (!this.verifySignature()) {
       // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
-      throw new Error('Invalid signature')
+      throw new Error('Invalid transaction signature')
     }
     return true
   }

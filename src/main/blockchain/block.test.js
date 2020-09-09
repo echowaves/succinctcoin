@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 import Block from './block'
 import Wallet from './wallet'
 import Account from './account'
@@ -253,12 +255,18 @@ describe('Block', () => {
           .toThrowError('Invalid miner')
       })
       it('should be signed by someone other than `miner`', () => {
+        minedBlock2.signature = new Wallet().sign(minedBlock2.hash)
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid block signature')
       })
       // it('`timestamp` should be +- 3 minutes from now', () => {
       // })
       // it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
       // })
       it('should contain not only valid transactions', () => {
+        minedBlock2.data[0].timestamp = moment.utc().valueOf() // this will invalidate transaction hash
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid transaction signature')
       })
       it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', () => {
       })

@@ -117,7 +117,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       data: this.hash,
       signature: this.signature,
     })) {
-      throw new Error('Invalid signature')
+      throw new Error('Invalid block signature')
     }
 
     return true
