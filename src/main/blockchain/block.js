@@ -83,6 +83,9 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       if (this.timestamp <= transaction.timestamp && transaction.recipient !== REWARD_ADDRESS) {
         throw new Error('Invalid transaction timestamp')
       }
+      if (this.timestamp !== transaction.timestamp && transaction.recipient === REWARD_ADDRESS) {
+        throw new Error('Invalid reward transaction timestamp')
+      }
     })
 
     // transaction must be ordered by timestamp ASC (reward transaction always last)

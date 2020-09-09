@@ -269,6 +269,9 @@ describe('Block', () => {
           .toThrowError('Invalid transaction signature')
       })
       it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', () => {
+        minedBlock2.timestamp = moment.utc().valueOf()
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid reward transaction timestamp')
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
       })
