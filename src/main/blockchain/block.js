@@ -94,6 +94,11 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       currentIteratorTimestamp = transaction.timestamp
     })
 
+    // miner should be a valid publicKey
+    if (!Crypto.isPublicKey({ publicKey: this.miner })) {
+      throw new Error('Invalid miner')
+    }
+
     if (
       Crypto.hash(
         this.height,

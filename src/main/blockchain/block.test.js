@@ -248,6 +248,9 @@ describe('Block', () => {
           .toThrowError('Invalid sort order')
       })
       it('should contain `miner` that is not valid public key of an existing `account`', () => {
+        minedBlock2.miner = 'invalid miner'
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid miner')
       })
       it('should be signed by someone other than `miner`', () => {
       })

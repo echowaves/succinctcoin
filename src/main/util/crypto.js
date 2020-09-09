@@ -16,9 +16,10 @@ Crypto.verifySignature = function ({ publicKey, data, signature }) {
 
 Crypto.isPublicKey = function ({ publicKey }) {
   if (
-    publicKey.length === 174
-  && publicKey.startsWith("-----BEGIN PUBLIC KEY-----\n")
-  && publicKey.endsWith("\n-----END PUBLIC KEY-----\n")
+    publicKey
+    && publicKey.length === 174
+    && publicKey.startsWith("-----BEGIN PUBLIC KEY-----\n")
+    && publicKey.endsWith("\n-----END PUBLIC KEY-----\n")
   ) {
     return true
   }
