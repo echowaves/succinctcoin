@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { v4 as uuidv4 } from 'uuid'
 
 import Block from './block'
 import Wallet from './wallet'
@@ -264,7 +265,8 @@ describe('Block', () => {
       // it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
       // })
       it('should contain not only valid transactions', () => {
-        minedBlock2.data[0].timestamp = moment.utc().valueOf() // this will invalidate transaction hash
+        minedBlock2.data[0].uuid = uuidv4()
+        // this will invalidate transaction hash
         expect(() => minedBlock2.validate())
           .toThrowError('Invalid transaction signature')
       })
@@ -274,8 +276,15 @@ describe('Block', () => {
           .toThrowError('Invalid reward transaction timestamp')
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
+        minedBlock2.data[1].timestamp = moment.utc().valueOf()
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid transaction timestamp')
       })
+
       it('should contain duplicate transactions', () => {
+        minedBlock2.data.push(minedBlock2.data[1])
+        expect(() => minedBlock2.validate())
+          .toThrowError('Duplicate transactions')
       })
     })
   })

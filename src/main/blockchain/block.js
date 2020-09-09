@@ -73,11 +73,6 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       throw new Error('Invalid height')
     }
 
-    // every transaction must be valid
-    this.data.forEach(transaction => {
-      transaction.validate()
-    })
-
     // timestamp of each transaction must be less than timestamp of block
     this.data.forEach(transaction => {
       if (this.timestamp <= transaction.timestamp && transaction.recipient !== REWARD_ADDRESS) {
@@ -101,6 +96,10 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     if (!Crypto.isPublicKey({ publicKey: this.miner })) {
       throw new Error('Invalid miner')
     }
+    // every transaction must be valid
+    this.data.forEach(transaction => {
+      transaction.validate()
+    })
 
     if (
       Crypto.hash(
