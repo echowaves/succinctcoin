@@ -40,8 +40,10 @@ if (!fs.existsSync(STORE.BLOCKS)) {
 
 const REWARD_ADDRESS = '*authorized-reward*'
 const STAKE_ADDRESS = '*authorized-stake*'
+const CREDIT_ADDRESS = '*authorized-credit*'
 
 const REWARD_AMOUNT = 100
+const MINIMUM_STAKE_AMOUNT = 200
 
 module.exports = {
   GENESIS_DATA,
@@ -50,5 +52,7 @@ module.exports = {
   STORE,
   REWARD_ADDRESS,
   STAKE_ADDRESS,
+  CREDIT_ADDRESS,
   REWARD_AMOUNT,
+  MINIMUM_STAKE_AMOUNT,
 }
