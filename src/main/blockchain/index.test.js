@@ -24,14 +24,14 @@ describe.skip('Blockchain', () => {
   })
 
   it('starts with the genesis block', () => {
-    expect(blockchain.chain[0]).toEqual(Block.genesis())
+    expect(blockchain.chain[0].toString()).toEqual(Block.genesis().toString())
   })
 
   it('adds a new block to the chain', () => {
     const newData = 'foo bar'
     blockchain.addBlock({ data: newData })
 
-    expect(blockchain.chain[blockchain.chain.length - 1].data).toEqual(newData)
+    expect([...blockchain.chain[blockchain.chain.length - 1].data]).toEqual(newData)
   })
 
   describe('isValidChain()', () => {
