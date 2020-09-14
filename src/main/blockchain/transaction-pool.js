@@ -1,8 +1,8 @@
-const Transaction = require('./transaction')
+import Transaction from './transaction'
 
 class TransactionPool {
   constructor() {
-    this.transactionMap = {}
+    this.clear()
   }
 
   clear() {
@@ -10,22 +10,28 @@ class TransactionPool {
   }
 
   setTransaction(transaction) {
-    this.transactionMap[transaction.id] = transaction
+    this.transactionMap[transaction.uuid] = transaction
   }
 
   setMap(transactionMap) {
     this.transactionMap = transactionMap
   }
 
-  existingTransaction({ inputAddress }) {
+  existingTransaction({ sender }) {
     const transactions = Object.values(this.transactionMap)
 
-    return transactions.find(transaction => transaction.input.address === inputAddress)
+    return transactions.find(transaction => transaction.sender === sender)
   }
 
   validTransactions() {
     return Object.values(this.transactionMap).filter(
-      transaction => Transaction.validTransaction(transaction)
+      transaction => {
+        try {
+          return transaction.validate()
+        } catch (error) {
+          return false
+        }
+      }
     )
   }
 
@@ -34,8 +40,8 @@ class TransactionPool {
       const block = chain[i]
 
       for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
-        if (this.transactionMap[transaction.id]) {
-          delete this.transactionMap[transaction.id]
+        if (this.transactionMap[transaction.uuid]) {
+          delete this.transactionMap[transaction.uuid]
         }
       }
     }

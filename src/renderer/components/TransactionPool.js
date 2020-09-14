@@ -51,7 +51,7 @@ class TransactionPool extends Component {
         <h3>Transaction Pool</h3>
         {
           Object.values(transactionPoolMap).map(transaction => (
-            <div key={transaction.id}>
+            <div key={transaction.uuid}>
               <hr />
               <Transaction transaction={transaction} />
             </div>

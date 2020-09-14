@@ -1,4 +1,4 @@
-const Transaction = require('../wallet/transaction')
+import Transaction from '../blockchain/transaction'
 
 class TransactionMiner {
   constructor({

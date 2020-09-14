@@ -1,7 +1,8 @@
-const Block = require('./block')
-const Transaction = require('./transaction')
-const Wallet = require('./wallet')
-const Crypto = require('../util/crypto')
+// import Crypto from '../util/crypto'
+import Wallet from './wallet'
+import Transaction from './transaction'
+import Block from './block'
+
 const { REWARD_INPUT, MINING_REWARD } = require('../config')
 
 class Blockchain {
@@ -11,24 +12,9 @@ class Blockchain {
     ]
   }
 
-  getGenesisBlock() {
-
-  }
-
-  getNextBlock({ block }) {
-
-  }
-
-  getPrevBlock({ block }) {
-
-  }
-
-  addBlock({ data }) {
-    const newBlock = Block.mineBlock({
-      lastBlock: this.chain[this.chain.length - 1],
-      data,
-    })
-
+  addBlock({ data, wallet }) {
+    const newBlock = new Block({ lastBlock: this.chain[this.chain.length - 1], data })
+      .mineBlock({ wallet })
     this.chain.push(newBlock)
   }
 
@@ -115,7 +101,7 @@ class Blockchain {
 
       if (lastHash !== actualLastHash) return false
 
-      const validatedHash = Crypto.hash(timestamp, lastHash, data, nonce, difficulty)
+      const validatedHash = cryptoHash(timestamp, lastHash, data, nonce, difficulty)
 
       if (hash !== validatedHash) return false
 

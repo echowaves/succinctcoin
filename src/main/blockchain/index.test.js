@@ -1,8 +1,8 @@
-const Blockchain = require('./index')
-const Block = require('./block')
-const Crypto = require('../util/crypto')
-const Wallet = require('./wallet')
-const Transaction = require('./transaction')
+import Wallet from './wallet'
+import Blockchain from './index'
+import Block from './block'
+import Crypto from '../util/crypto'
+import Transaction from './transaction'
 
 describe.skip('Blockchain', () => {
   let blockchain,

@@ -1,11 +1,12 @@
+import Blockchain from './blockchain'
+
 const bodyParser = require('body-parser')
 const express = require('express')
 const fetch = require("node-fetch")
 const path = require('path')
 const cors = require('cors')
-
-const Blockchain = require('./blockchain')
 const PubSub = require('./app/pubsub')
+
 const Transaction = require('./wallet/transaction')
 const TransactionPool = require('./wallet/transaction-pool')
 const Wallet = require('./wallet')
@@ -67,7 +68,7 @@ api.post('/api/transact', (req, res) => {
   const { amount, recipient } = req.body
 
   let transaction = transactionPool
-    .existingTransaction({ inputAddress: wallet.publicKey })
+    .existingTransaction({ recipient: wallet.publicKey })
   try {
     if (transaction) {
       const transactionObj = Object.assign(new Transaction({
