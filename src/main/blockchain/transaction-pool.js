@@ -1,5 +1,3 @@
-import Transaction from './transaction'
-
 class TransactionPool {
   constructor() {
     this.clear()
@@ -48,4 +46,4 @@ class TransactionPool {
   }
 }
 
-module.exports = TransactionPool
+export default TransactionPool

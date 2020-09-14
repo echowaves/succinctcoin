@@ -1,9 +1,9 @@
 import Wallet from './wallet'
 import Account from './account'
 
-const TransactionPool = require('./transaction-pool')
+import TransactionPool from './transaction-pool'
 
-const Blockchain = require('./index')
+import Blockchain from './index'
 
 describe('TransactionPool', () => {
   let transactionPool,
