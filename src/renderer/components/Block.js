@@ -24,7 +24,7 @@ class Block extends Component {
         <div>
           {
             data.map(transaction => (
-              <div key={transaction.id}>
+              <div key={transaction.uuid}>
                 <hr />
                 <Transaction transaction={transaction} />
               </div>

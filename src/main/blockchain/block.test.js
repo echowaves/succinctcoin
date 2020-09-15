@@ -1,47 +1,59 @@
-const hexToBinary = require('hex-to-binary')
-const Block = require('./block')
-const { GENESIS_DATA, MINE_RATE } = require('../../config')
-const { cryptoHash } = require('../util')
+import moment from 'moment'
+import { v4 as uuidv4 } from 'uuid'
+
+import Block from './block'
+import Wallet from './wallet'
+import Account from './account'
+import Crypto from '../util/crypto'
+
+import config from '../config'
 
 describe('Block', () => {
-  const timestamp = 2000
-  const lastHash = 'foo-hash'
-  const hash = 'bar-hash'
+  const genesisBlock = Block.genesis()
+
   const data = [
     'blockchain',
     'data',
   ]
-  const nonce = 1
-  const difficulty = 1
   const block = new Block({
-    timestamp, lastHash, hash, data, nonce, difficulty,
+    lastBlock: genesisBlock, data,
   })
 
-  it('has a timestamp, lastHash, hash, and data property', () => {
-    expect(block.timestamp).toEqual(timestamp)
-    expect(block.lastHash).toEqual(lastHash)
-    expect(block.hash).toEqual(hash)
-    expect(block.data).toEqual(data)
-    expect(block.nonce).toEqual(nonce)
-    expect(block.difficulty).toEqual(difficulty)
+  it('has a `height`, `uuid`, `lastHash`, `hash`, `miner`, `signature` and `data` property', () => {
+    expect(block).toHaveProperty('height')
+    expect(block).toHaveProperty('uuid')
+    expect(block).not.toHaveProperty('timestamp')// timestamp is assigned when the block is mined
+    expect(block).toHaveProperty('lastHash')
+    expect(block).toHaveProperty('hash')
+    expect(block).toHaveProperty('miner')
+    expect(block).toHaveProperty('signature')
+    expect(block).toHaveProperty('data')
+  })
+
+  it('references the last block', () => {
+    expect(block.height).toBe(genesisBlock.height + 1)
+    expect(block.uuid).not.toBe(genesisBlock.uuid)
+    expect(block.timestamp).not.toBe(genesisBlock.timestamp)
+    expect(block.lastHash).toBe(genesisBlock.hash)
+    expect(block.hash).not.toBe(genesisBlock.hash)
   })
 
   describe('genesis()', () => {
-    const genesisBlock = Block.genesis()
-
     it('returns a Block instance', () => {
       expect(genesisBlock instanceof Block).toBe(true)
     })
 
     it('returns the genesis data', () => {
-      expect(genesisBlock).toEqual(GENESIS_DATA)
+      expect(genesisBlock).toMatchObject(config.GENESIS_DATA)
     })
   })
 
   describe('mineBlock()', () => {
     const lastBlock = Block.genesis()
-    const data = 'mined data'
-    const minedBlock = Block.mineBlock({ lastBlock, data })
+    const data = [1, 2, 3]
+    const wallet = new Wallet()
+
+    const minedBlock = new Block({ lastBlock, data }).mineBlock({ wallet })
 
     it('returns a Block instance', () => {
       expect(minedBlock instanceof Block).toBe(true)
@@ -52,58 +64,227 @@ describe('Block', () => {
     })
 
     it('sets the `data`', () => {
-      expect(minedBlock.data).toEqual(data)
+      expect(minedBlock.data).toEqual(
+        expect.arrayContaining(data)
+      )
     })
 
     it('sets a `timestamp`', () => {
       expect(minedBlock.timestamp).not.toEqual(undefined)
     })
 
-    it('creates a SHA-256 `hash` based on the proper inputs', () => {
+    it('sets a `miner` to `wallet` publicKey', () => {
+      expect(minedBlock.miner).toEqual(wallet.publicKey)
+    })
+
+    it('creates a SHA512 `hash` based on the proper inputs', () => {
       expect(minedBlock.hash)
         .toEqual(
-          cryptoHash(
+          Crypto.hash(
+            minedBlock.height,
+            minedBlock.uuid,
             minedBlock.timestamp,
-            minedBlock.nonce,
-            minedBlock.difficulty,
-            lastBlock.hash,
-            data
+            minedBlock.miner,
+            minedBlock.lastHash,
+            minedBlock.data,
           )
         )
     })
-
-    it('sets a `hash` that matches the difficulty criteria', () => {
-      expect(hexToBinary(minedBlock.hash).substring(0, minedBlock.difficulty))
-        .toEqual('0'.repeat(minedBlock.difficulty))
-    })
-
-    it('adjusts the difficulty', () => {
-      const possibleResults = [
-        lastBlock.difficulty + 1,
-        lastBlock.difficulty - 1,
-      ]
-
-      expect(possibleResults.includes(minedBlock.difficulty)).toBe(true)
-    })
   })
 
-  describe('adjustDifficulty()', () => {
-    it('raises the difficulty for a quickly mined block', () => {
-      expect(Block.adjustDifficulty({
-        originalBlock: block, timestamp: block.timestamp + MINE_RATE - 100,
-      })).toEqual(block.difficulty + 1)
+  describe('validate()', () => {
+    let wallet
+    let recipient
+    let genesisBlock
+    let data
+    let minedBlock1
+
+    let transactions2
+    let minedBlock2 // this will be a correct block
+
+    beforeEach(async () => {
+      wallet = new Wallet()
+      wallet.store()
+      // sender account should contain balance
+      const account = new Account({
+        publicKey: wallet.publicKey,
+      })
+      account.balance = 50
+      account.store()
+
+      recipient = new Wallet().publicKey
+
+      genesisBlock = Block.genesis()
+      data = [1, 2, 3] // it has to be an array
+
+      minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
+
+      transactions2 = []
+
+      transactions2.push(wallet.createStakeTransaction({ amount: 5, fee: 1 }))
+      await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
+      transactions2.push(wallet.createTransaction(wallet.createTransaction({ recipient, amount: 10, fee: 1 })))
+      await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
+      // this will also generate reward transaction
+      minedBlock2 = new Block({ lastBlock: minedBlock1, data: transactions2 }).mineBlock({ wallet })
     })
 
-    it('lowers the difficulty for a slowly mined block', () => {
-      expect(Block.adjustDifficulty({
-        originalBlock: block, timestamp: block.timestamp + MINE_RATE + 100,
-      })).toEqual(block.difficulty - 1)
+    describe('when block is valid', () => {
+      // every tedt in this group should start with foloowing line
+      // expect(minedBlock2.validate()).toBe(true)
+      it('should have `height`that is greater by 1 than the previous block `height`', () => {
+        expect(minedBlock2.validate()).toBe(true)
+        expect(minedBlock2.height).toEqual(minedBlock1.height + 1)
+      })
+      // it('should contain `uuid` that is unique across all blocks', () => {
+      // })
+      it('should have `lastHash` that points to previous block', () => {
+        expect(minedBlock2.lastHash).toEqual(minedBlock1.hash)
+      })
+      it('should contain verifiable `hash`', () => {
+        expect(minedBlock2.validate()).toBe(true)
+        expect(Crypto.hash(
+          minedBlock2.height,
+          minedBlock2.uuid,
+          minedBlock2.timestamp,
+          minedBlock2.miner,
+          minedBlock2.lastHash,
+          minedBlock2.data,
+        )).toBe(minedBlock2.hash)
+      })
+      it('should contain non empty `data`', () => {
+        expect(minedBlock2.validate()).toBe(true)
+        expect(minedBlock2.data).toBeDefined()
+        expect(minedBlock2.data).not.toBeNull()
+        expect(minedBlock2.data).not.toHaveLength(0)
+        expect(minedBlock2.data).not.toBe([])
+        expect(JSON.stringify(minedBlock2.data)).not.toBe('{}')
+      })
+      it('should always contain 1 reward `transaction`', () => {
+        const transactions = minedBlock2.data
+        expect(transactions.filter(transaction => transaction.recipient === config.REWARD_ADDRESS)).toHaveLength(1)
+      })
+      it('should contain at least one non reward `transaction`', () => {
+        const transactions = minedBlock2.data
+        expect(transactions.filter(transaction => transaction.recipient !== config.REWARD_ADDRESS).length).toBeGreaterThan(0)
+      })
+      it('should have transactions that are ordered DESC by `timestamp`', () => {
+        const transactions = minedBlock2.data
+        const sortedTransaction = [...transactions] // create a clone of transactions before sorting it
+        sortedTransaction.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
+        expect(transactions).toStrictEqual(sortedTransaction)
+      })
+      it('should contain `miner` that is valid public key of an existing `account`', () => {
+        expect(Crypto.isPublicKey({ publicKey: minedBlock2.miner })).toBe(true)
+      })
+      it('should contain only valid transactions', () => {
+        // the impementatino is a bit smelly
+        minedBlock2.data.forEach(transaction => transaction.validate())
+        expect(minedBlock2.validate()).toBe(true)
+      })
+      it('should have the `timestamp` equal to the `timestamp` of the reward `transaction`', () => {
+        const transactions = minedBlock2.data
+        const rewardTrasaction = transactions.filter(transaction => transaction.recipient === config.REWARD_ADDRESS)[0]
+        expect(minedBlock2.timestamp).toBe(rewardTrasaction.timestamp)
+      })
+      it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
+        // timestamp of each transaction must be less than timestamp of block
+        minedBlock2.data.forEach(transaction => {
+          if (transaction.recipient !== config.REWARD_ADDRESS) {
+            expect(minedBlock2.timestamp).toBeGreaterThan(transaction.timestamp)
+          }
+        })
+      })
     })
+    describe('when block is invalid', () => {
+      it('should have `height`that is not greater by 1 than the previous block `height`', () => {
+        minedBlock2.height += 1
+        expect(minedBlock2.height).toEqual(minedBlock1.height + 2)
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid height')
+      })
+      // it('should contain `uuid` that is unique across all blocks', () => {
+      // })
+      it('should have `lastHash` that does not point to previous block', () => {
+        minedBlock2.lastHash = 'lastHash'
+        expect(minedBlock2.lastHash).toEqual('lastHash')
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid hash')
+      })
+      it('should contain non verifiable `hash`', () => {
+        minedBlock2.hash = 'hash'
+        expect(minedBlock2.hash).toEqual('hash')
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid hash')
+      })
+      it('should contain bad `data`', () => {
+        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
+        minedBlock3.data = []
+        expect(() => minedBlock3.validate())
+          .toThrowError('Bad data')
+      })
+      it('should contain empty `data`', () => {
+        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
+        expect(() => minedBlock3.validate())
+          .toThrowError('Empty data')
+      })
+      it('should contain 0 reward `transaction`', () => {
+        minedBlock2.data = minedBlock2.data.filter(transaction => transaction.recipient !== config.REWARD_ADDRESS)
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid number of rewards')
+      })
+      it('should contain more than 1 reward `transaction`', () => {
+        const rewardTrasaction = wallet.createRewardTransaction()
+        minedBlock2.data.push(rewardTrasaction) // add dup rewardTrasaction
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid number of rewards')
+      })
+      it('should contain 0 non reward `transaction`', () => {
+        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
+        expect(() => minedBlock3.validate())
+          .toThrowError('Empty data')
+      })
+      it('should have transactions that are not ordered ASC by `timestamp`', () => {
+        minedBlock2.data.sort((a, b) => (a.timestamp <= b.timestamp ? 1 : -1))
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid sort order')
+      })
+      it('should contain `miner` that is not valid public key of an existing `account`', () => {
+        minedBlock2.miner = 'invalid miner'
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid miner')
+      })
+      it('should be signed by someone other than `miner`', () => {
+        minedBlock2.signature = new Wallet().sign(minedBlock2.hash)
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid block signature')
+      })
+      // it('`timestamp` should be +- 3 minutes from now', () => {
+      // })
+      // it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
+      // })
+      it('should contain not only valid transactions', () => {
+        minedBlock2.data[0].uuid = uuidv4()
+        // this will invalidate transaction hash
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid transaction signature')
+      })
+      it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', () => {
+        minedBlock2.timestamp = moment.utc().valueOf()
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid reward transaction timestamp')
+      })
+      it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
+        minedBlock2.data[1].timestamp = moment.utc().valueOf()
+        expect(() => minedBlock2.validate())
+          .toThrowError('Invalid transaction timestamp')
+      })
 
-    it('has a lower limit of 1', () => {
-      block.difficulty = -1
-
-      expect(Block.adjustDifficulty({ originalBlock: block })).toEqual(1)
+      it('should contain duplicate transactions', () => {
+        minedBlock2.data.push(minedBlock2.data[1])
+        expect(() => minedBlock2.validate())
+          .toThrowError('Duplicate transactions')
+      })
     })
   })
 })

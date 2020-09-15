@@ -1,5 +1,3 @@
-const Transaction = require('../wallet/transaction')
-
 class TransactionMiner {
   constructor({
     blockchain, transactionPool, wallet, pubsub,
@@ -16,11 +14,7 @@ class TransactionMiner {
     // TODO: move this condition to an object and make it testable
     // only mine if there are transactions in the pool, otherwise it will create reward transaction without doing any work
     if (validTransactions.length) {
-      validTransactions.push(
-        Transaction.rewardTransaction({ minerWallet: this.wallet })
-      )
-
-      this.blockchain.addBlock({ data: validTransactions })
+      this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
 
       this.pubsub.broadcastChain()
 
@@ -28,5 +22,4 @@ class TransactionMiner {
     }
   }
 }
-
-module.exports = TransactionMiner
+export default TransactionMiner

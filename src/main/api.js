@@ -1,15 +1,15 @@
+import Blockchain from './blockchain'
+import Transaction from './blockchain/transaction'
+import Wallet from './blockchain/wallet'
+import TransactionPool from './blockchain/transaction-pool'
+import TransactionMiner from './app/transaction-miner'
+
 const bodyParser = require('body-parser')
 const express = require('express')
 const fetch = require("node-fetch")
 const path = require('path')
 const cors = require('cors')
-
-const Blockchain = require('./blockchain')
 const PubSub = require('./app/pubsub')
-const Transaction = require('./wallet/transaction')
-const TransactionPool = require('./wallet/transaction-pool')
-const Wallet = require('./wallet')
-const TransactionMiner = require('./app/transaction-miner')
 
 const { ROOT_NODE_ADDRESS } = require('../config')
 
@@ -67,7 +67,7 @@ api.post('/api/transact', (req, res) => {
   const { amount, recipient } = req.body
 
   let transaction = transactionPool
-    .existingTransaction({ inputAddress: wallet.publicKey })
+    .existingTransaction({ recipient: wallet.publicKey })
   try {
     if (transaction) {
       const transactionObj = Object.assign(new Transaction({
@@ -146,4 +146,4 @@ const syncWithRootState = () => {
     })
 }
 
-module.exports = { api, syncWithRootState }
+export default { api, syncWithRootState }
