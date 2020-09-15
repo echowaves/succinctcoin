@@ -45,7 +45,7 @@ const CREDIT_ADDRESS = '*authorized-credit*'
 const REWARD_AMOUNT = 100
 const MINIMUM_STAKE_AMOUNT = 200
 
-module.exports = {
+export default {
   GENESIS_DATA,
   VALIDATION_RATE,
   STARTING_BALANCE,

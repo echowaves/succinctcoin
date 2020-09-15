@@ -10,9 +10,7 @@ import Transaction from './transaction'
 // const fs = require('fs-extra')
 // const path = require('path')
 // const { STORE } = require('../config')
-
-const { REWARD_ADDRESS } = require('../config')
-const { REWARD_AMOUNT } = require('../config')
+import config from '../config'
 
 describe('Transaction', () => {
   let transaction,
@@ -235,7 +233,7 @@ describe('Transaction', () => {
 
       describe('when reward `amount` is invalid', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: REWARD_AMOUNT - 1, fee })
+          transaction = wallet.createTransaction({ recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT - 1, fee })
         })
         it('throws an error', () => {
           expect(() => transaction.validate())
@@ -245,7 +243,7 @@ describe('Transaction', () => {
 
       describe('when reward `fee` is invalid', () => {
         beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: REWARD_ADDRESS, amount: REWARD_AMOUNT, fee: 1 })
+          transaction = wallet.createTransaction({ recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT, fee: 1 })
         })
         it('throws an error', () => {
           expect(() => transaction.validate())

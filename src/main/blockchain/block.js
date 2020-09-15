@@ -4,12 +4,9 @@ import { v4 as uuidv4 } from 'uuid'
 import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 
+import config from '../config'
+
 const path = require('path')
-
-const { GENESIS_DATA } = require('../config')
-
-const { STORE } = require('../config')
-const { REWARD_ADDRESS/* , STAKE_ADDRESS */ } = require('../config')
 
 function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
   // this.lastBlock = lastBlock
@@ -53,12 +50,12 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     }
 
     // check the the data contains non empty array
-    if (this.data.length === 1 && this.data[0].recipient === REWARD_ADDRESS) {
+    if (this.data.length === 1 && this.data[0].recipient === config.REWARD_ADDRESS) {
       throw new Error('Empty data')
     }
 
     // check that there is only 1 reward transaction per block
-    if (this.data.filter(transaction => transaction.recipient === REWARD_ADDRESS).length !== 1) {
+    if (this.data.filter(transaction => transaction.recipient === config.REWARD_ADDRESS).length !== 1) {
       throw new Error('Invalid number of rewards')
     }
 
@@ -75,10 +72,10 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
 
     // timestamp of each transaction must be less than timestamp of block
     this.data.forEach(transaction => {
-      if (this.timestamp <= transaction.timestamp && transaction.recipient !== REWARD_ADDRESS) {
+      if (this.timestamp <= transaction.timestamp && transaction.recipient !== config.REWARD_ADDRESS) {
         throw new Error('Invalid transaction timestamp')
       }
-      if (this.timestamp !== transaction.timestamp && transaction.recipient === REWARD_ADDRESS) {
+      if (this.timestamp !== transaction.timestamp && transaction.recipient === config.REWARD_ADDRESS) {
         throw new Error('Invalid reward transaction timestamp')
       }
     })
@@ -130,12 +127,12 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     Obj2fsHooks(this),
   )
   // the key is derived from the publicKey when constructor is called, no need to expicitely set it
-  this.setKey(path.join(STORE.BLOCKS, this.height.toString().padStart(21, 0)))
+  this.setKey(path.join(config.STORE.BLOCKS, this.height.toString().padStart(21, 0)))
   return this
 }
 
 Block.genesis = function () {
-  return Object.assign(new Block(), GENESIS_DATA)
+  return Object.assign(new Block(), config.GENESIS_DATA)
 }
 
 export default Block

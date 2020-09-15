@@ -6,8 +6,7 @@ import Wallet from './wallet'
 import Account from './account'
 import Crypto from '../util/crypto'
 
-const { GENESIS_DATA } = require('../config')
-const { REWARD_ADDRESS /* , STAKE_ADDRESS */ } = require('../config')
+import config from '../config'
 
 describe('Block', () => {
   const genesisBlock = Block.genesis()
@@ -45,7 +44,7 @@ describe('Block', () => {
     })
 
     it('returns the genesis data', () => {
-      expect(genesisBlock).toMatchObject(GENESIS_DATA)
+      expect(genesisBlock).toMatchObject(config.GENESIS_DATA)
     })
   })
 
@@ -163,11 +162,11 @@ describe('Block', () => {
       })
       it('should always contain 1 reward `transaction`', () => {
         const transactions = minedBlock2.data
-        expect(transactions.filter(transaction => transaction.recipient === REWARD_ADDRESS)).toHaveLength(1)
+        expect(transactions.filter(transaction => transaction.recipient === config.REWARD_ADDRESS)).toHaveLength(1)
       })
       it('should contain at least one non reward `transaction`', () => {
         const transactions = minedBlock2.data
-        expect(transactions.filter(transaction => transaction.recipient !== REWARD_ADDRESS).length).toBeGreaterThan(0)
+        expect(transactions.filter(transaction => transaction.recipient !== config.REWARD_ADDRESS).length).toBeGreaterThan(0)
       })
       it('should have transactions that are ordered DESC by `timestamp`', () => {
         const transactions = minedBlock2.data
@@ -185,13 +184,13 @@ describe('Block', () => {
       })
       it('should have the `timestamp` equal to the `timestamp` of the reward `transaction`', () => {
         const transactions = minedBlock2.data
-        const rewardTrasaction = transactions.filter(transaction => transaction.recipient === REWARD_ADDRESS)[0]
+        const rewardTrasaction = transactions.filter(transaction => transaction.recipient === config.REWARD_ADDRESS)[0]
         expect(minedBlock2.timestamp).toBe(rewardTrasaction.timestamp)
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
         // timestamp of each transaction must be less than timestamp of block
         minedBlock2.data.forEach(transaction => {
-          if (transaction.recipient !== REWARD_ADDRESS) {
+          if (transaction.recipient !== config.REWARD_ADDRESS) {
             expect(minedBlock2.timestamp).toBeGreaterThan(transaction.timestamp)
           }
         })
@@ -230,7 +229,7 @@ describe('Block', () => {
           .toThrowError('Empty data')
       })
       it('should contain 0 reward `transaction`', () => {
-        minedBlock2.data = minedBlock2.data.filter(transaction => transaction.recipient !== REWARD_ADDRESS)
+        minedBlock2.data = minedBlock2.data.filter(transaction => transaction.recipient !== config.REWARD_ADDRESS)
         expect(() => minedBlock2.validate())
           .toThrowError('Invalid number of rewards')
       })

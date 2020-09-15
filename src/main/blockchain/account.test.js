@@ -3,12 +3,12 @@ import moment from 'moment'
 import Account from './account'
 import Crypto from '../util/crypto'
 
+import config from '../config'
+
 const fs = require('fs-extra')
 const path = require('path')
 
 const Big = require('big.js')
-
-const { STORE } = require('../config')
 
 describe('Account', () => {
   const
@@ -20,7 +20,7 @@ describe('Account', () => {
     account = new Account({ publicKey })
   })
 
-  afterAll(() => fs.removeSync(path.resolve(STORE.ACCOUNTS)))
+  afterAll(() => fs.removeSync(path.resolve(config.STORE.ACCOUNTS)))
 
   describe('properties', () => {
     it('has `KEY`, `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {
@@ -32,7 +32,7 @@ describe('Account', () => {
     })
     describe('KEY', () => {
       it('shold have correct `KEY` derived from `publicKey`', () => {
-        expect(account.KEY).toEqual(path.join(STORE.ACCOUNTS, Crypto.hash(account.publicKey)))
+        expect(account.KEY).toEqual(path.join(config.STORE.ACCOUNTS, Crypto.hash(account.publicKey)))
       })
     })
     describe('publicKey', () => {

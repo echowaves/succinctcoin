@@ -3,15 +3,13 @@ import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 import Transaction from './transaction'
 
+import config from '../config'
+
 const Big = require('big.js')
 
 const crypto = require('crypto')
 
 const path = require('path')
-
-const { STORE } = require('../config')
-const { REWARD_ADDRESS, STAKE_ADDRESS } = require('../config')
-const { REWARD_AMOUNT } = require('../config')
 
 function Wallet() {
   const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
@@ -64,7 +62,7 @@ function Wallet() {
   // This transaction does not have to be added to the pool
   this.createRewardTransaction = function () {
     const transaction = new Transaction({
-      sender: this.publicKey, recipient: REWARD_ADDRESS, amount: REWARD_AMOUNT, fee: 0,
+      sender: this.publicKey, recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT, fee: 0,
     })
     transaction.signature = this.transactionSignature({ transaction })
     return transaction
@@ -72,7 +70,7 @@ function Wallet() {
 
   this.createStakeTransaction = function ({ amount, fee }) {
     const transaction = new Transaction({
-      sender: this.publicKey, recipient: STAKE_ADDRESS, amount, fee,
+      sender: this.publicKey, recipient: config.STAKE_ADDRESS, amount, fee,
     })
     transaction.signature = this.transactionSignature({ transaction })
     return transaction
@@ -83,7 +81,7 @@ function Wallet() {
     Obj2fsHooks(this),
   )
   // this is only one wallet per running application, so it's OK to hard code it here
-  this.setKey(path.resolve(STORE.WALLET))
+  this.setKey(path.resolve(config.STORE.WALLET))
   return this
 }
 

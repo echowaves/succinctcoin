@@ -2,10 +2,10 @@ import moment from 'moment'
 import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 
+import config from '../config'
+
 const path = require('path')
 const Big = require('big.js')
-
-const { STORE } = require('../config')
 
 function Account({ publicKey } = { publicKey: '' }) {
   // have to make publicKey optional
@@ -49,7 +49,7 @@ function Account({ publicKey } = { publicKey: '' }) {
     Obj2fsHooks(this),
   )
   // the key is derived from the publicKey when constructor is called, no need to expicitely set it
-  this.setKey(path.join(STORE.ACCOUNTS, Crypto.hash(this.publicKey)))
+  this.setKey(path.join(config.STORE.ACCOUNTS, Crypto.hash(this.publicKey)))
   return this
 }
 

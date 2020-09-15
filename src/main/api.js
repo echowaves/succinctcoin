@@ -1,6 +1,8 @@
 import Blockchain from './blockchain'
 import Transaction from './blockchain/transaction'
 import Wallet from './blockchain/wallet'
+import TransactionPool from './blockchain/transaction-pool'
+import TransactionMiner from './app/transaction-miner'
 
 const bodyParser = require('body-parser')
 const express = require('express')
@@ -8,8 +10,6 @@ const fetch = require("node-fetch")
 const path = require('path')
 const cors = require('cors')
 const PubSub = require('./app/pubsub')
-const TransactionPool = require('./blockchain/transaction-pool')
-const TransactionMiner = require('./app/transaction-miner')
 
 const { ROOT_NODE_ADDRESS } = require('../config')
 
@@ -146,4 +146,4 @@ const syncWithRootState = () => {
     })
 }
 
-module.exports = { api, syncWithRootState }
+export default { api, syncWithRootState }
