@@ -1,6 +1,6 @@
 import { format as formatUrl } from 'url'
 
-import { api, syncWithRootState } from './api.js'
+import api from './api.js'
 
 const path = require('path')
 
@@ -15,10 +15,10 @@ const { DEFAULT_PORT } = require('../config.js')
 let mainWindow
 
 function createMainWindow() {
-  api.listen(DEFAULT_PORT, () => {
+  api.api.listen(DEFAULT_PORT, () => {
     console.log(`listening at localhost:${DEFAULT_PORT}`) // eslint-disable-line no-console
 
-    syncWithRootState()
+    api.syncWithRootState()
   })
 
   mainWindow = new BrowserWindow({
@@ -48,7 +48,7 @@ function createMainWindow() {
 }
 
 app.on('ready', () => {
-  // api()
+  // api.api()
   createMainWindow()
 })
 
