@@ -30,8 +30,8 @@ describe('Wallet', () => {
       })
 
       it('has `privateKey`, `publicKey` that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(237)
-        expect(wallet.publicKey).toHaveLength(174)
+        expect(wallet.privateKey).toHaveLength(241)
+        expect(wallet.publicKey).toHaveLength(178)
       })
     })
     describe('loading from storage', () => {
@@ -39,8 +39,8 @@ describe('Wallet', () => {
         wallet = wallet.retrieveOrNew()
       })
       it('has `privateKey` and `publicKey` that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(237)
-        expect(wallet.publicKey).toHaveLength(174)
+        expect(wallet.privateKey).toHaveLength(241)
+        expect(wallet.publicKey).toHaveLength(178)
       })
       it('reloads the same wallet when called again', () => {
         const wallet2 = new Wallet().retrieveOrNew()
