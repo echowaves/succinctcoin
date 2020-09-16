@@ -44,6 +44,12 @@ function Account({ publicKey } = { publicKey: '' }) {
     // TODO: to implement
   }
 
+  // TODO: TOTEST
+  this.setHash = function ({ hash }) {
+    this.setKey(path.join(config.STORE.ACCOUNTS, hash))
+    return this
+  }
+
   Object.assign(
     this,
     Obj2fsHooks(this),

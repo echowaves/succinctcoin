@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { FormGroup, FormControl, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
+import Account from '../../main/blockchain/account'
 import globalConfig from '../../config'
 
 class ConductTransaction extends Component {
@@ -26,11 +27,13 @@ class ConductTransaction extends Component {
 
   conductTransaction = () => {
     const { recipient, amount } = this.state
+    const account = new Account().setHash({ hash: recipient })
+    alert(account)
 
     fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipient, amount }),
+      body: JSON.stringify({ recipient: account.retrieve().publicKey, amount }),
     }).then(response => response.json())
       .then(json => {
         alert(json.message || json.type)

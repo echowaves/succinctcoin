@@ -1,20 +1,18 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Crypto from '../../main/util/crypto'
 
 const Transaction = ({ transaction }) => {
-  const { input, outputMap } = transaction
-  const recipients = Object.keys(outputMap)
+  const {
+    sender, recipient, amount, fee,
+  } = transaction
 
   return (
     <div className="Transaction">
-      <div>From: {`${input.address.substring(0, 20)}...`} | Balance: {input.amount}</div>
-      {
-        recipients.map(recipient => (
-          <div key={recipient}>
-            To: {`${recipient.substring(0, 20)}...`} | Sent: {outputMap[recipient]}
-          </div>
-        ))
-      }
+      <div>From: `${Crypto.hash(sender).substring(0, 20)}... | Balance:??? ${amount}`</div>
+      <div>
+        To: `${Crypto.hash(recipient).substring(0, 20)}... | Sent: ${amount} | Fee: ${fee}`
+      </div>
     </div>
   )
 }
