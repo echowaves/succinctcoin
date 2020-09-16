@@ -27,13 +27,12 @@ class ConductTransaction extends Component {
 
   conductTransaction = () => {
     const { recipient, amount } = this.state
-    const account = new Account().setHash({ hash: recipient })
-    alert(account)
+    const account = new Account().setHash({ hash: recipient }).retrieve()
 
     fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipient: account.retrieve().publicKey, amount }),
+      body: JSON.stringify({ recipient: account.publicKey, amount }),
     }).then(response => response.json())
       .then(json => {
         alert(json.message || json.type)

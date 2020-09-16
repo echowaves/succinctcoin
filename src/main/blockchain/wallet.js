@@ -79,8 +79,7 @@ function Wallet() {
 
   // TODO: TOTEST
   this.getAccount = function () {
-    const account = new Account({ publicKey: this.publicKey })
-
+    const account = new Account({ publicKey: this.publicKey }).retrieveOrNew()
     return account
   }
 
@@ -90,6 +89,7 @@ function Wallet() {
   )
   // this is only one wallet per running application, so it's OK to hard code it here
   this.setKey(path.resolve(config.STORE.WALLET))
+  this.getAccount() // ensure that the account is created and stored on disk
   return this
 }
 

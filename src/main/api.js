@@ -1,5 +1,4 @@
 import Blockchain from './blockchain'
-import Transaction from './blockchain/transaction'
 import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
 import TransactionMiner from './app/transaction-miner'
@@ -8,19 +7,21 @@ import globalConfig from '../config'
 import config from './config'
 import PubSub from './app/pubsub'
 
+const Big = require('big.js')
+
 const bodyParser = require('body-parser')
 const express = require('express')
 const fetch = require("node-fetch")
 const path = require('path')
 // const fs = require('fs-extra')
-const fs1 = require('fs')
+const fs1 = require('fs') // TODO: remove
 
 const cors = require('cors')
 
 const api = express()
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
-const wallet = new Wallet()
+const wallet = new Wallet().retrieveOrNew()
 
 const pubsub = new PubSub({ blockchain, transactionPool, wallet })
 
@@ -70,27 +71,28 @@ api.post('/api/mine', (req, res) => {
 api.post('/api/transact', (req, res) => {
   const { amount, recipient } = req.body
 
-  let transaction = transactionPool
-    .existingTransaction({ recipient: wallet.publicKey })
+  let transaction
+  // transactionPool
+  //   .existingTransaction({ recipient: wallet.publicKey })
   try {
-    if (transaction) {
-      const transactionObj = Object.assign(new Transaction({
-        senderWallet: wallet, recipient, amount, outputMap: {}, input: {},
-      }), transaction)
-
-      transactionObj.update({ senderWallet: wallet, recipient, amount })
-    } else {
-      transaction = wallet.createTransaction({
-        recipient,
-        amount,
-        chain: blockchain.chain,
-      })
-    }
+    // if (transaction) {
+    //   const transactionObj = Object.assign(new Transaction({
+    //     senderWallet: wallet, recipient, amount, outputMap: {}, input: {},
+    //   }), transaction)
+    //
+    //   transactionObj.update({ senderWallet: wallet, recipient, amount })
+    // } else {
+    transaction = wallet.createTransaction({
+      recipient,
+      amount,
+      fee: Big(amount).div(1000), // automatically calculate fee
+    })
+    transaction.validate()
+    transactionPool.setTransaction(transaction)
+    // }
   } catch (error) {
     return res.status(400).json({ type: 'error', message: error.message })
   }
-
-  transactionPool.setTransaction(transaction)
 
   pubsub.broadcastTransaction(transaction)
 
