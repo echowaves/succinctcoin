@@ -4,14 +4,18 @@ import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
 import TransactionMiner from './app/transaction-miner'
 
+import globalConfig from '../config'
+import config from './config'
+import PubSub from './app/pubsub'
+
 const bodyParser = require('body-parser')
 const express = require('express')
 const fetch = require("node-fetch")
 const path = require('path')
-const cors = require('cors')
-const PubSub = require('./app/pubsub')
+const fs = require('fs-extra')
+const fs1 = require('fs')
 
-const { ROOT_NODE_ADDRESS } = require('../config')
+const cors = require('cors')
 
 const api = express()
 const blockchain = new Blockchain()
@@ -108,26 +112,21 @@ api.get('/api/wallet-info', (req, res) => {
 
   res.json({
     address,
-    balance: Wallet.calculateBalance({ chain: blockchain.chain, address }),
+    account: wallet.getAccount(),
   })
 })
 
+// TODO: TODELETE
 api.get('/api/known-addresses', (req, res) => {
   const addressMap = {}
-
-  for (const block of blockchain.chain) { // eslint-disable-line no-restricted-syntax
-    for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
-      const recipient = Object.keys(transaction.outputMap)
-
-      recipient.forEach(recipient => addressMap[recipient] = recipient) // eslint-disable-line no-return-assign
-    }
-  }
+  const files = fs1.readdirSync(`${config.STORE.ACCOUNTS}`)
+  files.forEach(file => addressMap[file] = file) // eslint-disable-line no-return-assign
 
   res.json(Object.keys(addressMap))
 })
 
 const syncWithRootState = () => {
-  fetch(`${ROOT_NODE_ADDRESS}/api/blocks`)
+  fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks`)
     .then(response => response.json())
     .then(json => {
       const rootChain = json
@@ -136,7 +135,7 @@ const syncWithRootState = () => {
       blockchain.replaceChain(rootChain)
     })
 
-  fetch(`${ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
+  fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
     .then(response => response.json())
     .then(json => {
       const rootTransactionPoolMap = json

@@ -1,3 +1,5 @@
+import globalConfig from '../../config'
+
 const Libp2p = require('libp2p')
 const WebRTCStar = require('libp2p-webrtc-star')
 const wrtc = require('wrtc')
@@ -14,8 +16,6 @@ const SECIO = require('libp2p-secio')
 const GossipSub = require('libp2p-gossipsub')
 
 const Room = require('ipfs-pubsub-room')
-
-const { CHANNELS } = require('../../config.js')
 
 // express app
 
@@ -93,8 +93,8 @@ class PubSub {
     await node.start()
     console.log('libp2p has started') // eslint-disable-line no-console
 
-    this.blockChainRoom = new Room(node, CHANNELS.BLOCKCHAIN)
-    this.transactionRoom = new Room(node, CHANNELS.TRANSACTION)
+    this.blockChainRoom = new Room(node, globalConfig.CHANNELS.BLOCKCHAIN)
+    this.transactionRoom = new Room(node, globalConfig.CHANNELS.TRANSACTION)
 
     this.blockChainRoom.on('message', message => {
       console.log('blockChainRoom received:', message) // eslint-disable-line no-console
@@ -115,18 +115,18 @@ class PubSub {
     })
 
     this.blockChainRoom.on('peer joined', peer => {
-      console.log(`Peer joined ${CHANNELS.BLOCKCHAIN} room ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer joined ${globalConfig.CHANNELS.BLOCKCHAIN} room ${new Date()}`, peer) // eslint-disable-line no-console
       this.broadcastChain()
     })
     this.transactionRoom.on('peer joined', peer => {
-      console.log(`Peer joined ${CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer joined ${globalConfig.CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
     })
 
     this.blockChainRoom.on('peer left', peer => {
-      console.log(`Peer left ${CHANNELS.BLOCKCHAIN} room  ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer left ${globalConfig.CHANNELS.BLOCKCHAIN} room  ${new Date()}`, peer) // eslint-disable-line no-console
     })
     this.transactionRoom.on('peer left', peer => {
-      console.log(`Peer left ${CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
+      console.log(`Peer left ${globalConfig.CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
     })
   }
 
@@ -141,4 +141,4 @@ class PubSub {
   }
 }
 
-module.exports = PubSub
+export default PubSub

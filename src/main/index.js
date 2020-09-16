@@ -1,6 +1,8 @@
 import { format as formatUrl } from 'url'
 
-import api from './api.js'
+import api from './api.js' // express app
+
+import globalConfig from '../config'
 
 const path = require('path')
 
@@ -8,15 +10,13 @@ const electron = require("electron")
 
 const { app, BrowserWindow } = electron
 
-const isDev = require("electron-is-dev") // express app
-
-const { DEFAULT_PORT } = require('../config.js')
+const isDev = require("electron-is-dev")
 
 let mainWindow
 
 function createMainWindow() {
-  api.api.listen(DEFAULT_PORT, () => {
-    console.log(`listening at localhost:${DEFAULT_PORT}`) // eslint-disable-line no-console
+  api.api.listen(globalConfig.DEFAULT_PORT, () => {
+    console.log(`listening at localhost:${globalConfig.DEFAULT_PORT}`) // eslint-disable-line no-console
 
     api.syncWithRootState()
   })

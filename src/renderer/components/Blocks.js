@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import Block from './Block'
 
-const { ROOT_NODE_ADDRESS } = require('../../config')
+import globalConfig from '../../config'
 
 class Blocks extends Component {
   constructor(props) {
@@ -12,7 +12,7 @@ class Blocks extends Component {
   }
 
   componentDidMount() {
-    fetch(`${ROOT_NODE_ADDRESS}/api/blocks/length`)
+    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks/length`)
       .then(response => response.json())
       .then(json => {
         console.log(`retrieved json: ${JSON.stringify(json)}`) // eslint-disable-line no-console
@@ -24,7 +24,7 @@ class Blocks extends Component {
   }
 
   fetchPaginatedBlocks = paginatedId => () => {
-    fetch(`${ROOT_NODE_ADDRESS}/api/blocks/${paginatedId}`)
+    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks/${paginatedId}`)
       .then(response => response.json())
       .then(json => this.setState({ blocks: json }))
   }

@@ -2,6 +2,7 @@ import Obj2fsHooks from 'obj2fs-hooks'
 
 import Crypto from '../util/crypto'
 import Transaction from './transaction'
+import Account from './account'
 
 import config from '../config'
 
@@ -74,6 +75,13 @@ function Wallet() {
     })
     transaction.signature = this.transactionSignature({ transaction })
     return transaction
+  }
+
+  // TODO: TOTEST
+  this.getAccount = function () {
+    const account = new Account({ publicKey: this.publicKey })
+
+    return account
   }
 
   Object.assign(

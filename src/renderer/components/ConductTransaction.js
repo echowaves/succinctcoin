@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { FormGroup, FormControl, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
-const { ROOT_NODE_ADDRESS } = require('../../config')
+import globalConfig from '../../config'
 
 class ConductTransaction extends Component {
   constructor(props) {
@@ -11,7 +11,7 @@ class ConductTransaction extends Component {
   }
 
   componentDidMount() {
-    fetch(`${ROOT_NODE_ADDRESS}/api/known-addresses`)
+    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/known-addresses`)
       .then(response => response.json())
       .then(json => this.setState({ knownAddresses: json }))
   }
@@ -27,7 +27,7 @@ class ConductTransaction extends Component {
   conductTransaction = () => {
     const { recipient, amount } = this.state
 
-    fetch(`${ROOT_NODE_ADDRESS}/api/transact`, {
+    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ recipient, amount }),

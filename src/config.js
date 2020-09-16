@@ -13,7 +13,7 @@ const CHANNELS = {
   TRANSACTION: `${devPrefix}TRANSACTION`,
 }
 
-module.exports = {
+export default {
   DEFAULT_PORT,
   ROOT_NODE_ADDRESS,
   CHANNELS,
