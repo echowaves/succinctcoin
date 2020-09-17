@@ -13,12 +13,14 @@ class TransactionMiner {
 
     // TODO: move this condition to an object and make it testable
     // only mine if there are transactions in the pool, otherwise it will create reward transaction without doing any work
+
+    console.error(validTransactions.length)
     if (validTransactions.length) {
-      this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
+      const block = this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
 
       this.pubsub.broadcastChain()
 
-      this.transactionPool.clear()
+      this.transactionPool.clear({ block })
     }
   }
 }

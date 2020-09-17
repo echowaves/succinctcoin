@@ -1,3 +1,5 @@
+import Transaction from './transaction'
+
 class TransactionPool {
   constructor() {
     this.clear()
@@ -22,25 +24,26 @@ class TransactionPool {
   }
 
   validTransactions() {
+    console.error(this.transactionMap)
     return Object.values(this.transactionMap).filter(
       transaction => {
         try {
-          return transaction.validate()
+          const t = new Transaction().parse(JSON.stringify(transaction))
+          // const t = new Transaction().parse(transaction.toString())
+          console.error(t.constructor.name)
+          return t.validate()
         } catch (error) {
+          console.error(error)
           return false
         }
       }
     )
   }
 
-  clearBlockchainTransactions({ chain }) {
-    for (let i = 1; i < chain.length; i++) { // eslint-disable-line no-plusplus
-      const block = chain[i]
-
-      for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
-        if (this.transactionMap[transaction.uuid]) {
-          delete this.transactionMap[transaction.uuid]
-        }
+  clearBlockchainTransactions({ block }) {
+    for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
+      if (this.transactionMap[transaction.uuid]) {
+        delete this.transactionMap[transaction.uuid]
       }
     }
   }

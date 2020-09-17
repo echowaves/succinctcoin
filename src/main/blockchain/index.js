@@ -12,6 +12,7 @@ class Blockchain {
     const newBlock = new Block({ lastBlock: this.chain[this.chain.length - 1], data })
       .mineBlock({ wallet })
     this.chain.push(newBlock)
+    return newBlock
   }
 
   replaceChain(chain, onSuccess) {

@@ -58,12 +58,18 @@ api.get('/api/blocks/:id', (req, res) => {
   res.json(blocksReversed.slice(startIndex, endIndex))
 })
 
-api.post('/api/mine', (req, res) => {
-  const { data } = req.body
+// api.post('/api/mine', (req, res) => {
+//   const { data } = req.body
+//
+//   const block = blockchain.addBlock({ data })
+//   transactionPool.clearBlockchainTransactions({ block })
+//   pubsub.broadcastChain()
+//
+//   res.redirect('/api/blocks')
+// })
 
-  blockchain.addBlock({ data })
-
-  pubsub.broadcastChain()
+api.get('/api/mine-transactions', (req, res) => {
+  transactionMiner.mineTransactions()
 
   res.redirect('/api/blocks')
 })
@@ -101,12 +107,6 @@ api.post('/api/transact', (req, res) => {
 
 api.get('/api/transaction-pool-map', (req, res) => {
   res.json(transactionPool.transactionMap)
-})
-
-api.get('/api/mine-transactions', (req, res) => {
-  transactionMiner.mineTransactions()
-
-  res.redirect('/api/blocks')
 })
 
 api.get('/api/wallet-info', (req, res) => {

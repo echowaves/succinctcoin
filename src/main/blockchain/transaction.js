@@ -12,6 +12,8 @@ const Big = require('big.js')
 function Transaction({
   // the parameters passed at the time of transaction creation when it's added to the pool
   sender, recipient, amount, fee,
+} = {
+  sender: '', recipient: '', amount: '0', fee: '0',
 }) {
   this.uuid = uuidv4()
   this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
