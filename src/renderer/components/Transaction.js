@@ -9,10 +9,9 @@ const Transaction = ({ transaction }) => {
 
   return (
     <div className="Transaction">
-      <div>From: `${Crypto.hash(sender).substring(0, 20)}... | Balance:??? ${amount}`</div>
-      <div>
-        To: `${Crypto.hash(recipient).substring(0, 20)}... | Sent: ${amount} | Fee: ${fee}`
-      </div>
+      <div>From: {Crypto.hash(sender).substring(0, 30)}... </div>
+      <div>To: {Crypto.hash(recipient).substring(0, 30)}... </div>
+      <div>Amount: {amount}    Fee: {fee}</div>
     </div>
   )
 }

@@ -21,7 +21,10 @@ const cors = require('cors')
 const api = express()
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
-const wallet = new Wallet().retrieveOrNew()
+
+const wallet = new Wallet()
+wallet.retrieveOrNew()// try to retreive from disk
+wallet.getAccount() // ensure that the account is created and stored on disk
 
 const pubsub = new PubSub({ blockchain, transactionPool, wallet })
 

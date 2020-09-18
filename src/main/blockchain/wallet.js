@@ -14,6 +14,9 @@ const path = require('path')
 
 class Wallet {
   constructor() {
+    // this is only one wallet per running application, so it's OK to hard code it here
+    this.key = path.resolve(config.STORE.WALLET)
+
     const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
       namedCurve: 'prime256v1',
       publicKeyEncoding: {
@@ -28,10 +31,6 @@ class Wallet {
 
     this.publicKey = publicKey
     this.privateKey = privateKey
-
-    // this is only one wallet per running application, so it's OK to hard code it here
-    this.key = path.resolve(config.STORE.WALLET)
-    this.getAccount() // ensure that the account is created and stored on disk
   }
 
   sign(data) {
