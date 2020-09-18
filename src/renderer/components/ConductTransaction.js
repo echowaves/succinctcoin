@@ -27,7 +27,7 @@ class ConductTransaction extends Component {
 
   conductTransaction = () => {
     const { recipient, amount } = this.state
-    const account = new Account().setHash({ hash: recipient }).retrieve()
+    const account = new Account({ publicKey: '' }).setHash({ hash: recipient }).retrieve()
 
     fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transact`, {
       method: 'POST',

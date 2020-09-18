@@ -9,7 +9,7 @@ const path = require('path')
 const Big = require('big.js')
 
 class Account {
-  constructor({ publicKey } = { publicKey: '' }) {
+  constructor({ publicKey }) {
     // have to make publicKey optional
     this.publicKey = publicKey
     this.balance = '0'

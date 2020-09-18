@@ -11,7 +11,6 @@ const path = require('path')
 
 class Block {
   constructor({ lastBlock, data } = { lastBlock: null, data: [] }) {
-  // this.lastBlock = lastBlock
     this.height = lastBlock ? lastBlock.height + 1 : 0
     this.uuid = uuidv4()
     // this.timestamp = moment.utc().valueOf() // assigned when block is created
