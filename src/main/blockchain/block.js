@@ -58,8 +58,8 @@ class Block {
       throw new Error('Bad data')
     }
 
-    // check the the data contains non empty array
-    if (this.data.length === 1 && this.data[0].recipient === config.REWARD_ADDRESS) {
+    // check the the data contains non empty array, height > 3 allows the first 3 miners to mine empty blocks, to be able to bootstrap initial balance
+    if (this.data.length === 1 && this.data[0].recipient === config.REWARD_ADDRESS && this.height > 3) {
       throw new Error('Empty data')
     }
 

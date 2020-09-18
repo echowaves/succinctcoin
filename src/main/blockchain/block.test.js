@@ -224,9 +224,11 @@ describe('Block', () => {
         expect(() => minedBlock3.validate())
           .toThrowError('Bad data')
       })
-      it('should contain empty `data`', () => {
+      it('should contain 0 non reward `transaction`', () => {
+        // blocks below 4 are exception from this rule
         const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
-        expect(() => minedBlock3.validate())
+        const minedBlock4 = new Block({ lastBlock: minedBlock3, data: [] }).mineBlock({ wallet })
+        expect(() => minedBlock4.validate())
           .toThrowError('Empty data')
       })
       it('should contain 0 reward `transaction`', () => {
@@ -240,11 +242,7 @@ describe('Block', () => {
         expect(() => minedBlock2.validate())
           .toThrowError('Invalid number of rewards')
       })
-      it('should contain 0 non reward `transaction`', () => {
-        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
-        expect(() => minedBlock3.validate())
-          .toThrowError('Empty data')
-      })
+
       it('should have transactions that are not ordered ASC by `timestamp`', () => {
         minedBlock2.data.sort((a, b) => (a.timestamp <= b.timestamp ? 1 : -1))
         expect(() => minedBlock2.validate())
