@@ -20,6 +20,7 @@ describe('Block', () => {
   })
 
   it('has a `height`, `uuid`, `lastHash`, `hash`, `miner`, `signature` and `data` property', () => {
+    expect(block).toHaveProperty('key')
     expect(block).toHaveProperty('height')
     expect(block).toHaveProperty('uuid')
     expect(block).not.toHaveProperty('timestamp')// timestamp is assigned when the block is mined
@@ -40,7 +41,7 @@ describe('Block', () => {
 
   describe('genesis()', () => {
     it('returns a Block instance', () => {
-      expect(genesisBlock instanceof Block).toBe(true)
+      expect(genesisBlock.constructor.name).toBe("Block")
     })
 
     it('returns the genesis data', () => {

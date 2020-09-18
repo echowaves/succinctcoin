@@ -1,26 +1,36 @@
+import Obj2fsHOC from 'obj2fs-hoc'
+
 import { v4 as uuidv4 } from 'uuid'
 // import moment from 'moment'
 
-import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 
 import config from '../config'
 
 const path = require('path')
 
-function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
+class Block {
+  constructor({ lastBlock, data } = { lastBlock: null, data: [] }) {
   // this.lastBlock = lastBlock
-  this.height = lastBlock ? lastBlock.height + 1 : 0
-  this.uuid = uuidv4()
-  // this.timestamp = moment.utc().valueOf() // assigned when block is created
-  this.lastHash = lastBlock ? lastBlock.hash : ''
-  this.hash = ''
-  this.miner = ''
-  this.signature = ''
-  this.data = [...data]
+    this.height = lastBlock ? lastBlock.height + 1 : 0
+    this.uuid = uuidv4()
+    // this.timestamp = moment.utc().valueOf() // assigned when block is created
+    this.lastHash = lastBlock ? lastBlock.hash : ''
+    this.hash = ''
+    this.miner = ''
+    this.signature = ''
+    this.data = [...data]
+    this.lastBlock = lastBlock
+    // the key is derived from the publicKey when constructor is called, no need to expicitely set it
+    this.key = path.join(config.STORE.BLOCKS, this.height.toString().padStart(21, 0))
+  }
+
+  static genesis() {
+    return Object.assign(new Block(), config.GENESIS_DATA)
+  }
 
   // this function should generate hash and sign the block
-  this.mineBlock = function ({ wallet }) {
+  mineBlock({ wallet }) {
     this.miner = wallet.publicKey
 
     // add reward transaction and
@@ -44,7 +54,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     return this
   }
 
-  this.validate = function () {
+  validate() {
     if (this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}' || this.data.length === 0) {
       throw new Error('Bad data')
     }
@@ -66,7 +76,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
       throw new Error('Duplicate transactions')
     }
 
-    if (lastBlock.height + 1 !== this.height) {
+    if (this.lastBlock.height + 1 !== this.height) {
       throw new Error('Invalid height')
     }
 
@@ -118,21 +128,7 @@ function Block({ lastBlock, data } = { lastBlock: null, data: [] }) {
     })) {
       throw new Error('Invalid block signature')
     }
-
-    return true
   }
-
-  Object.assign(
-    this,
-    Obj2fsHooks(this),
-  )
-  // the key is derived from the publicKey when constructor is called, no need to expicitely set it
-  this.setKey(path.join(config.STORE.BLOCKS, this.height.toString().padStart(21, 0)))
-  return this
 }
 
-Block.genesis = function () {
-  return Object.assign(new Block(), config.GENESIS_DATA)
-}
-
-export default Block
+export default Obj2fsHOC(Block)

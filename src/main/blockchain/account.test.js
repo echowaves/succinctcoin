@@ -23,16 +23,16 @@ describe('Account', () => {
   afterAll(() => fs.removeSync(path.resolve(config.STORE.ACCOUNTS)))
 
   describe('properties', () => {
-    it('has `KEY`, `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {
-      expect(account).toHaveProperty('KEY')
+    it('has `key`, `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {
+      expect(account).toHaveProperty('key')
       expect(account).toHaveProperty('publicKey')
       expect(account).toHaveProperty('balance')
       expect(account).toHaveProperty('stake')
       expect(account).toHaveProperty('stakeTimestamp')
     })
-    describe('KEY', () => {
-      it('shold have correct `KEY` derived from `publicKey`', () => {
-        expect(account.KEY).toEqual(path.join(config.STORE.ACCOUNTS, Crypto.hash(account.publicKey)))
+    describe('key', () => {
+      it('shold have correct `key` derived from `publicKey`', () => {
+        expect(account.key).toEqual(path.join(config.STORE.ACCOUNTS, Crypto.hash(account.publicKey)))
       })
     })
     describe('publicKey', () => {
