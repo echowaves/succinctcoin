@@ -128,6 +128,7 @@ class Block {
     })) {
       throw new Error('Invalid block signature')
     }
+    return true
   }
 }
 
