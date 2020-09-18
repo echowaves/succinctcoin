@@ -10,17 +10,19 @@ class TransactionMiner {
 
   mineTransactions() {
     const validTransactions = this.transactionPool.validTransactions()
-
+    // const { chain } = this.blockchain
     // TODO: move this condition to an object and make it testable
     // only mine if there are transactions in the pool, otherwise it will create reward transaction without doing any work
 
-    if (validTransactions.length) {
-      const block = this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
+    // <= 4 allows to bootstrap the network by allowing first 3 blocks to be rewads transaction only
 
+    // if (validTransactions.length || chain[chain.length - 1].height <= 4) {
+    const block = this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
+    if (block) {
       this.pubsub.broadcastChain()
-
       this.transactionPool.clear({ block })
     }
+    // }
   }
 }
 export default TransactionMiner
