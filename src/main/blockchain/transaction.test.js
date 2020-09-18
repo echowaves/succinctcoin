@@ -82,7 +82,7 @@ describe('Transaction', () => {
         beforeEach(() => {
           transaction.sender = new Wallet().publicKey
           const account = new Account({ publicKey: transaction.sender })
-          fs.removeSync(path.resolve(account.KEY))
+          fs.removeSync(path.resolve(account.key))
         })
         it('throws an error', () => {
           expect(() => transaction.validate())

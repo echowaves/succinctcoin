@@ -1,7 +1,8 @@
+import Obj2fsHOC from 'obj2fs-hoc'
+
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 
-import Obj2fsHooks from 'obj2fs-hooks'
 import Crypto from '../util/crypto'
 import Account from './account'
 
@@ -9,21 +10,24 @@ import config from '../config'
 
 const Big = require('big.js')
 
-function Transaction({
+class Transaction {
+  constructor({
   // the parameters passed at the time of transaction creation when it's added to the pool
-  sender, recipient, amount, fee,
-} = {
-  sender: '', recipient: '', amount: '0', fee: '0',
-}) {
-  this.uuid = uuidv4()
-  this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
-  this.sender = sender
-  this.recipient = recipient
-  this.amount = amount
-  this.fee = fee
+    sender, recipient, amount, fee,
+  } = {
+    sender: '', recipient: '', amount: '0', fee: '0',
+  }) {
+    // transaction should not be stored on disk as a separate file, as such there is no need to define KEY
+    this.uuid = uuidv4()
+    this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
+    this.sender = sender
+    this.recipient = recipient
+    this.amount = amount
+    this.fee = fee
+  }
 
   // TODO: do a better grouping of related validation logic blocks
-  this.validate = function () {
+  validate() {
     if (!Crypto.isPublicKey({ publicKey: this.sender })) {
       throw new Error('Sender invalid')
     }
@@ -84,7 +88,7 @@ function Transaction({
     return true
   }
 
-  this.verifySignature = function () {
+  verifySignature() {
     return Crypto.verifySignature({
       publicKey: this.sender,
       data: [
@@ -98,11 +102,6 @@ function Transaction({
       signature: this.signature,
     })
   }
-  // transaction should not be stored on disk as a separate file, as such there is no need to define KEY
-  return Object.assign(
-    this,
-    Obj2fsHooks(this),
-  )
 }
 
-export default Transaction
+export default Obj2fsHOC(Transaction)

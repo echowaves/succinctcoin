@@ -1,4 +1,4 @@
-import Obj2fsHooks from 'obj2fs-hooks'
+import Obj2fsHOC from 'obj2fs-hoc'
 
 import Crypto from '../util/crypto'
 import Transaction from './transaction'
@@ -12,30 +12,36 @@ const crypto = require('crypto')
 
 const path = require('path')
 
-function Wallet() {
-  const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
-    namedCurve: 'prime256v1',
-    publicKeyEncoding: {
-      type: 'spki',
-      format: 'pem',
-    },
-    privateKeyEncoding: {
-      type: 'pkcs8',
-      format: 'pem',
-    },
-  })
+class Wallet {
+  constructor() {
+    const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
+      namedCurve: 'prime256v1',
+      publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem',
+      },
+      privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+      },
+    })
 
-  this.publicKey = publicKey
-  this.privateKey = privateKey
+    this.publicKey = publicKey
+    this.privateKey = privateKey
 
-  this.sign = function (data) {
+    // this is only one wallet per running application, so it's OK to hard code it here
+    this.key = path.resolve(config.STORE.WALLET)
+    this.getAccount() // ensure that the account is created and stored on disk
+  }
+
+  sign(data) {
     const sign = crypto.createSign('SHA512')
     sign.write(Crypto.hash(data))
     sign.end()
     return sign.sign(this.privateKey, 'hex')
   }
 
-  this.transactionSignature = function ({ transaction }) {
+  transactionSignature({ transaction }) {
     const signature = this.sign([
       transaction.uuid,
       transaction.timestamp,
@@ -51,7 +57,7 @@ function Wallet() {
   // there is no other place to create new transaction,
   // at this point the transaction should be signed and never modified.
   // This should be the only way to create transaction
-  this.createTransaction = function ({ recipient, amount, fee }) {
+  createTransaction({ recipient, amount, fee }) {
     const transaction = new Transaction({
       sender: this.publicKey, recipient, amount, fee,
     })
@@ -61,7 +67,7 @@ function Wallet() {
 
   // this creates a reward transaction for this wallet.
   // This transaction does not have to be added to the pool
-  this.createRewardTransaction = function () {
+  createRewardTransaction() {
     const transaction = new Transaction({
       sender: this.publicKey, recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT, fee: 0,
     })
@@ -69,7 +75,7 @@ function Wallet() {
     return transaction
   }
 
-  this.createStakeTransaction = function ({ amount, fee }) {
+  createStakeTransaction({ amount, fee }) {
     const transaction = new Transaction({
       sender: this.publicKey, recipient: config.STAKE_ADDRESS, amount, fee,
     })
@@ -78,19 +84,10 @@ function Wallet() {
   }
 
   // TODO: TOTEST
-  this.getAccount = function () {
+  getAccount() {
     const account = new Account({ publicKey: this.publicKey }).retrieveOrNew()
     return account
   }
-
-  Object.assign(
-    this,
-    Obj2fsHooks(this),
-  )
-  // this is only one wallet per running application, so it's OK to hard code it here
-  this.setKey(path.resolve(config.STORE.WALLET))
-  this.getAccount() // ensure that the account is created and stored on disk
-  return this
 }
 
-export default Wallet
+export default Obj2fsHOC(Wallet)
