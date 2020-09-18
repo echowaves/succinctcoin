@@ -117,18 +117,17 @@ describe('TransactionPool', () => {
         transactionPool.setTransaction(transaction)
 
         if (i % 2 === 0) {
-          blockchain.addBlock({
+          const block = blockchain.addBlock({
             data: [
               transaction,
             ],
             wallet: senderWallet,
           })
+          transactionPool.clearBlockchainTransactions({ block })
         } else {
           expectedTransactionMap[transaction.uuid] = transaction
         }
       }
-
-      transactionPool.clearBlockchainTransactions({ chain: blockchain.chain })
 
       expect(transactionPool.transactionMap).toEqual(expectedTransactionMap)
     })

@@ -12,6 +12,9 @@ import Transaction from './transaction'
 // const { STORE } = require('../config')
 import config from '../config'
 
+const fs = require('fs-extra')
+const path = require('path')
+
 describe('Transaction', () => {
   let transaction,
     wallet,
@@ -78,6 +81,8 @@ describe('Transaction', () => {
       describe('because `sender` account does not exist', () => {
         beforeEach(() => {
           transaction.sender = new Wallet().publicKey
+          const account = new Account({ publicKey: transaction.sender })
+          fs.removeSync(path.resolve(account.KEY))
         })
         it('throws an error', () => {
           expect(() => transaction.validate())

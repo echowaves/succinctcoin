@@ -24,16 +24,13 @@ class TransactionPool {
   }
 
   validTransactions() {
-    console.error(this.transactionMap)
     return Object.values(this.transactionMap).filter(
       transaction => {
         try {
           const t = new Transaction().parse(JSON.stringify(transaction))
           // const t = new Transaction().parse(transaction.toString())
-          console.error(t.constructor.name)
           return t.validate()
         } catch (error) {
-          console.error(error)
           return false
         }
       }
@@ -41,11 +38,11 @@ class TransactionPool {
   }
 
   clearBlockchainTransactions({ block }) {
-    for (const transaction of block.data) { // eslint-disable-line no-restricted-syntax
+    block.data.forEach(transaction => {
       if (this.transactionMap[transaction.uuid]) {
         delete this.transactionMap[transaction.uuid]
       }
-    }
+    })
   }
 }
 
