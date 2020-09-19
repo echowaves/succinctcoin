@@ -11,6 +11,14 @@ describe('Blockchain', () => {
 
   beforeEach(() => {
     blockchain = new Blockchain()
+    const wallet = new Wallet()
+    new Account({ publicKey: wallet.publicKey }).store()
+
+    // add first 3 empty blocks
+    blockchain.addBlock({ data: [], wallet })
+    blockchain.addBlock({ data: [], wallet })
+    blockchain.addBlock({ data: [], wallet })
+
     newChain = new Blockchain()
     errorMock = jest.fn()
 
@@ -34,10 +42,12 @@ describe('Blockchain', () => {
     account.store()
 
     const recipient = new Wallet().publicKey
+    new Account({ publicKey: recipient }).store()
+
     const transaction = senderWallet.createTransaction({ recipient, amount: '29', fee: '1' })
 
-    blockchain.addBlock({ data: [transaction], wallet: new Wallet() })
-    const blockData = blockchain.chain[blockchain.chain.length - 1].data
+    const block = blockchain.addBlock({ data: [transaction], wallet: senderWallet })
+    const blockData = block.data
     expect(blockData.slice(0, blockData.length - 1)).toEqual([transaction])
   })
 

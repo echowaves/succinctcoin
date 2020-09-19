@@ -9,13 +9,16 @@ class Blockchain {
   }
 
   addBlock({ data, wallet }) {
-    const newBlock = new Block({ lastBlock: this.chain[this.chain.length - 1], data })
-      .mineBlock({ wallet })
+    let newBlock
     try {
+      newBlock = new Block({ lastBlock: this.chain[this.chain.length - 1], data })
+      console.log(newBlock)
+      newBlock.mineBlock({ wallet })
       newBlock.validate()
       this.chain.push(newBlock)
     } catch (error) {
-      return null
+      // console.error(error)
+      newBlock = null
     }
     return newBlock
   }

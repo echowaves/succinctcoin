@@ -35,8 +35,9 @@ class Block {
     // add reward transaction and
     // make blocks timestamp to be equal the timestamp of reward transaction
     const rewardTrasaction = wallet.createRewardTransaction()
-    this.data.push(rewardTrasaction)
     this.timestamp = rewardTrasaction.timestamp
+
+    this.data.push(rewardTrasaction)
     // order transactions
     this.data.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
 
@@ -49,7 +50,6 @@ class Block {
       this.data,
     )
     this.signature = wallet.sign(this.hash)
-
     return this
   }
 

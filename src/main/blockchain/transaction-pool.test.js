@@ -19,12 +19,15 @@ describe('TransactionPool', () => {
     senderWallet = new Wallet()
     // create account associated with wallet (sender's account)
     account = new Account({ publicKey: senderWallet.publicKey })
-    account.balance = '50'
+    account.balance = '5000'
     account.store()
 
     recipient = new Wallet().publicKey
+    new Account({ publicKey: recipient }).store()
+
     amount = '49'
     fee = '1'
+
     transaction = senderWallet.createTransaction({ recipient, amount, fee })
   })
 
@@ -100,36 +103,34 @@ describe('TransactionPool', () => {
   describe('clearBlockchainTransactions()', () => {
     it('clears the pool of any existing blockchain transactions', () => {
       const blockchain = new Blockchain()
-      const expectedTransactionMap = {}
 
-      for (let i = 0; i < 6; i++) { // eslint-disable-line no-plusplus
-        senderWallet = new Wallet()
-        recipient = new Wallet().publicKey
-        // create account associated with wallet (sender's account)
-        account = new Account({ publicKey: senderWallet.publicKey })
-        account.balance = '50'
-        account.store()
+      senderWallet = new Wallet()
+      const account = new Account({ publicKey: senderWallet.publicKey })
+      account.balance = '5000'
+      account.store()
 
-        amount = '29'
-        fee = '1'
-        const transaction = senderWallet.createTransaction({ recipient, amount, fee })
+      // first 3 reward bootstrap blocks
+      blockchain.addBlock({ data: [], wallet: senderWallet })
+      blockchain.addBlock({ data: [], wallet: senderWallet })
+      blockchain.addBlock({ data: [], wallet: senderWallet })
 
-        transactionPool.setTransaction(transaction)
+      amount = '29'
+      fee = '1'
+      const transaction = senderWallet.createTransaction({ recipient, amount, fee })
 
-        if (i % 2 === 0) {
-          const block = blockchain.addBlock({
-            data: [
-              transaction,
-            ],
-            wallet: senderWallet,
-          })
-          transactionPool.clearBlockchainTransactions({ block })
-        } else {
-          expectedTransactionMap[transaction.uuid] = transaction
-        }
+      transactionPool.setTransaction(transaction)
+      expect(Object.values(transactionPool.transactionMap)).toHaveLength(1)
+
+      const block = blockchain.addBlock({
+        data: [
+          transaction,
+        ],
+        wallet: senderWallet,
+      })
+      if (block) {
+        transactionPool.clearBlockchainTransactions({ block })
       }
-
-      expect(transactionPool.transactionMap).toEqual(expectedTransactionMap)
+      expect(Object.values(transactionPool.transactionMap)).toHaveLength(0)
     })
   })
 })
