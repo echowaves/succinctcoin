@@ -12,7 +12,7 @@ class Blockchain {
     let newBlock
     try {
       newBlock = new Block({ lastBlock: this.chain[this.chain.length - 1], data })
-      console.log(newBlock)
+      // console.log(newBlock)
       newBlock.mineBlock({ wallet })
       newBlock.validate()
       this.chain.push(newBlock)
