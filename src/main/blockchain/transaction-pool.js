@@ -25,11 +25,11 @@ class TransactionPool {
 
   validTransactions() {
     return Object.values(this.transactionMap).filter(
-      transaction => {
+      async transaction => {
         try {
           const t = new Transaction().parse(JSON.stringify(transaction))
           // const t = new Transaction().parse(transaction.toString())
-          return t.validate()
+          return await t.validate()
         } catch (error) {
           return false
         }

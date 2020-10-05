@@ -105,13 +105,13 @@ describe('Block', () => {
 
     beforeEach(async () => {
       wallet = new Wallet()
-      wallet.store()
+      await wallet.store()
       // sender account should contain balance
       const account = new Account({
         publicKey: wallet.publicKey,
       })
       account.balance = 50
-      account.store()
+      await account.store()
 
       recipient = new Wallet().publicKey
 
@@ -133,8 +133,8 @@ describe('Block', () => {
     describe('when block is valid', () => {
       // every tedt in this group should start with foloowing line
       // expect(minedBlock2.validate()).toBe(true)
-      it('should have `height`that is greater by 1 than the previous block `height`', () => {
-        expect(minedBlock2.validate()).toBe(true)
+      it('should have `height`that is greater by 1 than the previous block `height`', async () => {
+        expect(await minedBlock2.validate()).toBe(true)
         expect(minedBlock2.height).toEqual(minedBlock1.height + 1)
       })
       // it('should contain `uuid` that is unique across all blocks', () => {

@@ -23,10 +23,10 @@ describe('Wallet', () => {
 
   describe('persistance', () => {
     describe('instantiating new', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         // make sure there is no wallet on disk
         // fs.removeSync(path.resolve(STORE.WALLET))
-        wallet = wallet.retrieveOrNew()
+        await wallet.retrieveThrough()
       })
 
       it('has `privateKey`, `publicKey` that are not empty', () => {
@@ -35,15 +35,15 @@ describe('Wallet', () => {
       })
     })
     describe('loading from storage', () => {
-      beforeEach(() => {
-        wallet = wallet.retrieveOrNew()
+      beforeEach(async () => {
+        await wallet.retrieveThrough()
       })
       it('has `privateKey` and `publicKey` that are not empty', () => {
         expect(wallet.privateKey).toHaveLength(241)
         expect(wallet.publicKey).toHaveLength(178)
       })
-      it('reloads the same wallet when called again', () => {
-        const wallet2 = new Wallet().retrieveOrNew()
+      it('reloads the same wallet when called again', async () => {
+        const wallet2 = await new Wallet().retrieveThrough()
         expect(wallet2.stringify()).toBe(wallet.stringify())
       })
     })
@@ -77,13 +77,12 @@ describe('Wallet', () => {
 
   describe('wallet.createTransaction()', () => {
     let account
-    beforeEach(() => {
+    beforeEach(async () => {
       // create account associated with wallet
-      account = new Account({
-        publicKey: wallet.publicKey,
-      }).retrieveOrNew()
+      await (new Account({ publicKey: wallet.publicKey })).retrieveThrough()
+
       account.balance = 50
-      account.store()
+      await account.store()
     })
 
     describe('and the amount and fee are valid', () => {
@@ -99,9 +98,9 @@ describe('Wallet', () => {
         transaction = wallet.createTransaction({ recipient, amount, fee })
       })
 
-      it('matches the transaction sender with the wallet address', () => {
+      it('matches the transaction sender with the wallet address', async () => {
         expect(transaction.sender).toEqual(wallet.publicKey)
-        expect(transaction.validate()).toBe(true)
+        expect(await transaction.validate()).toBe(true)
       })
     })
   })

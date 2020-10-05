@@ -22,8 +22,9 @@ const api = express()
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 
-const wallet = new Wallet()
-wallet.retrieveOrNew()// try to retreive from disk
+// try to retreive from disk
+const wallet = async () => new Wallet().retrieveThrough()
+
 wallet.getAccount() // ensure that the account is created and stored on disk
 
 const pubsub = new PubSub({ blockchain, transactionPool, wallet })
@@ -83,7 +84,8 @@ api.post('/api/transact', (req, res) => {
   let transaction
   // transactionPool
   //   .existingTransaction({ recipient: wallet.publicKey })
-  try {
+  (async () => {
+    try {
     // if (transaction) {
     //   const transactionObj = Object.assign(new Transaction({
     //     senderWallet: wallet, recipient, amount, outputMap: {}, input: {},
@@ -91,18 +93,18 @@ api.post('/api/transact', (req, res) => {
     //
     //   transactionObj.update({ senderWallet: wallet, recipient, amount })
     // } else {
-    transaction = wallet.createTransaction({
-      recipient,
-      amount,
-      fee: Big(amount).div(1000), // automatically calculate fee
-    })
-    transaction.validate()
-    transactionPool.setTransaction(transaction)
+      transaction = wallet.createTransaction({
+        recipient,
+        amount,
+        fee: Big(amount).div(1000), // automatically calculate fee
+      })
+      await transaction.validate()
+      transactionPool.setTransaction(transaction)
     // }
-  } catch (error) {
-    return res.status(400).json({ type: 'error', message: error.message })
-  }
-
+    } catch (error) {
+      return res.status(400).json({ type: 'error', message: error.message })
+    }
+  })()
   pubsub.broadcastTransaction(transaction)
 
   res.json({ type: 'success', transaction })
@@ -112,12 +114,12 @@ api.get('/api/transaction-pool-map', (req, res) => {
   res.json(transactionPool.transactionMap)
 })
 
-api.get('/api/wallet-info', (req, res) => {
+api.get('/api/wallet-info', async (req, res) => {
   const address = wallet.publicKey
 
   res.json({
     address,
-    account: wallet.getAccount(),
+    account: await wallet.getAccount(),
   })
 })
 

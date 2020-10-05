@@ -10373,10 +10373,10 @@ oauth-sign@~0.9.0:
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
   integrity sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==
 
-obj2fs-hoc@1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/obj2fs-hoc/-/obj2fs-hoc-1.2.1.tgz#04fa2804d40811001435a9dc607718e14c8f869e"
-  integrity sha512-NQRrgFW48UTnkr8W+NuSr5nvWja+PGP3N7rfyS6xEXvt1Qs/1X+5bjZiDbLvUdVR0vspinDhmrkd+hbu9h7xkg==
+obj2fs-hoc@1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/obj2fs-hoc/-/obj2fs-hoc-1.3.2.tgz#cedd25dc204a5df7de3db0ddd0005f5c0633366c"
+  integrity sha512-vz8Fmb58v8mM2E4UuiCmF9EGYH3pEjN6arSyQgSSnK5ptp5U4ChryukDG3cUFQ22NeURcFOPs/1fQMscNaV7fA==
   dependencies:
     fs-extra "9.0.1"
 

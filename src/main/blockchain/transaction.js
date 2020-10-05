@@ -27,7 +27,7 @@ class Transaction {
   }
 
   // TODO: do a better grouping of related validation logic blocks
-  validate() {
+  async validate() {
     if (!Crypto.isPublicKey({ publicKey: this.sender })) {
       throw new Error('Sender invalid')
     }
@@ -52,7 +52,7 @@ class Transaction {
 
     // expected the sender senderAccount already in the system -- simply retreive it
     // this will throw 'No such key or file name found on disk' if the senderAccount does not exist on disk
-    const senderAccount = new Account({ publicKey: this.sender }).retrieve()
+    const senderAccount = await new Account({ publicKey: this.sender }).retrieve()
 
     if (this.recipient === config.STAKE_ADDRESS
       && (Big(this.amount).plus(senderAccount.stake)).gt(Big(senderAccount.balance).div(10))) {

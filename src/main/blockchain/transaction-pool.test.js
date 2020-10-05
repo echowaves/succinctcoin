@@ -14,13 +14,13 @@ describe('TransactionPool', () => {
     fee,
     account
 
-  beforeEach(() => {
+  beforeEach(async () => {
     transactionPool = new TransactionPool()
     senderWallet = new Wallet()
     // create account associated with wallet (sender's account)
     account = new Account({ publicKey: senderWallet.publicKey })
     account.balance = '5000'
-    account.store()
+    await account.store()
 
     recipient = new Wallet().publicKey
     new Account({ publicKey: recipient }).store()
@@ -54,7 +54,7 @@ describe('TransactionPool', () => {
     let validTransactions,
       errorMock
 
-    beforeEach(() => {
+    beforeEach(async () => {
       validTransactions = []
       errorMock = jest.fn()
       global.console.error = errorMock
@@ -65,7 +65,7 @@ describe('TransactionPool', () => {
         // create account associated with wallet (sender's account)
         account = new Account({ publicKey: senderWallet.publicKey })
         account.balance = '50'
-        account.store()
+        await account.store() // eslint-disable-line no-await-in-loop
 
         amount = '29'
         fee = '1'
@@ -101,13 +101,13 @@ describe('TransactionPool', () => {
   })
 
   describe('clearBlockchainTransactions()', () => {
-    it('clears the pool of any existing blockchain transactions', () => {
+    it('clears the pool of any existing blockchain transactions', async () => {
       const blockchain = new Blockchain()
 
       senderWallet = new Wallet()
       const account = new Account({ publicKey: senderWallet.publicKey })
       account.balance = '5000'
-      account.store()
+      await account.store()
 
       // first 3 reward bootstrap blocks
       blockchain.addBlock({ data: [], wallet: senderWallet })

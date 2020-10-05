@@ -83,8 +83,8 @@ class Wallet {
   }
 
   // TODO: TOTEST
-  getAccount() {
-    const account = new Account({ publicKey: this.publicKey }).retrieveOrNew()
+  async getAccount() {
+    const account = await new Account({ publicKey: this.publicKey }).retrieveThrough()
     return account
   }
 }
