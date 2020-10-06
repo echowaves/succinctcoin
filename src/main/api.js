@@ -72,8 +72,8 @@ api.get('/api/blocks/:id', (req, res) => {
 //   res.redirect('/api/blocks')
 // })
 
-api.get('/api/mine-transactions', (req, res) => {
-  transactionMiner.mineTransactions()
+api.get('/api/mine-transactions', async (req, res) => {
+  await transactionMiner.mineTransactions()
 
   res.redirect('/api/blocks')
 })

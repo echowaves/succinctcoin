@@ -8,8 +8,8 @@ class TransactionMiner {
     this.pubsub = pubsub
   }
 
-  mineTransactions() {
-    const validTransactions = this.transactionPool.validTransactions()
+  async mineTransactions() {
+    const validTransactions = await this.transactionPool.validTransactions()
     const block = this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
     if (block) {
       this.pubsub.broadcastChain()

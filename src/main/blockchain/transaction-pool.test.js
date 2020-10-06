@@ -59,7 +59,7 @@ describe('TransactionPool', () => {
       errorMock = jest.fn()
       global.console.error = errorMock
 
-      for (let i = 0; i < 10; i++) { // eslint-disable-line no-plusplus
+      for (let i = 0; i < 10; i += 1) {
         senderWallet = new Wallet()
         recipient = new Wallet().publicKey
         // create account associated with wallet (sender's account)
@@ -69,7 +69,7 @@ describe('TransactionPool', () => {
 
         amount = '29'
         fee = '1'
-        transaction = senderWallet.createTransaction({ recipient, amount, fee })
+        const transaction = senderWallet.createTransaction({ recipient, amount, fee })
 
         if (i % 3 === 0) {
           transaction.amount = 999999
@@ -82,8 +82,8 @@ describe('TransactionPool', () => {
       }
     })
 
-    it('returns valid transaction', () => {
-      expect(transactionPool.validTransactions()).toEqual(validTransactions)
+    it('returns valid transaction', async () => {
+      expect(await transactionPool.validTransactions()).toEqual(validTransactions)
     })
 
     // it('logs errors for the invalid transactions', () => {

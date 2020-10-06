@@ -23,18 +23,19 @@ class TransactionPool {
     return transactions.find(transaction => transaction.sender === sender)
   }
 
-  validTransactions() {
-    return Object.values(this.transactionMap).filter(
-      async transaction => {
-        try {
-          const t = new Transaction().parse(JSON.stringify(transaction))
-          // const t = new Transaction().parse(transaction.toString())
-          return await t.validate()
-        } catch (error) {
-          return false
-        }
+  async validTransactions() {
+    const values = Object.values(this.transactionMap)
+
+    const shouldFilter = await Promise.all(values.map(async value => {
+      try {
+        const valid = await value.validate()
+        return valid
+      } catch (error) {
+        return false
       }
-    )
+    }))
+
+    return values.filter((value, index) => shouldFilter[index])
   }
 
   clearBlockchainTransactions({ block }) {

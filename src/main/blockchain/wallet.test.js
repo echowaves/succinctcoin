@@ -79,7 +79,7 @@ describe('Wallet', () => {
     let account
     beforeEach(async () => {
       // create account associated with wallet
-      await (new Account({ publicKey: wallet.publicKey })).retrieveThrough()
+      account = await (new Account({ publicKey: wallet.publicKey })).retrieveThrough()
 
       account.balance = 50
       await account.store()
