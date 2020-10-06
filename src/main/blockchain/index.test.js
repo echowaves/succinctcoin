@@ -16,9 +16,9 @@ describe('Blockchain', () => {
     await (new Account({ publicKey: wallet.publicKey })).store()
 
     // add first 3 empty blocks
-    blockchain.addBlock({ data: [], wallet })
-    blockchain.addBlock({ data: [], wallet })
-    blockchain.addBlock({ data: [], wallet })
+    await blockchain.addBlock({ data: [], wallet })
+    await blockchain.addBlock({ data: [], wallet })
+    await blockchain.addBlock({ data: [], wallet })
 
     newChain = new Blockchain()
     errorMock = jest.fn()
@@ -49,7 +49,7 @@ describe('Blockchain', () => {
 
     const transaction = senderWallet.createTransaction({ recipient, amount: '29', fee: '1' })
 
-    const block = blockchain.addBlock({ data: [transaction], wallet: senderWallet })
+    const block = await blockchain.addBlock({ data: [transaction], wallet: senderWallet })
     const blockData = block.data
     expect(blockData.slice(0, blockData.length - 1)).toEqual([transaction])
   })
@@ -78,9 +78,9 @@ describe('Blockchain', () => {
         const transaction2 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '28', fee: '1' })
         const transaction3 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '27', fee: '1' })
 
-        blockchain.addBlock({ data: [transaction1], wallet: senderWallet })
-        blockchain.addBlock({ data: [transaction2], wallet: senderWallet })
-        blockchain.addBlock({ data: [transaction3], wallet: senderWallet })
+        await blockchain.addBlock({ data: [transaction1], wallet: senderWallet })
+        await blockchain.addBlock({ data: [transaction2], wallet: senderWallet })
+        await blockchain.addBlock({ data: [transaction3], wallet: senderWallet })
       })
 
       describe('and a lastHash reference has changed', () => {
@@ -145,10 +145,10 @@ describe('Blockchain', () => {
         const transaction3 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '27', fee: '1' })
         const transaction4 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '26', fee: '1' })
 
-        newChain.addBlock({ data: [transaction1], wallet: senderWallet })
-        newChain.addBlock({ data: [transaction2], wallet: senderWallet })
-        newChain.addBlock({ data: [transaction3], wallet: senderWallet })
-        newChain.addBlock({ data: [transaction4], wallet: senderWallet })
+        await newChain.addBlock({ data: [transaction1], wallet: senderWallet })
+        await newChain.addBlock({ data: [transaction2], wallet: senderWallet })
+        await newChain.addBlock({ data: [transaction3], wallet: senderWallet })
+        await newChain.addBlock({ data: [transaction4], wallet: senderWallet })
       })
 
       describe('and the chain is invalid', () => {

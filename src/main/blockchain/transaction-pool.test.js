@@ -110,9 +110,9 @@ describe('TransactionPool', () => {
       await account.store()
 
       // first 3 reward bootstrap blocks
-      blockchain.addBlock({ data: [], wallet: senderWallet })
-      blockchain.addBlock({ data: [], wallet: senderWallet })
-      blockchain.addBlock({ data: [], wallet: senderWallet })
+      await blockchain.addBlock({ data: [], wallet: senderWallet })
+      await blockchain.addBlock({ data: [], wallet: senderWallet })
+      await blockchain.addBlock({ data: [], wallet: senderWallet })
 
       amount = '29'
       fee = '1'
@@ -121,7 +121,7 @@ describe('TransactionPool', () => {
       transactionPool.setTransaction(transaction)
       expect(Object.values(transactionPool.transactionMap)).toHaveLength(1)
 
-      const block = blockchain.addBlock({
+      const block = await blockchain.addBlock({
         data: [
           transaction,
         ],

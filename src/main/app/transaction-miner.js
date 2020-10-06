@@ -10,7 +10,7 @@ class TransactionMiner {
 
   async mineTransactions() {
     const validTransactions = await this.transactionPool.validTransactions()
-    const block = this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
+    const block = await this.blockchain.addBlock({ data: validTransactions, wallet: this.wallet })
     if (block) {
       this.pubsub.broadcastChain()
       this.transactionPool.clear({ block })

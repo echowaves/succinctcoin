@@ -8,13 +8,15 @@ class Blockchain {
     ]
   }
 
-  addBlock({ data, wallet }) {
+  async addBlock({ data, wallet }) {
     let newBlock
     try {
       newBlock = new Block({ lastBlock: this.chain[this.chain.length - 1], data })
       // console.log(newBlock)
       newBlock.mineBlock({ wallet })
-      newBlock.validate()
+
+      await newBlock.validate()
+
       this.chain.push(newBlock)
     } catch (error) {
       // console.error(error)
@@ -45,7 +47,9 @@ class Blockchain {
     }
     for (let i = 1; i < chain.length; i++) { // eslint-disable-line no-plusplus
       try {
-        chain[i].validate()
+        (async () => {
+          await chain[i].validate()
+        })()
       } catch (error) {
         console.error('Invalid chain', error) // eslint-disable-line no-console
         return false

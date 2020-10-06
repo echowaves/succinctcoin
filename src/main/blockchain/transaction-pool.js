@@ -1,5 +1,3 @@
-import Transaction from './transaction'
-
 class TransactionPool {
   constructor() {
     this.clear()

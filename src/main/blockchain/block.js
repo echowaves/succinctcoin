@@ -53,7 +53,7 @@ class Block {
     return this
   }
 
-  validate() {
+  async validate() {
     if (this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}' || this.data.length === 0) {
       throw new Error('Bad data')
     }
@@ -103,9 +103,7 @@ class Block {
       throw new Error('Invalid miner')
     }
     // every transaction must be valid
-    this.data.forEach(transaction => {
-      transaction.validate()
-    })
+    await Promise.all(this.data.map(async transaction => transaction.validate()))
 
     if (
       Crypto.hash(
