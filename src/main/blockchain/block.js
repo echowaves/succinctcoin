@@ -54,6 +54,11 @@ class Block {
   }
 
   async validate() {
+    // genesis blocl is always valid
+    if (JSON.stringify(this) === JSON.stringify(Block.genesis())) {
+      return true
+    }
+
     if (this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}' || this.data.length === 0) {
       throw new Error('Bad data')
     }

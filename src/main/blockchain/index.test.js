@@ -56,10 +56,10 @@ describe('Blockchain', () => {
 
   describe('isValidChain()', () => {
     describe('when the chain does not start with the genesis block', () => {
-      it('returns false', () => {
+      it('returns false', async () => {
         blockchain.chain[0] = { data: 'fake-genesis' }
 
-        expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
+        expect(await Blockchain.isValidChain(blockchain.chain)).toBe(false)
       })
     })
 
@@ -84,23 +84,23 @@ describe('Blockchain', () => {
       })
 
       describe('and a lastHash reference has changed', () => {
-        it('returns false', () => {
+        it('returns false', async () => {
           blockchain.chain[2].lastHash = 'broken-lastHash'
-          expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
+          expect(await Blockchain.isValidChain(blockchain.chain)).toBe(false)
         })
       })
 
       describe('and the chain contains a block with an invalid field', () => {
-        it('returns false', () => {
+        it('returns false', async () => {
           blockchain.chain[2].data = 'some-bad-and-evil-data'
 
-          expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
+          expect(await Blockchain.isValidChain(blockchain.chain)).toBe(false)
         })
       })
 
       describe('and the chain does not contain any invalid blocks', () => {
-        it('returns true', () => {
-          expect(Blockchain.isValidChain(blockchain.chain)).toBe(true)
+        it('returns true', async () => {
+          expect(await Blockchain.isValidChain(blockchain.chain)).toBe(true)
         })
       })
     })
@@ -116,10 +116,10 @@ describe('Blockchain', () => {
     })
 
     describe('when the new chain is not longer', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         newChain.chain[0] = { new: 'chain' }
 
-        blockchain.replaceChain(newChain.chain)
+        await blockchain.replaceChain(newChain.chain)
       })
 
       it('does not replace the chain', () => {
@@ -152,23 +152,23 @@ describe('Blockchain', () => {
       })
 
       describe('and the chain is invalid', () => {
-        beforeEach(() => {
+        beforeEach(async () => {
           newChain.chain[2].hash = 'some-fake-hash'
 
-          blockchain.replaceChain(newChain.chain)
+          await blockchain.replaceChain(newChain.chain)
         })
       })
 
       describe('and the chain is valid', () => {
-        beforeEach(() => {
-          blockchain.replaceChain(newChain.chain)
+        beforeEach(async () => {
+          await blockchain.replaceChain(newChain.chain)
         })
 
         it('replaces the chain', () => {
           expect(blockchain.chain).toEqual(newChain.chain)
         })
 
-        it('logs about the chain replacement', () => {
+        it('logs about the chain replacement', async () => {
           expect(logMock).toHaveBeenCalled()
         })
       })

@@ -96,11 +96,11 @@ class PubSub {
     this.blockChainRoom = new Room(node, globalConfig.CHANNELS.BLOCKCHAIN)
     this.transactionRoom = new Room(node, globalConfig.CHANNELS.TRANSACTION)
 
-    this.blockChainRoom.on('message', message => {
+    this.blockChainRoom.on('message', async message => {
       console.log('blockChainRoom received:', message) // eslint-disable-line no-console
       const parsedMessage = JSON.parse(message.data.toString('utf8'))
       // console.log('message.data:', parsedMessage)
-      this.blockchain.replaceChain(parsedMessage, true, () => {
+      await this.blockchain.replaceChain(parsedMessage, true, () => {
         this.transactionPool.clearBlockchainTransactions({
           chain: parsedMessage,
         })

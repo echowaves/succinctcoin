@@ -272,7 +272,7 @@ describe('Block', () => {
       // })
       // it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
       // })
-      it.only('should contain not only valid transactions', async () => {
+      it('should contain not only valid transactions', async () => {
         minedBlock2.data[0].uuid = uuidv4()
         // this will invalidate transaction hash
         await expect(minedBlock2.validate())

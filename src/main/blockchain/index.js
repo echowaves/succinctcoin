@@ -25,13 +25,13 @@ class Blockchain {
     return newBlock
   }
 
-  replaceChain(chain, onSuccess) {
+  async replaceChain(chain, onSuccess) {
     if (chain.length <= this.chain.length) {
       console.error('The incoming chain must be longer') // eslint-disable-line no-console
       return
     }
 
-    if (!Blockchain.isValidChain(chain)) {
+    if (!await Blockchain.isValidChain(chain)) {
       console.error('The incoming chain must be valid') // eslint-disable-line no-console
       return
     }
@@ -41,22 +41,20 @@ class Blockchain {
     this.chain = chain
   }
 
-  static isValidChain(chain) {
+  static async isValidChain(chain) {
     if (JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis())) {
       return false
     }
-    for (let i = 1; i < chain.length; i++) { // eslint-disable-line no-plusplus
-      try {
-        (async () => {
-          await chain[i].validate()
-        })()
-      } catch (error) {
-        console.error('Invalid chain', error) // eslint-disable-line no-console
-        return false
-      }
-    }
 
-    return true
+    let isChainValid = true
+    try {
+      await Promise.all(chain.map(async block => {
+        await block.validate()
+      }))
+    } catch (error) {
+      isChainValid = false
+    }
+    return isChainValid
   }
 }
 
