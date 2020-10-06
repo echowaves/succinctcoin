@@ -7,8 +7,15 @@ import Account from './account'
 import Crypto from '../util/crypto'
 
 import config from '../config'
+//
+// const fs = require('fs-extra')
+// const path = require('path')
 
 describe('Block', () => {
+  // afterAll(() => {
+  //   fs.removeSync(path.resolve(config.STORE.WALLET, '..'))
+  // })
+
   const genesisBlock = Block.genesis()
 
   const data = [
@@ -53,32 +60,34 @@ describe('Block', () => {
     const lastBlock = Block.genesis()
     const data = [1, 2, 3]
     const wallet = new Wallet()
+    let minedBlock
 
-    const minedBlock = new Block({ lastBlock, data }).mineBlock({ wallet })
-
-    it('returns a Block instance', () => {
+    beforeEach(async () => {
+      minedBlock = await (new Block({ lastBlock, data }).mineBlock({ wallet }))
+    })
+    it('returns a Block instance', async () => {
       expect(minedBlock instanceof Block).toBe(true)
     })
 
-    it('sets the `lastHash` to be the `hash` of the lastBlock', () => {
+    it('sets the `lastHash` to be the `hash` of the lastBlock', async () => {
       expect(minedBlock.lastHash).toEqual(lastBlock.hash)
     })
 
-    it('sets the `data`', () => {
+    it('sets the `data`', async () => {
       expect(minedBlock.data).toEqual(
         expect.arrayContaining(data)
       )
     })
 
-    it('sets a `timestamp`', () => {
+    it('sets a `timestamp`', async () => {
       expect(minedBlock.timestamp).not.toEqual(undefined)
     })
 
-    it('sets a `miner` to `wallet` publicKey', () => {
+    it('sets a `miner` to `wallet` publicKey', async () => {
       expect(minedBlock.miner).toEqual(wallet.publicKey)
     })
 
-    it('creates a SHA512 `hash` based on the proper inputs', () => {
+    it('creates a SHA512 `hash` based on the proper inputs', async () => {
       expect(minedBlock.hash)
         .toEqual(
           Crypto.hash(
@@ -118,7 +127,7 @@ describe('Block', () => {
       genesisBlock = Block.genesis()
       data = [1, 2, 3] // it has to be an array
 
-      minedBlock1 = new Block({ lastBlock: genesisBlock, data }).mineBlock({ wallet })
+      minedBlock1 = await (new Block({ lastBlock: genesisBlock, data })).mineBlock({ wallet })
 
       transactions2 = []
 
@@ -127,7 +136,7 @@ describe('Block', () => {
       transactions2.push(wallet.createTransaction(wallet.createTransaction({ recipient, amount: 10, fee: 1 })))
       await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
       // this will also generate reward transaction
-      minedBlock2 = new Block({ lastBlock: minedBlock1, data: transactions2 }).mineBlock({ wallet })
+      minedBlock2 = await (new Block({ lastBlock: minedBlock1, data: transactions2 })).mineBlock({ wallet })
     })
 
     describe('when block is valid', () => {
@@ -222,7 +231,7 @@ describe('Block', () => {
           .toThrowError('Invalid hash')
       })
       it('should contain bad `data`', async () => {
-        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
+        const minedBlock3 = await (new Block({ lastBlock: minedBlock2, data: [] })).mineBlock({ wallet })
         minedBlock3.data = []
         await expect(minedBlock3.validate())
           .rejects
@@ -230,8 +239,8 @@ describe('Block', () => {
       })
       it('should contain 0 non reward `transaction`', async () => {
         // blocks below 4 are exception from this rule
-        const minedBlock3 = new Block({ lastBlock: minedBlock2, data: [] }).mineBlock({ wallet })
-        const minedBlock4 = new Block({ lastBlock: minedBlock3, data: [] }).mineBlock({ wallet })
+        const minedBlock3 = await (new Block({ lastBlock: minedBlock2, data: [] })).mineBlock({ wallet })
+        const minedBlock4 = await (new Block({ lastBlock: minedBlock3, data: [] })).mineBlock({ wallet })
         await expect(minedBlock4.validate())
           .rejects
           .toThrowError('Empty data')
@@ -280,13 +289,13 @@ describe('Block', () => {
           .toThrowError('Invalid transaction signature')
       })
       it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', async () => {
-        minedBlock2.timestamp = moment.utc().valueOf()
+        minedBlock2.timestamp = moment.utc().add(1, 'second').valueOf()
         await expect(minedBlock2.validate())
           .rejects
           .toThrowError('Invalid reward transaction timestamp')
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', async () => {
-        minedBlock2.data[1].timestamp = moment.utc().valueOf()
+        minedBlock2.data[1].timestamp = moment.utc().add(1, 'second').valueOf()
         await expect(minedBlock2.validate())
           .rejects
           .toThrowError('Invalid transaction timestamp')

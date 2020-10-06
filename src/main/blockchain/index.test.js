@@ -2,8 +2,16 @@ import Account from './account'
 import Wallet from './wallet'
 import Blockchain from './index'
 import Block from './block'
+// import config from '../config'
+//
+// const fs = require('fs-extra')
+// const path = require('path')
 
 describe('Blockchain', () => {
+  // afterAll(() => {
+  //   fs.removeSync(path.resolve(config.STORE.WALLET, '..'))
+  // })
+
   let blockchain,
     newChain,
     originalChain,
@@ -45,11 +53,12 @@ describe('Blockchain', () => {
 
     const recipient = new Wallet().publicKey
 
-    await new Account({ publicKey: recipient }).store()
+    await (new Account({ publicKey: recipient })).store()
 
     const transaction = senderWallet.createTransaction({ recipient, amount: '29', fee: '1' })
 
     const block = await blockchain.addBlock({ data: [transaction], wallet: senderWallet })
+
     const blockData = block.data
     expect(blockData.slice(0, blockData.length - 1)).toEqual([transaction])
   })

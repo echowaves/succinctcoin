@@ -1,18 +1,20 @@
 import Wallet from './wallet'
 import Account from './account'
 
-const fs = require('fs-extra')
-const path = require('path')
-
-const { STORE } = require('../config')
+// const fs = require('fs-extra')
+// const path = require('path')
+//
+// const { STORE } = require('../config')
 
 describe('Wallet', () => {
+  // afterAll(() => {
+  //   fs.removeSync(path.resolve(STORE.WALLET, '..'))
+  // })
+
   let wallet
   beforeEach(() => {
     wallet = new Wallet()
   })
-
-  afterAll(() => fs.removeSync(path.resolve(STORE.WALLET)))
 
   describe('properties', () => {
     it('has `priaveteKey`, `publicKey`', () => {

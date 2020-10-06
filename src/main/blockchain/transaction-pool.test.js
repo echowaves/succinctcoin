@@ -5,7 +5,16 @@ import TransactionPool from './transaction-pool'
 
 import Blockchain from './index'
 
+// import config from '../config'
+//
+// const fs = require('fs-extra')
+// const path = require('path')
+
 describe('TransactionPool', () => {
+  // afterAll(() => {
+  //   fs.removeSync(path.resolve(config.STORE.WALLET, '..'))
+  // })
+
   let transactionPool,
     transaction,
     senderWallet,

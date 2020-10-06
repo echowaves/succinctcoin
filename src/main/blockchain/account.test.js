@@ -5,22 +5,33 @@ import Crypto from '../util/crypto'
 
 import config from '../config'
 
-const fs = require('fs-extra')
+// const fs = require('fs-extra')
 const path = require('path')
 
 const Big = require('big.js')
 
 describe('Account', () => {
+  // afterAll(() => {
+  //   fs.removeSync(path.resolve(config.STORE.WALLET, '..'))
+  // })
+
+  // beforeAll(async () => {
+  //   fs.removeSync(path.resolve(config.STORE.ACCOUNTS))
+  // })
+  // afterAll(async () => {
+  //   fs.removeSync(path.resolve(config.STORE.ACCOUNTS))
+  //   await new Promise(resolve => setTimeout(resolve, 2000)) // otherwise it works too fast
+  // })
+
   const
     amount = '42',
     publicKey = '321'
   let account
 
   beforeEach(() => {
+    // fs.removeSync(path.resolve(config.STORE.ACCOUNTS))
     account = new Account({ publicKey })
   })
-
-  afterAll(() => fs.removeSync(path.resolve(config.STORE.ACCOUNTS)))
 
   describe('properties', () => {
     it('has `key`, `publicKey`, `balance`, `stake`, `stakeTimestamp`', () => {

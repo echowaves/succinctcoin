@@ -29,7 +29,7 @@ class Block {
   }
 
   // this function should generate hash and sign the block
-  mineBlock({ wallet }) {
+  async mineBlock({ wallet }) {
     this.miner = wallet.publicKey
 
     // add reward transaction and

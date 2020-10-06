@@ -7,15 +7,16 @@ import Transaction from './transaction'
 
 // import { FlashStore } from 'flash-store'
 
+import config from '../config'
+//
 // const fs = require('fs-extra')
 // const path = require('path')
-// const { STORE } = require('../config')
-import config from '../config'
-
-const fs = require('fs-extra')
-const path = require('path')
 
 describe('Transaction', () => {
+  // afterAll(() => {
+  //   fs.removeSync(path.resolve(config.STORE.WALLET, '..'))
+  // })
+
   let transaction,
     wallet,
     recipient,
@@ -81,8 +82,8 @@ describe('Transaction', () => {
       describe('because `sender` account does not exist', () => {
         beforeEach(() => {
           transaction.sender = new Wallet().publicKey
-          const account = new Account({ publicKey: transaction.sender })
-          fs.removeSync(path.resolve(account.key))
+          // const account = new Account({ publicKey: transaction.sender })
+          // fs.removeSync(path.resolve(account.key))
         })
         it('throws an error', async () => {
           await expect(transaction.validate())
