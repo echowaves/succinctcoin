@@ -24,19 +24,20 @@ const transactionPool = new TransactionPool()
 
 // try to retreive from disk
 let wallet
-let account;
+let account
+let pubsub
+let transactionMiner;
+
 (async () => {
   wallet = await (new Wallet()).retrieveThrough()
   account = await wallet.getAccount() // ensure that the account is created and stored on disk
+  pubsub = new PubSub({ blockchain, transactionPool, wallet })
+
+  transactionMiner = new TransactionMiner({
+    blockchain, transactionPool, wallet, pubsub,
+  })
+  console.log(wallet)
 })()
-
-console.log(wallet)
-
-const pubsub = new PubSub({ blockchain, transactionPool, wallet })
-
-const transactionMiner = new TransactionMiner({
-  blockchain, transactionPool, wallet, pubsub,
-})
 
 api.use(bodyParser.json())
 api.use(express.static(path.join(__dirname, 'client/dist')))
