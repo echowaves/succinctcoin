@@ -11,7 +11,7 @@ const SECIO = require('libp2p-secio')
 
 // const { NOISE } = require('libp2p-noise')
 
-// const MulticastDNS = require('libp2p-mdns')
+const MulticastDNS = require('libp2p-mdns')
 // const DHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 
@@ -35,16 +35,16 @@ class PubSub {
       //   // Add the signaling server address, along with our PeerId to our multiaddrs list
       //   // libp2p will automatically attempt to dial to the signaling server so that it can
       //   // receive inbound connections from other peers
-        listen: [
-          '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-          '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-        ],
+        // listen: [
+        //   '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        //   '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+        // ],
       },
       modules: {
         transport: [WebRTCStar],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO],
-        // peerDiscovery: [MulticastDNS],
+        peerDiscovery: [MulticastDNS],
         // dht: DHT,
         pubsub: GossipSub,
       },
