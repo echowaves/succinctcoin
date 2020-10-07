@@ -36,7 +36,6 @@ let transactionMiner;
   transactionMiner = new TransactionMiner({
     blockchain, transactionPool, wallet, pubsub,
   })
-  console.log(wallet)
 })()
 
 api.use(bodyParser.json())
