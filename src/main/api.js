@@ -23,9 +23,14 @@ const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 
 // try to retreive from disk
-const wallet = async () => new Wallet().retrieveThrough()
+let wallet
+let account;
+(async () => {
+  wallet = await (new Wallet()).retrieveThrough()
+  account = await wallet.getAccount() // ensure that the account is created and stored on disk
+})()
 
-wallet.getAccount() // ensure that the account is created and stored on disk
+console.log(wallet)
 
 const pubsub = new PubSub({ blockchain, transactionPool, wallet })
 
@@ -114,12 +119,12 @@ api.get('/api/transaction-pool-map', (req, res) => {
   res.json(transactionPool.transactionMap)
 })
 
-api.get('/api/wallet-info', async (req, res) => {
+api.get('/api/wallet-info', (req, res) => {
   const address = wallet.publicKey
 
   res.json({
     address,
-    account: await wallet.getAccount(),
+    account,
   })
 })
 
