@@ -33,6 +33,9 @@ class PubSub {
     // create a node, assign to the class variable, discover peers,
     // and have the node establish connections to the peers
     const node = await Libp2p.create({
+      addresses: {
+        listen: ['/ip4/0.0.0.0/tcp/0'],
+      },
       // addresses: {
       // //   // Add the signaling server address, along with our PeerId to our multiaddrs list
       // //   // libp2p will automatically attempt to dial to the signaling server so that it can
