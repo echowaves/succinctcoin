@@ -3,6 +3,7 @@ import globalConfig from '../../config'
 const Libp2p = require('libp2p')
 const WebRTCStar = require('libp2p-webrtc-star')
 const TCP = require('libp2p-tcp')
+const crypto = require('libp2p-crypto')
 
 const wrtc = require('wrtc')
 
@@ -18,6 +19,8 @@ const DHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 
 const Room = require('ipfs-pubsub-room')
+
+const uint8ArrayToString = require('uint8arrays/to-string')
 
 // express app
 
@@ -67,12 +70,22 @@ class PubSub {
         //     enabled: true,
         //   },
         // },
+
         peerDiscovery: {
-          [MulticastDNS.tag]: {
-            interval: 20e3,
+          autoDial: true,
+          mdns: {
             enabled: true,
+            interval: 200, // discover quickly
+            // use a random tag to prevent CI collision
+            serviceTag: uint8ArrayToString(crypto.randomBytes(10), 'base16'),
           },
         },
+        // peerDiscovery: {
+        //   [MulticastDNS.tag]: {
+        //     interval: 20e3,
+        //     enabled: true,
+        //   },
+        // },
         pubsub: { // The pubsub options (and defaults) can be found in the pubsub router documentation
           enabled: true,
           emitSelf: true, // whether the node should emit to self on publish
