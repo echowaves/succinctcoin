@@ -13,7 +13,7 @@ const SECIO = require('libp2p-secio')
 
 // const { NOISE } = require('libp2p-noise')
 
-// const MulticastDNS = require('libp2p-mdns')
+const MulticastDNS = require('libp2p-mdns')
 const DHT = require('libp2p-kad-dht')
 const GossipSub = require('libp2p-gossipsub')
 
@@ -49,7 +49,7 @@ class PubSub {
         transport: [TCP],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO],
-        // peerDiscovery: [MulticastDNS],
+        peerDiscovery: [MulticastDNS],
         dht: DHT,
         pubsub: GossipSub,
       },
@@ -64,6 +64,12 @@ class PubSub {
         //     enabled: true,
         //   },
         // },
+        peerDiscovery: {
+          [MulticastDNS.tag]: {
+            interval: 20e3,
+            enabled: true,
+          },
+        },
         pubsub: { // The pubsub options (and defaults) can be found in the pubsub router documentation
           enabled: true,
           emitSelf: true, // whether the node should emit to self on publish

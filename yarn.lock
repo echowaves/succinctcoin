@@ -8985,7 +8985,7 @@ libp2p-kad-dht@^0.20.0:
     varint "^5.0.0"
     xor-distance "^2.0.0"
 
-libp2p-mdns@^0.15.0:
+libp2p-mdns@0.15.0, libp2p-mdns@^0.15.0:
   version "0.15.0"
   resolved "https://registry.yarnpkg.com/libp2p-mdns/-/libp2p-mdns-0.15.0.tgz#c4e71e162ef2ea817d9d745376a1acac1271fe51"
   integrity sha512-wuILE+mwC6ww/0TMkR3k2h53D5Ma9TXpz0siacbsACcGukkS+mIpsvruaf9U1Uxe0F1aC8+Y+Vi5lP8C3YR9Lg==
