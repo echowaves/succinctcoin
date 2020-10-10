@@ -9137,7 +9137,7 @@ libp2p-webrtc-star@0.20.1, libp2p-webrtc-star@^0.20.0:
     stream-to-it "^0.2.2"
     streaming-iterables "^5.0.2"
 
-libp2p-websockets@^0.14.0:
+libp2p-websockets@0.14.0, libp2p-websockets@^0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/libp2p-websockets/-/libp2p-websockets-0.14.0.tgz#e1c48d1787e88dee85db740598b9a6a687fe225c"
   integrity sha512-UeI0uqw2xYXFhImJucewG7fuL6hOR2tnSwlSAAxilyK0Z3Yya+GeVkqy7Vufj9ax3EWFx6lPO8mC3uBl30TkpA==

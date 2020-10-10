@@ -6,6 +6,7 @@ const TCP = require('libp2p-tcp')
 const crypto = require('libp2p-crypto')
 
 const wrtc = require('wrtc')
+const Websockets = require('libp2p-websockets')
 
 const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
 
@@ -56,7 +57,7 @@ class PubSub {
       //   ],
       // },
       modules: {
-        transport: [TCP],
+        transport: [TCP, Websockets, WebRTCStar],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO],
         peerDiscovery: [MulticastDNS],
