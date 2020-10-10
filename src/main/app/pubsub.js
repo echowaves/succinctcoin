@@ -38,8 +38,12 @@ class PubSub {
     const node = await Libp2p.create({
       addresses: {
         listen: [
+          // Add a TCP listen address on port 0
           '/ip4/0.0.0.0/tcp/0',
-          '/ip4/127.0.0.1/tcp/0',
+          // Add a Websockets listen address on port 0
+          '/ip4/0.0.0.0/tcp/0/ws',
+          // Add the signaling server multiaddr
+          `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star/`,
         ],
       },
       // addresses: {
@@ -56,7 +60,6 @@ class PubSub {
         streamMuxer: [MPLEX],
         connEncryption: [SECIO],
         peerDiscovery: [MulticastDNS],
-        dht: DHT,
         pubsub: GossipSub,
       },
       config: {
@@ -73,11 +76,9 @@ class PubSub {
 
         peerDiscovery: {
           autoDial: true,
-          mdns: {
+          [MulticastDNS.tag]: {
+            interval: 20e3,
             enabled: true,
-            interval: 200, // discover quickly
-            // use a random tag to prevent CI collision
-            serviceTag: uint8ArrayToString(crypto.randomBytes(10), 'base16'),
           },
         },
         // peerDiscovery: {
