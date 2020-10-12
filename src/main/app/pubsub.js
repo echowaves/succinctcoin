@@ -1,27 +1,29 @@
 import globalConfig from '../../config'
 
 const Libp2p = require('libp2p')
-const WebRTCStar = require('libp2p-webrtc-star')
+// Transports
 const TCP = require('libp2p-tcp')
-const crypto = require('libp2p-crypto')
-
-const wrtc = require('wrtc')
 const Websockets = require('libp2p-websockets')
+const WebrtcStar = require('libp2p-webrtc-star')
+// wrtc for node to supplement WebrtcStar
+const wrtc = require('wrtc')
 
-const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
+const SignalingServer = require('libp2p-webrtc-star/src/sig-server')
 
-const MPLEX = require('libp2p-mplex')
-const SECIO = require('libp2p-secio')
+const transportKey = WebrtcStar.prototype[Symbol.toStringTag]
 
-// const { NOISE } = require('libp2p-noise')
-
-const MulticastDNS = require('libp2p-mdns')
-const DHT = require('libp2p-kad-dht')
-const GossipSub = require('libp2p-gossipsub')
+// Stream Multiplexers
+const Mplex = require('libp2p-mplex')
+// Encryption
+const { NOISE } = require('libp2p-noise')
+// Discovery
+const MDNS = require('libp2p-mdns')
+// DHT
+const KademliaDHT = require('libp2p-kad-dht')
+// PubSub
+const Gossipsub = require('libp2p-gossipsub')
 
 const Room = require('ipfs-pubsub-room')
-
-const uint8ArrayToString = require('uint8arrays/to-string')
 
 // express app
 
@@ -36,58 +38,53 @@ class PubSub {
   async discoverPeers() {
     // create a node, assign to the class variable, discover peers,
     // and have the node establish connections to the peers
+    const signalingServer = await SignalingServer.start({
+      port: 15555,
+    })
+
     const node = await Libp2p.create({
       addresses: {
+      //   // Add the signaling server address, along with our PeerId to our multiaddrs list
+      //   // libp2p will automatically attempt to dial to the signaling server so that it can
+      //   // receive inbound connections from other peers
         listen: [
-          // Add a TCP listen address on port 0
-          '/ip4/0.0.0.0/tcp/0',
-          // Add a Websockets listen address on port 0
-          '/ip4/0.0.0.0/tcp/0/ws',
-          // Add the signaling server multiaddr
-          `/ip4/127.0.0.1/tcp/15555/ws/p2p-webrtc-star/`,
+          '/ip4/0.0.0.0/tcp/63785',
+          '/ip4/0.0.0.0/tcp/63786/ws',
+          `/ip4/${signalingServer.info.host}/tcp/${signalingServer.info.port}/ws/p2p-webrtc-star`,
         ],
       },
-      // addresses: {
-      // //   // Add the signaling server address, along with our PeerId to our multiaddrs list
-      // //   // libp2p will automatically attempt to dial to the signaling server so that it can
-      // //   // receive inbound connections from other peers
-      //   listen: [
-      //     '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-      //     '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-      //   ],
-      // },
       modules: {
-        transport: [TCP, Websockets, WebRTCStar],
-        streamMuxer: [MPLEX],
-        connEncryption: [SECIO],
-        peerDiscovery: [MulticastDNS],
-        pubsub: GossipSub,
+        transport: [WebrtcStar, TCP, Websockets],
+        streamMuxer: [Mplex],
+        connEncryption: [NOISE],
+        peerDiscovery: [MDNS],
+        dht: KademliaDHT,
+        pubsub: Gossipsub,
       },
       config: {
-        // transport: {
-        //   [transportKey]: {
-        //     wrtc, // You can use `wrtc` when running in Node.js
-        //   },
-        // },
-        // peerDiscovery: {
-        //   webRTCStar: {
-        //     enabled: true,
-        //   },
-        // },
-
-        peerDiscovery: {
-          autoDial: true,
-          [MulticastDNS.tag]: {
-            interval: 20e3,
+        transport: {
+          [transportKey]: {
+            wrtc, // You can use `wrtc` when running in Node.js
+          },
+        },
+        relay: {
+          enabled: true,
+          hop: {
+            enabled: true,
+            active: false,
+          },
+        },
+        dht: {
+          enabled: true,
+          randomWalk: {
             enabled: true,
           },
         },
-        // peerDiscovery: {
-        //   [MulticastDNS.tag]: {
-        //     interval: 20e3,
-        //     enabled: true,
-        //   },
-        // },
+        peerDiscovery: {
+          webRTCStar: {
+            enabled: true,
+          },
+        },
         pubsub: { // The pubsub options (and defaults) can be found in the pubsub router documentation
           enabled: true,
           emitSelf: true, // whether the node should emit to self on publish
@@ -101,15 +98,15 @@ class PubSub {
         //     active: true,
         //   },
         // },
-        dht: { // The DHT options (and defaults) can be found in its documentation
-          kBucketSize: 20,
-          enabled: true,
-          randomWalk: {
-            enabled: true, // Allows to disable discovery (enabled by default)
-            interval: 15e3,
-            timeout: 10e3,
-          },
-        },
+        // dht: { // The DHT options (and defaults) can be found in its documentation
+        //   kBucketSize: 20,
+        //   enabled: true,
+        //   randomWalk: {
+        //     enabled: true, // Allows to disable discovery (enabled by default)
+        //     interval: 15e3,
+        //     timeout: 10e3,
+        //   },
+        // },
       },
     })
 
