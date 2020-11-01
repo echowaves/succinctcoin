@@ -24,7 +24,7 @@ class PubSub {
     this.blockchain = blockchain
     this.transactionPool = transactionPool
     this.wallet = wallet
-    this.discoverPeers()
+    this.discoverPeers() // this is where it hangs
   }
 
   async discoverPeers() {
@@ -91,6 +91,7 @@ class PubSub {
     // await node.peerStore.addressBook.add('/ip4/0.0.0.0/tcp/0')
 
     await node.start()
+
     console.log('libp2p has started') // eslint-disable-line no-console
 
     this.blockChainRoom = new Room(node, globalConfig.CHANNELS.BLOCKCHAIN)

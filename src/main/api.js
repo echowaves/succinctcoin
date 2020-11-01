@@ -26,9 +26,9 @@ const transactionPool = new TransactionPool()
 let wallet
 let account
 let pubsub
-let transactionMiner;
+let transactionMiner
 
-(async () => {
+const init = async () => {
   wallet = await (new Wallet()).retrieveThrough()
   account = await wallet.getAccount() // ensure that the account is created and stored on disk
   pubsub = new PubSub({ blockchain, transactionPool, wallet })
@@ -36,7 +36,7 @@ let transactionMiner;
   transactionMiner = new TransactionMiner({
     blockchain, transactionPool, wallet, pubsub,
   })
-})()
+}
 
 api.use(bodyParser.json())
 api.use(express.static(path.join(__dirname, 'client/dist')))
@@ -157,4 +157,4 @@ const syncWithRootState = () => {
     })
 }
 
-export default { api, syncWithRootState }
+export default { api, syncWithRootState, init }

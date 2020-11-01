@@ -14,11 +14,14 @@ const isDev = require("electron-is-dev")
 
 let mainWindow
 
-function createMainWindow() {
-  api.api.listen(globalConfig.DEFAULT_PORT, () => {
-    console.log(`listening at localhost:${globalConfig.DEFAULT_PORT}`) // eslint-disable-line no-console
+// app.disableHardwareAcceleration()
 
-    api.syncWithRootState()
+const createMainWindow = async () => {
+  await api.init()
+
+  api.api.listen(globalConfig.DEFAULT_PORT, async () => {
+    console.log(`listening at localhost:${globalConfig.DEFAULT_PORT}`) // eslint-disable-line no-console
+    await api.syncWithRootState()
   })
 
   mainWindow = new BrowserWindow({
@@ -34,13 +37,16 @@ function createMainWindow() {
 
   // use this to open dev tools manualy to debug
   if (isDev) {
-    mainWindow.webContents.openDevTools()
-  }
-
-  if (isDev) {
-    mainWindow.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
+    try {
+      mainWindow.webContents.openDevTools()
+      await mainWindow.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
+      console.log('opened window with dev tools ----------------------------------------------')
+    } catch (error) {
+      console.log("error happened ---------------------------------------------------")
+      console.log(error)
+    }
   } else {
-    mainWindow.loadURL(formatUrl({
+    await mainWindow.loadURL(formatUrl({
       pathname: path.join(__dirname, 'index.html'),
       protocol: 'file',
       slashes: true,
@@ -48,9 +54,9 @@ function createMainWindow() {
   }
 }
 
-app.on('ready', () => {
+app.on('ready', async () => {
   // api.api()
-  createMainWindow()
+  await createMainWindow()
 })
 
 app.on("window-all-closed", () => {
@@ -59,8 +65,8 @@ app.on("window-all-closed", () => {
   }
 })
 
-app.on('activate', () => {
+app.on('activate', async () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow()
+    await createMainWindow()
   }
 })
