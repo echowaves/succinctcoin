@@ -24,7 +24,7 @@ class PubSub {
     this.blockchain = blockchain
     this.transactionPool = transactionPool
     this.wallet = wallet
-    this.discoverPeers() // this is where it hangs
+    // this.discoverPeers() // this is where it hangs
   }
 
   async discoverPeers() {

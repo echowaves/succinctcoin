@@ -32,6 +32,12 @@ const init = async () => {
   wallet = await (new Wallet()).retrieveThrough()
   account = await wallet.getAccount() // ensure that the account is created and stored on disk
   pubsub = new PubSub({ blockchain, transactionPool, wallet })
+  try {
+    await pubsub.discoverPeers()
+  } catch (error) {
+    console.error('error discovering peers') // eslint-disable-line no-console
+    console.error(error) // eslint-disable-line no-console
+  }
 
   transactionMiner = new TransactionMiner({
     blockchain, transactionPool, wallet, pubsub,
