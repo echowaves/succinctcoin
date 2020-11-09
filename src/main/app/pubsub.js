@@ -1,10 +1,11 @@
 import globalConfig from '../../config'
 
 const Libp2p = require('libp2p')
-const WebRTCStar = require('libp2p-webrtc-star')
-const wrtc = require('wrtc')
 
-const transportKey = WebRTCStar.prototype[Symbol.toStringTag]
+const KadDHT = require('libp2p-kad-dht')
+const TCP = require('libp2p-tcp')
+
+const wrtc = require('wrtc')
 
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
@@ -36,28 +37,20 @@ class PubSub {
       //   // libp2p will automatically attempt to dial to the signaling server so that it can
       //   // receive inbound connections from other peers
         listen: [
-          '/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
-          '/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star',
+          '/ip4/0.0.0.0/tcp/0',
         ],
       },
       modules: {
-        transport: [WebRTCStar],
+        transport: [TCP],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO],
-        // peerDiscovery: [MulticastDNS],
-        // dht: DHT,
+        peerDiscovery: [],
+        dht: KadDHT,
         pubsub: GossipSub,
       },
       config: {
-        transport: {
-          [transportKey]: {
-            wrtc, // You can use `wrtc` when running in Node.js
-          },
-        },
         peerDiscovery: {
-          webRTCStar: {
-            enabled: true,
-          },
+          autoDial: true,
         },
         pubsub: { // The pubsub options (and defaults) can be found in the pubsub router documentation
           enabled: true,
@@ -72,15 +65,15 @@ class PubSub {
         //     active: true,
         //   },
         // },
-        // dht: { // The DHT options (and defaults) can be found in its documentation
-        //   kBucketSize: 20,
-        //   enabled: true,
-        //   randomWalk: {
-        //     enabled: true, // Allows to disable discovery (enabled by default)
-        //     interval: 15e3,
-        //     timeout: 10e3,
-        //   },
-        // },
+        dht: { // The DHT options (and defaults) can be found in its documentation
+          // kBucketSize: 20,
+          enabled: true,
+          randomWalk: {
+            enabled: true, // Allows to disable discovery (enabled by default)
+            // interval: 15e3,
+            // timeout: 10e3,
+          },
+        },
       },
     })
 

@@ -9334,7 +9334,7 @@ libp2p-interfaces@^0.6.0:
     streaming-iterables "^5.0.2"
     uint8arrays "^1.1.0"
 
-libp2p-kad-dht@^0.20.1:
+libp2p-kad-dht@0.20.1, libp2p-kad-dht@^0.20.1:
   version "0.20.1"
   resolved "https://registry.yarnpkg.com/libp2p-kad-dht/-/libp2p-kad-dht-0.20.1.tgz#fa72ded6dcc18fccd4a4a891849de88cd06ddc00"
   integrity sha512-khffe6L6O6oU53LO8BrI3bULH4i6FLibvFEyV+7FAPXnFYhTKHa9TsIifkL/MEAfLI0hI9QN4NwMf0DpOLMvDA==
@@ -9497,7 +9497,7 @@ libp2p-webrtc-peer@^10.0.1:
     randombytes "^2.0.3"
     readable-stream "^3.4.0"
 
-libp2p-webrtc-star@0.20.1, libp2p-webrtc-star@^0.20.1:
+libp2p-webrtc-star@^0.20.1:
   version "0.20.1"
   resolved "https://registry.yarnpkg.com/libp2p-webrtc-star/-/libp2p-webrtc-star-0.20.1.tgz#9c49e1cc26bd4cd0f508f3b16dff058154e4b1c4"
   integrity sha512-VQNL24A3rN1/9U0fTO8MqUx3+6d99iz/HvPI3p+IzHb6MgBe7er+rgbvRep7uheZ2894IxiJI848Vs0ZNypn2w==
