@@ -6,8 +6,6 @@ const KadDHT = require('libp2p-kad-dht')
 const TCP = require('libp2p-tcp')
 const MDNS = require('libp2p-mdns')
 
-const wrtc = require('wrtc')
-
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 
@@ -67,12 +65,12 @@ class PubSub {
         //   },
         // },
         dht: { // The DHT options (and defaults) can be found in its documentation
-          // kBucketSize: 20,
+          kBucketSize: 20,
           enabled: true,
           randomWalk: {
             enabled: true, // Allows to disable discovery (enabled by default)
-            // interval: 15e3,
-            // timeout: 10e3,
+            interval: 300e3,
+            timeout: 10e3,
           },
         },
       },
