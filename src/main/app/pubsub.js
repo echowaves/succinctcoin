@@ -4,6 +4,7 @@ const Libp2p = require('libp2p')
 
 const KadDHT = require('libp2p-kad-dht')
 const TCP = require('libp2p-tcp')
+const MDNS = require('libp2p-mdns')
 
 const wrtc = require('wrtc')
 
@@ -44,7 +45,7 @@ class PubSub {
         transport: [TCP],
         streamMuxer: [MPLEX],
         connEncryption: [SECIO],
-        peerDiscovery: [],
+        peerDiscovery: [MDNS],
         dht: KadDHT,
         pubsub: GossipSub,
       },
