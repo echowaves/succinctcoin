@@ -30,7 +30,10 @@ class PubSub {
   async discoverPeers() {
     // create a node, assign to the class variable, discover peers,
     // and have the node establish connections to the peers
+    // const peerId = await PeerId.create()
+
     const node = await Libp2p.create({
+      // peerId,
       addresses: {
       //   // Add the signaling server address, along with our PeerId to our multiaddrs list
       //   // libp2p will automatically attempt to dial to the signaling server so that it can
@@ -65,12 +68,12 @@ class PubSub {
         //   },
         // },
         dht: { // The DHT options (and defaults) can be found in its documentation
-          kBucketSize: 20,
+          // kBucketSize: 20,
           enabled: true,
           randomWalk: {
             enabled: true, // Allows to disable discovery (enabled by default)
-            interval: 300e3,
-            timeout: 10e3,
+            // interval: 300e3,
+            // timeout: 10e3,
           },
         },
       },
@@ -83,8 +86,13 @@ class PubSub {
     // await node.peerStore.addressBook.add('/ip4/0.0.0.0/tcp/0')
 
     await node.start()
-
     console.log('libp2p has started') // eslint-disable-line no-console
+
+    console.log(node.multiaddrs)
+    console.log(node.addressManager.getListenAddrs())
+    console.log(node.addressManager.getAnnounceAddrs())
+    console.log(node.addressManager.getNoAnnounceAddrs())
+    console.log(node.transportManager.getAddrs())
 
     this.blockChainRoom = new Room(node, globalConfig.CHANNELS.BLOCKCHAIN)
     this.transactionRoom = new Room(node, globalConfig.CHANNELS.TRANSACTION)
