@@ -1,24 +1,23 @@
 import globalConfig from '../../config'
 
-const Libp2p = require('libp2p')
+import { createLibp2p } from 'libp2p'
 
-const KadDHT = require('libp2p-kad-dht')
-const TCP = require('libp2p-tcp')
-const MDNS = require('libp2p-mdns')
+import { TCP } from '@libp2p/tcp'
 
-const MPLEX = require('libp2p-mplex')
-const SECIO = require('libp2p-secio')
+import { MulticastDNS } from '@libp2p/mdns'
 
-// const { NOISE } = require('libp2p-noise')
+import { Mplex } from '@libp2p/mplex'
 
-// const MulticastDNS = require('libp2p-mdns')
-// const DHT = require('libp2p-kad-dht')
-const GossipSub = require('libp2p-gossipsub')
+import {NOISE} from "@chainsafe/libp2p-noise"
 
-const Room = require('ipfs-pubsub-room')
+// import { Gossipsub } from 'libp2p-gossipsub'
+
+import Room from 'ipfs-pubsub-room'
+
+import { create } from '@libp2p/kad-dht'
+
 
 // express app
-
 class PubSub {
   constructor({ blockchain, transactionPool, wallet }) {
     this.blockchain = blockchain
@@ -32,7 +31,13 @@ class PubSub {
     // and have the node establish connections to the peers
     // const peerId = await PeerId.create()
 
-    const node = await Libp2p.create({
+    const customDHT = create({
+      libp2p,
+      protocolPrefix: '/custom'
+    })
+    await customDHT.start()
+
+    const node = await createLibp2p({
       // peerId,
       addresses: {
       //   // Add the signaling server address, along with our PeerId to our multiaddrs list
@@ -43,12 +48,11 @@ class PubSub {
         ],
       },
       modules: {
-        transport: [TCP],
-        streamMuxer: [MPLEX],
-        connEncryption: [SECIO],
-        peerDiscovery: [MDNS],
-        dht: KadDHT,
-        pubsub: GossipSub,
+        transport: [new TCP()],
+        streamMuxer: [new Mplex()],
+        peerDiscovery: [new MulticastDNS()],
+        connEncryption: [NOISE],
+        // pubsub: new Gossipsub(),
       },
       config: {
         peerDiscovery: {

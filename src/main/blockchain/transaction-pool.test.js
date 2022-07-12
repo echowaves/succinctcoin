@@ -7,7 +7,6 @@ import Blockchain from './index'
 
 // import config from '../config'
 //
-// const fs = require('fs-extra')
 // const path = require('path')
 
 describe('TransactionPool', () => {

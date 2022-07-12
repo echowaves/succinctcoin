@@ -4,7 +4,6 @@ import Blockchain from './index'
 import Block from './block'
 // import config from '../config'
 //
-// const fs = require('fs-extra')
 // const path = require('path')
 
 describe('Blockchain', () => {

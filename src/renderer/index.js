@@ -17,5 +17,5 @@ render(
       <Route path="/transaction-pool" component={TransactionPool} />
     </Switch>
   </HashRouter>,
-  document.getElementById('app')
+  document.body
 )

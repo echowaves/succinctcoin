@@ -5,7 +5,6 @@ import Crypto from '../util/crypto'
 
 import config from '../config'
 
-// const fs = require('fs-extra')
 const path = require('path')
 
 const Big = require('big.js')

@@ -13,7 +13,6 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const fetch = require("node-fetch")
 const path = require('path')
-// const fs = require('fs-extra')
 const fs1 = require('fs') // TODO: remove
 
 const cors = require('cors')
@@ -22,7 +21,7 @@ const api = express()
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 
-// try to retreive from disk
+// try to retreive from diskx 
 let wallet
 let account
 let pubsub
