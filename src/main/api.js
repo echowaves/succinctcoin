@@ -1,3 +1,5 @@
+import fetch from 'electron-fetch'
+
 import Blockchain from './blockchain'
 import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
@@ -11,7 +13,6 @@ const Big = require('big.js')
 
 const bodyParser = require('body-parser')
 const express = require('express')
-const fetch = require("node-fetch")
 const path = require('path')
 const fs1 = require('fs') // TODO: remove
 
