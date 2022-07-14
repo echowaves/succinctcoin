@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import fetch from 'electron-fetch'
 
 import { Link } from 'react-router-dom'
-import logo from '../../static/assets/logo.png'
+// import logo from '../../static/assets/logo.png'
 
 import globalConfig from '../../config'
+// <img className="logo" alt="succinct logo" src={logo}/> 
 
 class App extends Component {
   constructor(props) {
@@ -25,7 +26,6 @@ class App extends Component {
 
     return (
       <div className="App">
-        <img className="logo" alt="succinct logo" src={logo} />
         <br />
         <div>
           Welcome to the blockchain...
