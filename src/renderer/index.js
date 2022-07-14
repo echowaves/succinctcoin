@@ -5,6 +5,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
+  Routes, 
 } from "react-router-dom"
 
 
@@ -17,12 +18,14 @@ import './index.css'
 function render() {
   ReactDOM.render(
     <Router>
-      <Switch>
-        <Route exact path="/" component={App} />
-        <Route path="/blocks" component={Blocks} />
-        <Route path="/conduct-transaction" component={ConductTransaction} />
-        <Route path="/transaction-pool" component={TransactionPool} />
-      </Switch>
+      <Routes>
+        <Switch>
+          <Route exact path="/" component={App} />
+          <Route path="/blocks" component={Blocks} />
+          <Route path="/conduct-transaction" component={ConductTransaction} />
+          <Route path="/transaction-pool" component={TransactionPool} />
+        </Switch>
+      </Routes>
     </Router>,
     document.body
   )

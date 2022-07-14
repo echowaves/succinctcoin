@@ -28,14 +28,16 @@ const createWindow = async() => {
     width: isDev ? 1600 : 800,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       enableRemoteModule: true,
       nodeIntegration: true,
     },
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  // mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
