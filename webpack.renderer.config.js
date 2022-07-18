@@ -6,6 +6,7 @@ rules.push({
 });
 
 module.exports = {
+  target: 'node',
   // Put your normal webpack config below here
   module: {
     rules,

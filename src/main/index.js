@@ -29,9 +29,16 @@ const createWindow = async() => {
     height: 800,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-      enableRemoteModule: true,
       nodeIntegration: true,
+      // nodeIntegrationInWorker: true,
+      contextIsolation: false,
+      // webSecurity: true,
+      // allowRunningInsecureContent: true,
+      // experimentalFeatures: true,
     },
+    // resizable: false,
+    // icon: 'logo.png',
+    // frame: false,
   });
 
   // and load the index.html of the app.
@@ -40,7 +47,7 @@ const createWindow = async() => {
 
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if(isDev) mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished

@@ -1,34 +1,37 @@
-import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+import React from 'react'
+
+import { createRoot } from "react-dom/client";
+
+// import isDev from "electron-is-dev"
 
 import {
-  BrowserRouter as Router,
-  Route,
+  MemoryRouter,
   Routes, 
+  Route,
 } from "react-router-dom"
 
 
 import App from './components/App'
-import Blocks from './components/Blocks'
-import ConductTransaction from './components/ConductTransaction'
-import TransactionPool from './components/TransactionPool'
+// import Blocks from './components/Blocks'
+// import ConductTransaction from './components/ConductTransaction'
+// import TransactionPool from './components/TransactionPool'
 
 import './index.css'
 
 console.log('!!!!!!!!!!!!!!!!!!!!!!!!! loading !!!!!!!!!!!!!!!!!!!!!!!!!!!')
+const rootElement = document.getElementById("root")
+const root = createRoot(rootElement)
 
-function render() {
-  ReactDOM.render(
-    <Router>
+root.render(
+    <MemoryRouter>
       <Routes>
-        <Route exact path="/" component={App} />
-        <Route path="/blocks" component={Blocks} />
-        <Route path="/conduct-transaction" component={ConductTransaction} />
-        <Route path="/transaction-pool" component={TransactionPool} />
+        <Route path="/" element={<App/>} >
+          {/*<Route path="/blocks" element={<Blocks/>} />*/}
+        </Route>
       </Routes>
-    </Router>,
-    document.body
+    </MemoryRouter>
   )
-}
 
-render()
+
+// <Route path="/conduct-transaction" component={ConductTransaction} />
+// <Route path="/transaction-pool" component={TransactionPool} />

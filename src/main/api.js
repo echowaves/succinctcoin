@@ -1,3 +1,5 @@
+const { ipcMain } = require('electron')
+
 import fetch from 'electron-fetch'
 
 import Blockchain from './blockchain'
@@ -49,6 +51,10 @@ api.use(express.static(path.join(__dirname, 'client/dist')))
 
 // enable CORS
 api.use(cors())
+
+ipcMain.on('/api/blocks', (event, arg) => {
+ 
+})
 
 api.get('/api/blocks', (req, res) => {
   res.json(blockchain.chain)
@@ -125,6 +131,19 @@ api.get('/api/transaction-pool-map', (req, res) => {
   res.json(transactionPool.transactionMap)
 })
 
+
+ipcMain.on('/api/wallet-info', (event, arg) => {  
+  const address = wallet.publicKey
+
+  const walletInfo = {
+    address,
+    account,
+  }
+  
+  console.log({walletInfo})
+  event.returnValue = walletInfo
+})
+
 api.get('/api/wallet-info', (req, res) => {
   const address = wallet.publicKey
 
@@ -162,5 +181,6 @@ const syncWithRootState = () => {
       transactionPool.setMap(rootTransactionPoolMap)
     })
 }
+
 
 export default { api, syncWithRootState, init }

@@ -57,7 +57,7 @@
               "entryPoints": [
                 {
                   "html": "./src/renderer/index.html",
-                  "js":   "./src/renderer/index.js",
+                  "js": "./src/renderer/index.js",
                   "name": "main_window",
                   "preload": {
                     "js": "./src/renderer/preload.js"
@@ -110,8 +110,6 @@
     "cross-env": "7.0.3",
     "css-loader": "^6.0.0",
     "electron": "19.0.8",
-    "electron-builder": "23.1.0",
-    "electron-webpack": "2.8.2",
     "eslint": "8.19.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-prettier": "8.5.0",

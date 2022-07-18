@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import fetch from 'electron-fetch'
 
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
