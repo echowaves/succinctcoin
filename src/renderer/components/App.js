@@ -23,7 +23,7 @@ const App = () => {
 
     return (
       <div className="App">
-        <img className="logo" alt="succinct logo" src="../static/assets/logo.png"/> 
+        <img className="logo" alt="succinct logo" src="/static/assets/logo.png"/> 
 
         <br />
         <div>
