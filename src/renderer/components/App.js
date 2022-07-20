@@ -5,10 +5,6 @@ import React, { useEffect, useState } from 'react'
 const {ipcRenderer} = window
 
 import { Link } from 'react-router-dom'
-// import logo from '../../static/assets/logo.png'
-
-// import globalConfig from '../../config'
-// <img className="logo" alt="succinct logo" src={logo}/> 
 
 
 const App = () => {  
@@ -27,6 +23,8 @@ const App = () => {
 
     return (
       <div className="App">
+        <img className="logo" alt="succinct logo" src="../static/assets/logo.png"/> 
+
         <br />
         <div>
           Welcome to the blockchain...
