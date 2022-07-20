@@ -5,11 +5,10 @@ import { createRoot } from "react-dom/client";
 // import isDev from "electron-is-dev"
 
 import {
-  MemoryRouter,
+  HashRouter,
   Routes, 
   Route,
 } from "react-router-dom"
-
 
 import App from './components/App'
 // import Blocks from './components/Blocks'
@@ -18,18 +17,18 @@ import App from './components/App'
 
 import './index.css'
 
-console.log('!!!!!!!!!!!!!!!!!!!!!!!!! loading !!!!!!!!!!!!!!!!!!!!!!!!!!!')
+console.log('!!!!!!!!!!!!!!!!!!!!!!!!! renderer !!!!!!!!!!!!!!!!!!!!!!!!!!!')
 const rootElement = document.getElementById("root")
 const root = createRoot(rootElement)
 
 root.render(
-    <MemoryRouter>
+    <HashRouter>
       <Routes>
-        <Route path="/" element={<App/>} >
+        <Route path="/" exact element={<App/>} >
           {/*<Route path="/blocks" element={<Blocks/>} />*/}
         </Route>
       </Routes>
-    </MemoryRouter>
+    </HashRouter>
   )
 
 
