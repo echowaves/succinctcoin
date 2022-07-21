@@ -13,15 +13,14 @@ body {
 }
 
 .logo {
-  height: 100px;
-  width: 100px;
+  height: 50px;
+  width: 50px;  
 }
 
 .App {
   align-items: center;
   display: flex;
   flex-direction: column;
-
 }
 
 .WalletInfo {
@@ -45,4 +44,17 @@ body {
 a, a:hover {
   color: #e66;
   text-decoration: underline;
+}
+
+
+.header {
+  text-align: center;
+}
+
+.custom-btn-toolbar {
+  display: inline !important;
+}
+
+.custom-btn-toolbar > .btn {
+  margin-right: 1rem;
 }
