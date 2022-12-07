@@ -33,7 +33,7 @@
 		"fs-extra": "9.0.1",
 		"ipfs": "0.51.0",
 		"ipfs-pubsub-room": "2.0.1",
-		"libp2p": "0.29.2",
+		"libp2p": "0.38.0",
 		"libp2p-gossipsub": "0.6.4",
 		"libp2p-kad-dht": "0.20.1",
 		"libp2p-mdns": "^0.15.0",
