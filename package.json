@@ -28,7 +28,7 @@
 		"bootstrap": "4.5.3",
 		"cors": "2.8.5",
 		"electron-is-dev": "1.2.0",
-		"express": "4.17.1",
+		"express": "4.17.3",
 		"flash-store": "0.20.6",
 		"fs-extra": "9.0.1",
 		"ipfs": "0.51.0",
