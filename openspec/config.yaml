@@ -1,20 +1,62 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Project: SuccinctCoin - a minimalistic cryptocurrency built as an Electron desktop app.
+  
+  Tech stack:
+  - Electron 19 + Electron Forge for desktop packaging
+  - React 18 with hooks for renderer UI
+  - Express.js API server in main process (port 3001 dev / 3333 prod)
+  - Webpack (separate main/renderer configs)
+  - Jest for testing (node environment)
+  - libp2p with TCP, FloodSub pubsub, mDNS peer discovery
+  - Node.js crypto (ECDSA prime256v1, SHA512)
+  - big.js for arbitrary-precision arithmetic
+  - obj2fs-hoc for persistence to ~/.succinctcoin/
+  
+  Architecture:
+  - src/main/ — Electron main process (blockchain, wallet, networking, API)
+  - src/main/blockchain/ — Core domain: Block, Transaction, Wallet, Account, TransactionPool
+  - src/main/app/ — Application services: PubSub (P2P), TransactionMiner
+  - src/main/util/ — Crypto utilities
+  - src/renderer/ — React UI with React Router + React Bootstrap
+  - src/renderer/components/ — Blocks, Wallet, ConductTransaction, TransactionPool
+  
+  Conventions:
+  - ES6 modules (import/export)
+  - Class-based OOP for domain entities
+  - Functional React components with hooks
+  - kebab-case file names, PascalCase class names
+  - Tests co-located with source (*.test.js)
+  - async/await for I/O, Promise.all() for parallelism
+  
+  Domain:
+  - Block reward: 100 coins
+  - Min transaction fee: 0.1% of amount
+  - Min stake: 200 coins
+  - Special addresses: *authorized-reward*, *authorized-stake*, *authorized-credit*
+  - Persistence: wallet, accounts/{hash}, blocks/{height}
+  - P2P channels: {ENV}-succinctcoin-BLOCKCHAIN, {ENV}-succinctcoin-TRANSACTION
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - Keep proposals focused on one capability area
+    - Consider impact on P2P message format for any blockchain changes
+    - Note any breaking changes to persisted data format
+  specs:
+    - Every requirement MUST have testable scenarios
+    - Use big.js for any amount/balance assertions
+    - Specify behavior for both valid and invalid inputs
+    - Cover P2P sync edge cases for distributed state
+  design:
+    - Reference existing persistence pattern (obj2fs-hoc) when applicable
+    - Consider Electron main/renderer process boundary
+    - Address backward compatibility with existing chain data
+  tasks:
+    - Keep tasks completable in a single session
+    - Include test task for each implementation task
+    - Order by dependency (data model → logic → API → UI → tests)
+    - When any task involves adding or updating npm dependencies, always use exact version numbers (no ^ or ~) in package.json.
+    - Always write code in a modular fashion, separating concerns into different files and components.    
+  dependencies:
+    - Do not add any new dependencies to the project unless the user explicitly requests or approves it. Solve problems using existing dependencies and built-in APIs first.  
