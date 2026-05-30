@@ -1,9 +1,9 @@
 import moment from 'moment'
 
-import Account from './account'
 import Crypto from '../util/crypto'
-
 import config from '../config'
+
+import Account from './account'
 
 const path = require('path')
 
@@ -86,7 +86,7 @@ describe('Account', () => {
       it('should fail subtracting amount bigger than `balance`', () => {
         expect(() => {
           account.subtractBalance({ amount: Big(amount).times(3).valueOf() })
-        }).toThrowError('trying to substract bigger amount than possible')
+        }).toThrow('trying to substract bigger amount than possible')
       })
     })
 
@@ -105,7 +105,7 @@ describe('Account', () => {
       it('should fail to add stake bigger than the `balance`', () => {
         expect(() => {
           account.addStake({ amount: Big(amount).times(3).valueOf() })
-        }).toThrowError('trying to substract bigger amount than possible')
+        }).toThrow('trying to substract bigger amount than possible')
       })
 
       it('should add increment `stakeTimestamp`', async () => {
@@ -140,7 +140,7 @@ describe('Account', () => {
       it('should fail subtracting amount bigger than `stake`', () => {
         expect(() => {
           account.subtractStake({ amount: Big(amount).times(3).valueOf() })
-        }).toThrowError('trying to substract bigger amount than possible')
+        }).toThrow('trying to substract bigger amount than possible')
       })
     })
 
@@ -164,7 +164,7 @@ describe('Account', () => {
       it('should fail to generate an `Account` object from wrong JSON', () => {
         expect(() => {
           account.parse('{ some: json }')
-        }).toThrowError('Unexpected token s in JSON at position 2')
+        }).toThrow('Unexpected token s in JSON at position 2')
       })
     })
 

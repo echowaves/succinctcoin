@@ -1,6 +1,5 @@
 import Wallet from './wallet'
 import Account from './account'
-
 import TransactionPool from './transaction-pool'
 
 import Blockchain from './index'
@@ -53,7 +52,7 @@ describe('TransactionPool', () => {
       transactionPool.setTransaction(transaction)
 
       expect(
-        transactionPool.existingTransaction({ sender: senderWallet.publicKey })
+        transactionPool.existingTransaction({ sender: senderWallet.publicKey }),
       ).toBe(transaction)
     })
   })
@@ -73,7 +72,7 @@ describe('TransactionPool', () => {
         // create account associated with wallet (sender's account)
         account = new Account({ publicKey: senderWallet.publicKey })
         account.balance = '50'
-        await account.store() // eslint-disable-line no-await-in-loop
+        await account.store()
 
         amount = '29'
         fee = '1'

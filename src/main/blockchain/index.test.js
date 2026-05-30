@@ -1,7 +1,8 @@
 import Account from './account'
 import Wallet from './wallet'
-import Blockchain from './index'
 import Block from './block'
+
+import Blockchain from './index'
 // import config from '../config'
 //
 // const path = require('path')

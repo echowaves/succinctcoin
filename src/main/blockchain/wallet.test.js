@@ -66,12 +66,12 @@ describe('Wallet', () => {
     it('does not verify an invalid signature', () => {
       transaction.signature = 'invalid signature'
       expect(
-        transaction.verifySignature()
+        transaction.verifySignature(),
       ).toBe(false)
     })
     it('verifies a signature', () => {
       expect(
-        transaction.verifySignature()
+        transaction.verifySignature(),
       ).toBe(true)
     })
   })

@@ -1,16 +1,18 @@
 import Obj2fsHOC from 'obj2fs-hoc'
 
 import Crypto from '../util/crypto'
+import config from '../config'
+
 import Transaction from './transaction'
 import Account from './account'
 
-import config from '../config'
+
+const crypto = require('crypto')
+const path = require('path')
 
 const Big = require('big.js')
 
-const crypto = require('crypto')
 
-const path = require('path')
 
 class Wallet {
   constructor() {

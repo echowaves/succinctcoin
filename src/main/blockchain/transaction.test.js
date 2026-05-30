@@ -1,13 +1,14 @@
 import { v4 as uuidv4 } from 'uuid'
 import moment from 'moment'
 
+import config from '../config'
+
 import Wallet from './wallet'
 import Account from './account'
 import Transaction from './transaction'
 
 // import { FlashStore } from 'flash-store'
 
-import config from '../config'
 //
 // const path = require('path')
 
@@ -87,7 +88,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('No such key or file name found on disk')
+            .toThrow('No such key or file name found on disk')
         })
       })
 
@@ -98,7 +99,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Sender invalid')
+            .toThrow('Sender invalid')
         })
       })
 
@@ -109,7 +110,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Sender and Recipient are the same')
+            .toThrow('Sender and Recipient are the same')
         })
       })
 
@@ -120,7 +121,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Recipient invalid')
+            .toThrow('Recipient invalid')
         })
       })
 
@@ -132,7 +133,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Amount exceeds balance')
+            .toThrow('Amount exceeds balance')
         })
       })
 
@@ -143,7 +144,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Amount invalid')
+            .toThrow('Amount invalid')
         })
       })
 
@@ -154,7 +155,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Amount invalid')
+            .toThrow('Amount invalid')
         })
       })
 
@@ -165,7 +166,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Fee invalid')
+            .toThrow('Fee invalid')
         })
       })
 
@@ -176,7 +177,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Invalid transaction signature')
+            .toThrow('Invalid transaction signature')
         })
       })
 
@@ -188,7 +189,7 @@ describe('Transaction', () => {
           it('throws an error', async () => {
             await expect(transaction.validate())
               .rejects
-              .toThrowError('Invalid transaction signature')
+              .toThrow('Invalid transaction signature')
           })
         })
         describe('when `timestamp` is altered', () => {
@@ -198,7 +199,7 @@ describe('Transaction', () => {
           it('throws an error', async () => {
             await expect(transaction.validate())
               .rejects
-              .toThrowError('Invalid transaction signature')
+              .toThrow('Invalid transaction signature')
           })
         })
         describe('when `sender` is altered', () => {
@@ -212,7 +213,7 @@ describe('Transaction', () => {
           it('throws an error', async () => {
             await expect(transaction.validate())
               .rejects
-              .toThrowError('Invalid transaction signature')
+              .toThrow('Invalid transaction signature')
           })
         })
         describe('when `recipient` is altered', () => {
@@ -226,7 +227,7 @@ describe('Transaction', () => {
           it('throws an error', async () => {
             await expect(transaction.validate())
               .rejects
-              .toThrowError('Invalid transaction signature')
+              .toThrow('Invalid transaction signature')
           })
         })
         describe('when `ammount` is altered', () => {
@@ -236,7 +237,7 @@ describe('Transaction', () => {
           it('throws an error', async () => {
             await expect(transaction.validate())
               .rejects
-              .toThrowError('Invalid transaction signature')
+              .toThrow('Invalid transaction signature')
           })
         })
         describe('when `fee` is altered', () => {
@@ -246,7 +247,7 @@ describe('Transaction', () => {
           it('throws an error', async () => {
             await expect(transaction.validate())
               .rejects
-              .toThrowError('Invalid transaction signature')
+              .toThrow('Invalid transaction signature')
           })
         })
       })
@@ -258,7 +259,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Invalid reward amount')
+            .toThrow('Invalid reward amount')
         })
       })
 
@@ -269,7 +270,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Invalid reward fee')
+            .toThrow('Invalid reward fee')
         })
       })
 
@@ -280,7 +281,7 @@ describe('Transaction', () => {
         it('throws an error', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Invalid stake amount')
+            .toThrow('Invalid stake amount')
         })
       })
     })
@@ -308,7 +309,7 @@ describe('Transaction', () => {
         it('should fail', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Stake too high')
+            .toThrow('Stake too high')
         })
       })
       describe('when trying to release less than currently staked', () => {
@@ -326,7 +327,7 @@ describe('Transaction', () => {
         it('should fail', async () => {
           await expect(transaction.validate())
             .rejects
-            .toThrowError('Not enough stake')
+            .toThrow('Not enough stake')
         })
       })
     })

@@ -1,12 +1,12 @@
 import Obj2fsHOC from 'obj2fs-hoc'
-
 import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid'
 
 import Crypto from '../util/crypto'
+import config from '../config'
+
 import Account from './account'
 
-import config from '../config'
 
 const Big = require('big.js')
 

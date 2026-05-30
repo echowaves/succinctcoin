@@ -1,5 +1,6 @@
-import Crypto from './crypto'
 import Wallet from '../blockchain/wallet'
+
+import Crypto from './crypto'
 
 describe('Crypto', () => {
   describe('Crypto.hash()', () => {

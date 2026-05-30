@@ -1,30 +1,26 @@
-const { ipcMain } = require('electron')
 
-import fetch from 'electron-fetch'
+import globalConfig from '../config'
 
 import Blockchain from './blockchain'
 import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
 import TransactionMiner from './app/transaction-miner'
-
-import globalConfig from '../config'
 import config from './config'
 import PubSub from './app/pubsub'
 
-const Big = require('big.js')
-
-const bodyParser = require('body-parser')
-const express = require('express')
 const path = require('path')
 const fs1 = require('fs') // TODO: remove
 
+const Big = require('big.js')
+const express = require('express')
+const { ipcMain } = require('electron')
 const cors = require('cors')
 
 const api = express()
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 
-// try to retreive from diskx 
+// try to retreive from diskx
 let wallet
 let account
 let pubsub
@@ -46,14 +42,14 @@ const init = async () => {
   })
 }
 
-api.use(bodyParser.json())
+api.use(express.json())
 api.use(express.static(path.join(__dirname, 'client/dist')))
 
 // enable CORS
 api.use(cors())
 
 ipcMain.on('/api/blocks', (event, arg) => {
- 
+
 })
 
 api.get('/api/blocks', (req, res) => {
@@ -132,15 +128,15 @@ api.get('/api/transaction-pool-map', (req, res) => {
 })
 
 
-ipcMain.on('/api/wallet-info', (event, arg) => {  
+ipcMain.on('/api/wallet-info', (event, arg) => {
   const address = wallet.publicKey
 
   const walletInfo = {
     address,
     account,
   }
-  
-  console.log({walletInfo})
+
+  console.log({ walletInfo })
   event.returnValue = walletInfo
 })
 
@@ -157,7 +153,7 @@ api.get('/api/wallet-info', (req, res) => {
 api.get('/api/known-addresses', (req, res) => {
   const addressMap = {}
   const files = fs1.readdirSync(`${config.STORE.ACCOUNTS}`)
-  files.forEach(file => addressMap[file] = file) // eslint-disable-line no-return-assign
+  files.forEach(file => addressMap[file] = file)
 
   res.json(Object.keys(addressMap))
 })

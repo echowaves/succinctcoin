@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+
 import Crypto from '../../main/util/crypto'
 
 const Transaction = ({ transaction }) => {

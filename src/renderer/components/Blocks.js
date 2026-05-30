@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import Block from './Block'
 
 import globalConfig from '../../config'
+
+import Block from './Block'
+
 
 class Blocks extends Component {
   constructor(props) {
