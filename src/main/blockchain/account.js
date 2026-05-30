@@ -1,5 +1,8 @@
 import Obj2fsHOC from 'obj2fs-hoc'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 import Crypto from '../util/crypto'
 import config from '../config'

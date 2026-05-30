@@ -5,7 +5,7 @@ import { tcp } from '@libp2p/tcp'
 import { mplex } from '@libp2p/mplex'
 import { noise } from '@chainsafe/libp2p-noise'
 import { mdns } from '@libp2p/mdns'
-import { floodSub } from '@libp2p/floodsub'
+import { floodsub } from '@libp2p/floodsub'
 
 import globalConfig from '../../config'
 
@@ -33,8 +33,11 @@ class PubSub {
       transports: [tcp()],
       streamMuxers: [mplex()],
       connectionEncrypters: [noise()],
-      pubsub: floodSub(),
+      pubsub: floodsub(),
+       })
 
+    await node.start()
+    console.log('>libp2p has started') // eslint-disable-line no-console
     // console.log(node.multiaddrs)
     // console.log(node.addressManager.getListenAddrs())
     // console.log(node.addressManager.getAnnounceAddrs())
