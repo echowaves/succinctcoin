@@ -134,8 +134,7 @@ export default [
       'no-unsafe-negation': 0,
 
       // Unused vars
-      'no-unused-vars': [1, { varsIgnorePattern: '(bindActionCreators|colors|chalk|dotenv|PropTypes)', args: 'none' }],
-
+       'no-unused-vars': [1, { varsIgnorePattern: '(bindActionCreators|colors|chalk|dotenv)', args: 'none' }],
       // Use before define
       'no-use-before-define': 0,
 
@@ -183,10 +182,10 @@ export default [
       'react/no-direct-mutation-state': 0,
       'react/no-multi-comp': 'warn',
       'react/no-set-state': 0,
-      'react/no-unknown-property': 'warn',
-      'react/prefer-es6-class': 'warn',
-      'react/prefer-stateless-function': 0,
-      'react/prop-types': 'warn',
+       'react/no-unknown-property': 'warn',
+        'react/prefer-es6-class': 'warn',
+        'react/prefer-stateless-function': 0,
+        'react/prop-types': 0,
       'react/react-in-jsx-scope': 0,
       'react/require-extension': 0,
       'react/self-closing-comp': 'warn',
