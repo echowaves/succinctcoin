@@ -1,11 +1,11 @@
 
 import Room from 'ipfs-pubsub-room'
 import { createLibp2p } from 'libp2p'
-import { TCP } from '@libp2p/tcp'
-import { Mplex } from '@libp2p/mplex'
-import { Noise } from '@chainsafe/libp2p-noise'
-import { MulticastDNS } from '@libp2p/mdns'
-import { FloodSub } from '@libp2p/floodsub'
+import { tcp } from '@libp2p/tcp'
+import { mplex } from '@libp2p/mplex'
+import { noise } from '@chainsafe/libp2p-noise'
+import { mdns } from '@libp2p/mdns'
+import { floodSub } from '@libp2p/floodsub'
 
 import globalConfig from '../../config'
 
@@ -30,14 +30,10 @@ class PubSub {
       addresses: {
         listen: ['/ip4/0.0.0.0/tcp/0'],
       },
-      transports: [new TCP()],
-      streamMuxers: [new Mplex()],
-      connectionEncryption: [new Noise()],
-      pubsub: new FloodSub(),
-    })
-
-    await node.start()
-    console.log('>libp2p has started') // eslint-disable-line no-console
+      transports: [tcp()],
+      streamMuxers: [mplex()],
+      connectionEncrypters: [noise()],
+      pubsub: floodSub(),
 
     // console.log(node.multiaddrs)
     // console.log(node.addressManager.getListenAddrs())
