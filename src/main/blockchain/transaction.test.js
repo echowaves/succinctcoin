@@ -9,7 +9,6 @@ import Transaction from './transaction'
 
 import config from '../config'
 //
-// const fs = require('fs-extra')
 // const path = require('path')
 
 describe('Transaction', () => {

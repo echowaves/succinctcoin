@@ -1,21 +1,13 @@
-import React from "react"
-import { render } from 'react-dom'
+import React from 'react'
+import { createRoot } from "react-dom/client";
 
-import { HashRouter, Switch, Route } from 'react-router-dom'
-import App from './components/App'
-import Blocks from './components/Blocks'
-import ConductTransaction from './components/ConductTransaction'
-import TransactionPool from './components/TransactionPool'
-import './index.css'
+import App from './App'
 
-render(
-  <HashRouter>
-    <Switch>
-      <Route exact path="/" component={App} />
-      <Route path="/blocks" component={Blocks} />
-      <Route path="/conduct-transaction" component={ConductTransaction} />
-      <Route path="/transaction-pool" component={TransactionPool} />
-    </Switch>
-  </HashRouter>,
-  document.getElementById('app')
-)
+// Importing the Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+console.log('!!!!!!!!!!!!!!!!!!!!!!!!! renderer !!!!!!!!!!!!!!!!!!!!!!!!!!!')
+const rootElement = document.getElementById("root")
+const root = createRoot(rootElement)
+
+root.render(<App />)

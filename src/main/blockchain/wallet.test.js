@@ -1,7 +1,6 @@
 import Wallet from './wallet'
 import Account from './account'
 
-// const fs = require('fs-extra')
 // const path = require('path')
 //
 // const { STORE } = require('../config')

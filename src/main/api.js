@@ -1,3 +1,7 @@
+const { ipcMain } = require('electron')
+
+import fetch from 'electron-fetch'
+
 import Blockchain from './blockchain'
 import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
@@ -11,9 +15,7 @@ const Big = require('big.js')
 
 const bodyParser = require('body-parser')
 const express = require('express')
-const fetch = require("node-fetch")
 const path = require('path')
-// const fs = require('fs-extra')
 const fs1 = require('fs') // TODO: remove
 
 const cors = require('cors')
@@ -22,7 +24,7 @@ const api = express()
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 
-// try to retreive from disk
+// try to retreive from diskx 
 let wallet
 let account
 let pubsub
@@ -49,6 +51,10 @@ api.use(express.static(path.join(__dirname, 'client/dist')))
 
 // enable CORS
 api.use(cors())
+
+ipcMain.on('/api/blocks', (event, arg) => {
+ 
+})
 
 api.get('/api/blocks', (req, res) => {
   res.json(blockchain.chain)
@@ -125,6 +131,19 @@ api.get('/api/transaction-pool-map', (req, res) => {
   res.json(transactionPool.transactionMap)
 })
 
+
+ipcMain.on('/api/wallet-info', (event, arg) => {  
+  const address = wallet.publicKey
+
+  const walletInfo = {
+    address,
+    account,
+  }
+  
+  console.log({walletInfo})
+  event.returnValue = walletInfo
+})
+
 api.get('/api/wallet-info', (req, res) => {
   const address = wallet.publicKey
 
@@ -162,5 +181,6 @@ const syncWithRootState = () => {
       transactionPool.setMap(rootTransactionPoolMap)
     })
 }
+
 
 export default { api, syncWithRootState, init }

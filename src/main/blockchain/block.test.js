@@ -8,7 +8,6 @@ import Crypto from '../util/crypto'
 
 import config from '../config'
 //
-// const fs = require('fs-extra')
 // const path = require('path')
 
 describe('Block', () => {
