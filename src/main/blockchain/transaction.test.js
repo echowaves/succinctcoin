@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import dayjs from 'dayjs'
 
 import config from '../config'
@@ -184,7 +184,7 @@ describe('Transaction', () => {
       describe('because failed to validate signature', () => {
         describe('when `uuid` is altered', () => {
           beforeEach(() => {
-            transaction.uuid = uuidv4()// alter uuid
+            transaction.uuid = randomUUID()// alter uuid
           })
           it('throws an error', async () => {
             await expect(transaction.validate())

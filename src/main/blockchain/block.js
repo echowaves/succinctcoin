@@ -1,5 +1,5 @@
 import Obj2fsHOC from 'obj2fs-hoc'
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 // import moment from 'moment'
 
 import Crypto from '../util/crypto'
@@ -10,7 +10,7 @@ const path = require('path')
 class Block {
   constructor({ lastBlock, data } = { lastBlock: null, data: [] }) {
     this.height = lastBlock ? lastBlock.height + 1 : 0
-    this.uuid = uuidv4()
+    this.uuid = randomUUID()
     // this.timestamp = moment.utc().valueOf() // assigned when block is created
     this.lastHash = lastBlock ? lastBlock.hash : ''
     this.hash = ''

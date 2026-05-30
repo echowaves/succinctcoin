@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { v4 as uuidv4 } from 'uuid'
+import { randomUUID } from 'crypto'
 
 import Crypto from '../util/crypto'
 import config from '../config'
@@ -301,7 +301,7 @@ describe('Block', () => {
         expect(minedBlock2.data.length).toBeGreaterThanOrEqual(1)
        })
       it('should contain not only valid transactions', async () => {
-        minedBlock2.data[0].uuid = uuidv4()
+        minedBlock2.data[0].uuid = randomUUID()
         // this will invalidate transaction hash
         await expect(minedBlock2.validate())
           .rejects
