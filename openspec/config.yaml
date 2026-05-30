@@ -43,8 +43,8 @@ context: |
        - Phase 5: PropTypes Migration (JSDoc annotations)
        - Phase 6: Electron 36 Upgrade (latest LTS)
        - Phase 7: Electron 42 Upgrade (Node.js 24, Chromium 138)
-        - Phase 8: Tooling Updates (Jest 30.4, Babel 10, Webpack 14, ESLint 9.39.4)
-rules:
+        - Phase 8: Tooling Updates (Jest 30.4, Babel 10, Webpack 14, ESLint 9.39.4)         - Phase 9: Express 5 Upgrade (Express 4 → 5.2.1)
+         - Phase 10: Fix POST /api/transact Bug (async pattern + pubsub rooms)rules:
   proposal:
        - Keep proposals focused on one capability area
        - Consider impact on P2P message format for any blockchain changes
