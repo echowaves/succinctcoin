@@ -1,5 +1,5 @@
 import Obj2fsHOC from 'obj2fs-hoc'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid'
 
 import Crypto from '../util/crypto'
@@ -19,7 +19,7 @@ class Transaction {
   }) {
     // transaction should not be stored on disk as a separate file, as such there is no need to define KEY
     this.uuid = uuidv4()
-    this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
+    this.timestamp = dayjs().utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
     this.sender = sender
     this.recipient = recipient
     this.amount = amount

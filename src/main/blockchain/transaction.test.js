@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 import config from '../config'
 
@@ -194,7 +194,7 @@ describe('Transaction', () => {
         })
         describe('when `timestamp` is altered', () => {
           beforeEach(() => {
-            transaction.timestamp = moment.utc().valueOf() // alter timestamp
+            transaction.timestamp = dayjs().utc().valueOf() // alter timestamp
           })
           it('throws an error', async () => {
             await expect(transaction.validate())

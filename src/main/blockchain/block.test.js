@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid'
 
 import Crypto from '../util/crypto'
@@ -289,13 +289,13 @@ describe('Block', () => {
           .toThrow('Invalid transaction signature')
       })
       it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', async () => {
-        minedBlock2.timestamp = moment.utc().add(1, 'second').valueOf()
+        minedBlock2.timestamp = dayjs().utc().add(1, 'second').valueOf()
         await expect(minedBlock2.validate())
           .rejects
           .toThrow('Invalid reward transaction timestamp')
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', async () => {
-        minedBlock2.data[1].timestamp = moment.utc().add(1, 'second').valueOf()
+        minedBlock2.data[1].timestamp = dayjs().utc().add(1, 'second').valueOf()
         await expect(minedBlock2.validate())
           .rejects
           .toThrow('Invalid transaction timestamp')

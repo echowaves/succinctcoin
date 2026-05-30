@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 import Crypto from '../util/crypto'
 import config from '../config'
@@ -113,7 +113,7 @@ describe('Account', () => {
         await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
         account.addStake({ amount })
         expect(account.stakeTimestamp).toBeGreaterThan(stakeTimestamp)
-        expect(account.stakeTimestamp).toBeLessThan(moment.utc(stakeTimestamp).add(1, 'second').valueOf())
+        expect(account.stakeTimestamp).toBeLessThan(dayjs(stakeTimestamp).utc().add(1, 'second').valueOf())
       })
     })
 
@@ -135,7 +135,7 @@ describe('Account', () => {
         await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
         account.subtractStake({ amount })
         expect(account.stakeTimestamp).toBeGreaterThan(stakeTimestamp)
-        expect(account.stakeTimestamp).toBeLessThan(moment.utc(stakeTimestamp).add(1, 'second').valueOf())
+        expect(account.stakeTimestamp).toBeLessThan(dayjs(stakeTimestamp).utc().add(1, 'second').valueOf())
       })
       it('should fail subtracting amount bigger than `stake`', () => {
         expect(() => {
