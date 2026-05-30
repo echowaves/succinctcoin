@@ -43,7 +43,7 @@ context: |
        - Phase 5: PropTypes Migration (JSDoc annotations)
        - Phase 6: Electron 36 Upgrade (latest LTS)
        - Phase 7: Electron 42 Upgrade (Node.js 24, Chromium 138)
-
+        - Phase 8: Tooling Updates (Jest 30.4, Babel 10, Webpack 14, ESLint 9.39.4)
 rules:
   proposal:
        - Keep proposals focused on one capability area
