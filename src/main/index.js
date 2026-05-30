@@ -31,7 +31,7 @@ const createWindow = async() => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: true,
       // nodeIntegrationInWorker: true,
-      contextIsolation: false,
+      contextIsolation: true,
       // webSecurity: true,
       // allowRunningInsecureContent: true,
       // experimentalFeatures: true,
