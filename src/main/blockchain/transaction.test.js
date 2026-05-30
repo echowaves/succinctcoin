@@ -194,7 +194,7 @@ describe('Transaction', () => {
         })
         describe('when `timestamp` is altered', () => {
           beforeEach(() => {
-            transaction.timestamp = dayjs().utc().valueOf() // alter timestamp
+            transaction.timestamp = dayjs().utc().add(1, 'day').valueOf() // alter timestamp to future
           })
           it('throws an error', async () => {
             await expect(transaction.validate())
@@ -232,7 +232,7 @@ describe('Transaction', () => {
         })
         describe('when `ammount` is altered', () => {
           beforeEach(() => {
-            transaction.ammount = 1 // alter ammount
+            transaction.amount = 1 // alter amount
           })
           it('throws an error', async () => {
             await expect(transaction.validate())

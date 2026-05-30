@@ -57,11 +57,9 @@ class Block {
       return true
     }
 
-    if (this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}' || this.data.length === 0) {
+    if ((this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}') || (this.data.length === 0 && this.height > 3)) {
       throw new Error('Bad data')
     }
-
-    // check the the data contains non empty array, height > 3 allows the first 3 miners to mine empty blocks, to be able to bootstrap initial balance
     if (this.data.length === 1 && this.data[0].recipient === config.REWARD_ADDRESS && this.height > 3) {
       throw new Error('Empty data')
     }
@@ -82,9 +80,9 @@ class Block {
       throw new Error('Invalid height')
     }
 
-    // timestamp of each transaction must be less than timestamp of block
+    // timestamp of each transaction must be less than or equal to timestamp of block
     this.data.forEach(transaction => {
-      if (this.timestamp <= transaction.timestamp && transaction.recipient !== config.REWARD_ADDRESS) {
+      if (this.timestamp < transaction.timestamp && transaction.recipient !== config.REWARD_ADDRESS) {
         throw new Error('Invalid transaction timestamp')
       }
       if (this.timestamp !== transaction.timestamp && transaction.recipient === config.REWARD_ADDRESS) {

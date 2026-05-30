@@ -48,14 +48,12 @@ class Wallet {
       transaction.timestamp,
       transaction.sender,
       transaction.recipient,
-      Big(transaction.ammount).valueOf(),
-      Big(transaction.fee).valueOf(),
-    ])
+      Big(transaction.amount).valueOf(),      Big(transaction.fee).valueOf(),
+     ])
     return signature
-  }
+    }
 
-  // this method is called to create transaction that goes into transaction pool,
-  // there is no other place to create new transaction,
+   // this method is called to create transaction that goes into transaction pool,  // there is no other place to create new transaction,
   // at this point the transaction should be signed and never modified.
   // This should be the only way to create transaction
   createTransaction({ recipient, amount, fee }) {

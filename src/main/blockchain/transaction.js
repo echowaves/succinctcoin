@@ -96,7 +96,7 @@ class Transaction {
         this.timestamp,
         this.sender,
         this.recipient,
-        Big(this.ammount).valueOf(),
+        Big(this.amount).valueOf(),
         Big(this.fee).valueOf(),
       ],
       signature: this.signature,

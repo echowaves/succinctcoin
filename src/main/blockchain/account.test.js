@@ -164,13 +164,9 @@ describe('Account', () => {
       it('should fail to generate an `Account` object from wrong JSON', () => {
         expect(() => {
           account.parse('{ some: json }')
-        }).toThrow('Unexpected token s in JSON at position 2')
+        }).toThrow(/Expected property name/)
       })
     })
 
-    // describe('calculateBalance()', () => {
-    //   xit('should walk the chain and calculate the balance', () => {
-    //   })
-    // })
   })
 })

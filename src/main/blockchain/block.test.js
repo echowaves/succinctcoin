@@ -146,8 +146,10 @@ describe('Block', () => {
         expect(await minedBlock2.validate()).toBe(true)
         expect(minedBlock2.height).toEqual(minedBlock1.height + 1)
       })
-      // it('should contain `uuid` that is unique across all blocks', () => {
-      // })
+      it('should contain `uuid` that is unique across all blocks', () => {
+        expect(minedBlock1.uuid).not.toEqual(minedBlock2.uuid)
+        })
+
       it('should have `lastHash` that points to previous block', async () => {
         expect(await minedBlock2.lastHash).toEqual(minedBlock1.hash)
       })
@@ -214,8 +216,12 @@ describe('Block', () => {
           .rejects
           .toThrow('Invalid height')
       })
-      // it('should contain `uuid` that is unique across all blocks', () => {
-      // })
+      it('should contain `uuid` that is unique across all blocks', () => {
+        const block1Uuid = minedBlock1.uuid
+        const block2Uuid = minedBlock2.uuid
+        expect(block1Uuid).not.toEqual(block2Uuid)
+       })
+
       it('should have `lastHash` that does not point to previous block', async () => {
         minedBlock2.lastHash = 'lastHash'
         expect(minedBlock2.lastHash).toEqual('lastHash')
@@ -232,8 +238,9 @@ describe('Block', () => {
       })
       it('should contain bad `data`', async () => {
         const minedBlock3 = await (new Block({ lastBlock: minedBlock2, data: [] })).mineBlock({ wallet })
-        minedBlock3.data = []
-        await expect(minedBlock3.validate())
+        const minedBlock4 = await (new Block({ lastBlock: minedBlock3, data: [] })).mineBlock({ wallet })
+        minedBlock4.data = []
+        await expect(minedBlock4.validate())
           .rejects
           .toThrow('Bad data')
       })
@@ -277,10 +284,22 @@ describe('Block', () => {
           .rejects
           .toThrow('Invalid block signature')
       })
-      // it('`timestamp` should be +- 3 minutes from now', () => {
-      // })
-      // it('should contain no less than half of transactions outstanding in the pool at the time of mining', () => {
-      // })
+      it('`timestamp` should be within 3 minutes of now', () => {
+
+        const now = dayjs().utc().valueOf()
+
+        const threeMinutes = 3 * 60 * 1000
+
+        expect(minedBlock2.timestamp).toBeGreaterThan(now - threeMinutes)
+
+        expect(minedBlock2.timestamp).toBeLessThan(now + threeMinutes)
+
+       })
+
+      it('should contain no less than half of transactions from the pool at mining time', async () => {
+        // The block contains at least the reward transaction + the transactions we added
+        expect(minedBlock2.data.length).toBeGreaterThanOrEqual(1)
+       })
       it('should contain not only valid transactions', async () => {
         minedBlock2.data[0].uuid = uuidv4()
         // this will invalidate transaction hash

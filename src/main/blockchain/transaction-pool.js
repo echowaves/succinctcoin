@@ -29,15 +29,16 @@ class TransactionPool {
         const valid = await value.validate()
         return valid
       } catch (error) {
+        console.error(`Invalid transaction ${value.uuid}: ${error.message}`)
         return false
-      }
-    }))
+        }
+      }))
 
     return values.filter((value, index) => shouldFilter[index])
-  }
+   }
 
-  clearBlockchainTransactions({ block }) {
-    block.data.forEach(transaction => {
+   clearBlockchainTransactions({ block }) {
+     block.data.forEach(transaction => {
       if (this.transactionMap[transaction.uuid]) {
         delete this.transactionMap[transaction.uuid]
       }
