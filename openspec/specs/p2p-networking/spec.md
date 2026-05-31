@@ -1,19 +1,43 @@
 ## Purpose
 
-Defines peer-to-peer networking for blockchain synchronization and transaction broadcasting using libp2p pubsub.
+Defines peer-to-peer networking for blockchain synchronization and transaction broadcasting using libp2p pubsub with discv5-based peer discovery and circuit relay for NAT traversal.
 
 ## Requirements
 
-### Requirement: Peer discovery
-The system SHALL discover peers on the local network using libp2p with MulticastDNS and establish encrypted connections via Noise protocol.
+### Requirement: Peer discovery via discv5 DHT
+The system SHALL discover peers internet-wide using the discv5 DHT protocol with ENR (Ethereum Node Record) based identity, falling back to circuit relay when direct connections are not possible.
 
-#### Scenario: Node starts and discovers peers
+#### Scenario: Node starts and discovers peers via discv5
 - **WHEN** the application starts and calls discoverPeers()
-- **THEN** a libp2p node SHALL be created with TCP transport, Mplex multiplexing, Noise encryption, FloodSub pubsub, and mDNS discovery
+- **THEN** a libp2p node SHALL be created with TCP transport, circuit relay, mplex multiplexing, Noise encryption, and discv5 peer discovery connected to bootstrap nodes
 
-#### Scenario: Peer joins blockchain room
-- **WHEN** a new peer joins the blockchain pubsub room
-- **THEN** the local node SHALL broadcast its current chain to the new peer
+#### Scenario: Node discovers peers via DHT search
+- **WHEN** discv5 peer discovery is active
+- **THEN** the node SHALL search the DHT for ENRs using the configured search interval (default: 30 seconds)
+- **AND** discovered peers SHALL be added to the libp2p peer store
+
+#### Scenario: Graceful degradation when bootstrap is unreachable
+- **WHEN** bootstrap nodes are unreachable or DISCV5_BOOTSTRAP_ENRs is empty
+- **THEN** discv5 discovery SHALL be disabled and the node SHALL continue operating with relay-only connections
+- **AND** the node SHALL log a warning message indicating relay mode
+
+### Requirement: Circuit relay connectivity
+The system SHALL connect to circuit relay servers when direct peer connections are not possible due to NAT or firewall restrictions.
+
+#### Scenario: Connect via circuit relay
+- **WHEN** the node has configured RELAY_ENDPOINTS
+- **THEN** it SHALL establish relay transport and reserve a relay connection
+- **AND** the relay endpoint SHALL be advertised in the node's ENR
+
+#### Scenario: DCUtR direct connection upgrade
+- **WHEN** two nodes behind NAT want to connect and both have relay connections
+- **THEN** the node SHALL initiate DCUtR (Direct Connection under NAT) upgrade
+- **AND** if successful, the relay connection SHALL be replaced with a direct TCP connection
+
+#### Scenario: UPnP port mapping
+- **WHEN** the node starts and UPnP is supported by the router
+- **THEN** the node SHALL attempt to map ports for incoming connections
+- **AND** failed UPnP attempts SHALL be logged but not cause failure
 
 ### Requirement: Blockchain synchronization
 The system SHALL broadcast the full blockchain to peers and accept chain replacements via the blockchain pubsub channel.

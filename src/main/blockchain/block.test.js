@@ -1,5 +1,6 @@
-import dayjs from 'dayjs'
 import { randomUUID } from 'crypto'
+
+import dayjs from 'dayjs'
 
 import Crypto from '../util/crypto'
 import config from '../config'
@@ -148,7 +149,7 @@ describe('Block', () => {
       })
       it('should contain `uuid` that is unique across all blocks', () => {
         expect(minedBlock1.uuid).not.toEqual(minedBlock2.uuid)
-        })
+      })
 
       it('should have `lastHash` that points to previous block', async () => {
         expect(await minedBlock2.lastHash).toEqual(minedBlock1.hash)
@@ -220,7 +221,7 @@ describe('Block', () => {
         const block1Uuid = minedBlock1.uuid
         const block2Uuid = minedBlock2.uuid
         expect(block1Uuid).not.toEqual(block2Uuid)
-       })
+      })
 
       it('should have `lastHash` that does not point to previous block', async () => {
         minedBlock2.lastHash = 'lastHash'
@@ -294,12 +295,12 @@ describe('Block', () => {
 
         expect(minedBlock2.timestamp).toBeLessThan(now + threeMinutes)
 
-       })
+      })
 
       it('should contain no less than half of transactions from the pool at mining time', async () => {
         // The block contains at least the reward transaction + the transactions we added
         expect(minedBlock2.data.length).toBeGreaterThanOrEqual(1)
-       })
+      })
       it('should contain not only valid transactions', async () => {
         minedBlock2.data[0].uuid = randomUUID()
         // this will invalidate transaction hash

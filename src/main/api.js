@@ -99,14 +99,14 @@ api.post('/api/transact', async (req, res) => {
       recipient,
       amount,
       fee: Big(amount).div(1000), // automatically calculate fee
-      })
+    })
     await transaction.validate()
     transactionPool.setTransaction(transaction)
     pubsub.broadcastTransaction(transaction)
     res.json({ type: 'success', transaction })
-    } catch (error) {
+  } catch (error) {
     res.status(400).json({ type: 'error', message: error.message })
-    }
+  }
 })
 
 
@@ -123,26 +123,8 @@ ipcMain.on('/api/wallet-info', (event, arg) => {
     account,
   }
 
-  console.log({ walletInfo })
+  console.log({ walletInfo }) // eslint-disable-line no-console
   event.returnValue = walletInfo
-})
-
-api.get('/api/wallet-info', (req, res) => {
-  const address = wallet.publicKey
-
-  res.json({
-    address,
-    account,
-  })
-})
-
-// TODO: TODELETE
-api.get('/api/known-addresses', (req, res) => {
-  const addressMap = {}
-  const files = fs1.readdirSync(`${config.STORE.ACCOUNTS}`)
-  files.forEach(file => addressMap[file] = file)
-
-  res.json(Object.keys(addressMap))
 })
 
 const syncWithRootState = () => {

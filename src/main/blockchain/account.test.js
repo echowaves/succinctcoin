@@ -132,7 +132,7 @@ describe('Account', () => {
       })
       it('should add increment stakeTimestamp', async () => {
         const { stakeTimestamp } = account
-        await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
+        await new Promise(resolve => setTimeout(resolve, 10)) // ensure millisecond-level timestamp changes
         account.subtractStake({ amount })
         expect(account.stakeTimestamp).toBeGreaterThan(stakeTimestamp)
         expect(account.stakeTimestamp).toBeLessThan(dayjs(stakeTimestamp).utc().add(1, 'second').valueOf())

@@ -13,10 +13,10 @@ rules.push({
 })
 
 module.exports = {
-   // Put your normal webpack config below here
+  // Put your normal webpack config below here
   module: {
     rules,
-   },
+  },
   plugins: [
     new CopyWebpackPlugin({
       patterns: assets.map(asset => ({

@@ -10,7 +10,7 @@ context: |
        - Webpack 12 (separate main/renderer configs)
        - Jest 30 for testing (node environment)
        - ESLint 9 with flat config
-       - libp2p 3.x with TCP, FloodSub pubsub, mDNS peer discovery
+        - libp2p 3.x with TCP, FloodSub pubsub, discv5 peer discovery, circuit relay
        - dayjs for date/time handling (moment.js removed)
        - Node.js crypto (ECDSA prime256v1, SHA512)
        - big.js for arbitrary-precision arithmetic

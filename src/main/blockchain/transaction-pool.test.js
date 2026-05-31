@@ -93,10 +93,10 @@ describe('TransactionPool', () => {
       expect(await transactionPool.validTransactions()).toEqual(validTransactions)
     })
 
-     it('logs errors for the invalid transactions', async () => {
-       await transactionPool.validTransactions()
-       expect(errorMock).toHaveBeenCalled()
-      })
+    it('logs errors for the invalid transactions', async () => {
+      await transactionPool.validTransactions()
+      expect(errorMock).toHaveBeenCalled()
+    })
     // })
   })
 

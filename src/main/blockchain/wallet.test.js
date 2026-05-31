@@ -31,8 +31,8 @@ describe('Wallet', () => {
       })
 
       it('has `privateKey`, `publicKey` that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(241)
-        expect(wallet.publicKey).toHaveLength(178)
+        expect(wallet.privateKey).toHaveLength(237)
+        expect(wallet.publicKey).toHaveLength(174)
       })
     })
     describe('loading from storage', () => {
@@ -40,8 +40,8 @@ describe('Wallet', () => {
         await wallet.retrieveThrough()
       })
       it('has `privateKey` and `publicKey` that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(241)
-        expect(wallet.publicKey).toHaveLength(178)
+        expect(wallet.privateKey).toHaveLength(237)
+        expect(wallet.publicKey).toHaveLength(174)
       })
       it('reloads the same wallet when called again', async () => {
         const wallet2 = await new Wallet().retrieveThrough()

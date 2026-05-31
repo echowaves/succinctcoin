@@ -75,6 +75,9 @@
         }
     },
     "jest": {
+        "transform": {
+            "^.+\\.js$": "babel-jest"
+        },
         "testEnvironment": "node",
         "setupFilesAfterEnv": [
             "<rootDir>/jest.setup.js"
@@ -128,12 +131,16 @@
         "style-loader": "^4.0.0"
     },
     "dependencies": {
-        "@chainsafe/discv5": "^2.0.0",
+        "@chainsafe/discv5": "^12.0.1",
+        "@chainsafe/enr": "^6.0.1",
         "@chainsafe/libp2p-noise": "^17.0.0",
+        "@libp2p/autonat": "^3.0.20",
+        "@libp2p/circuit-relay-v2": "^4.2.5",
+        "@libp2p/dcutr": "^3.0.20",
         "@libp2p/floodsub": "^11.0.22",
-        "@libp2p/mdns": "^12.0.23",
         "@libp2p/mplex": "^12.0.23",
         "@libp2p/tcp": "^11.0.20",
+        "@libp2p/upnp-nat": "^4.0.20",
         "big.js": "^7.0.1",
         "bootstrap": "^5.3.3",
         "cors": "2.8.6",
@@ -149,6 +156,6 @@
         "react-bootstrap": "^2.10.9",
         "react-dom": "^19.0.0",
         "react-router-bootstrap": "^0.26.3",
-"react-router-dom": "^7.16.0"
+        "react-router-dom": "^7.16.0"
     }
 }

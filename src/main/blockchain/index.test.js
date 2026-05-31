@@ -169,12 +169,12 @@ describe('Blockchain', () => {
 
         it('does not replace the chain', () => {
           expect(blockchain.chain).not.toEqual(newChain.chain)
-         })       })
+        }) })
 
-       describe('and the chain is valid', () => {
+      describe('and the chain is valid', () => {
         beforeEach(async () => {
           await blockchain.replaceChain(newChain.chain)
-         })
+        })
         it('replaces the chain', () => {
           expect(blockchain.chain).toEqual(newChain.chain)
         })
