@@ -116,7 +116,7 @@
 - [x] Verify all renderer components render correctly
 - [x] Verify app functionality is preserved
 
-### Task 2.7.1: Run npm install
+<!-- ### Task 2.7.1: Run npm install
 - [ ] Execute `npm install` with updated package.json
 - [ ] Verify no peer dependency conflicts
 - [ ] If conflicts exist, resolve them
@@ -144,4 +144,4 @@
 - [ ] Verify Blocks view displays with pagination
 - [ ] Verify TransactionPool view displays with polling
 - [ ] Verify ConductTransaction form works
-- [ ] Verify app works when loaded via file:// protocol
+- [ ] Verify app works when loaded via file:// protocol -->
