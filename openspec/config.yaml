@@ -10,7 +10,7 @@ context: |
        - Webpack 12 (separate main/renderer configs)
        - Jest 30 for testing (node environment)
        - ESLint 9 with flat config
-        - libp2p 3.x with TCP, FloodSub pubsub, discv5 peer discovery, circuit relay
+       - libp2p 3.x with TCP, FloodSub pubsub, discv5 peer discovery, circuit relay
        - dayjs for date/time handling (moment.js removed)
        - Node.js crypto (ECDSA prime256v1, SHA512)
        - big.js for arbitrary-precision arithmetic
@@ -54,7 +54,7 @@ context: |
        - When modifying blockchain data structures, consider impact on mining and validation logic
        - For any changes to transaction structure, consider impact on transaction pool and mempool management
        - When modifying block structure, consider impact on block validation and chain synchronization logic
-      - For any changes to wallet/account structure, consider impact on transaction creation and signing logic
+       - For any changes to wallet/account structure, consider impact on transaction creation and signing logic
 
 
   tasks:
