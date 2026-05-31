@@ -148,6 +148,22 @@
 
 ## Phase 1.6: Cleanup
 
+<!-- ### Task 1.6.1: Verify no broken imports
+- [ ] Search for remaining `electron-fetch` imports — remove or replace
+- [ ] Search for remaining `body-parser` imports — remove or replace
+- [ ] Search for remaining `electron-is-dev` imports — remove or replace
+- [ ] Search for remaining `@vercel/webpack-asset-relocator-loader` references — remove
+
+### Task 1.6.2: Verify package.json is clean
+- [ ] No devDependencies reference removed packages
+- [ ] No dependencies reference removed packages
+- [ ] Scripts still reference correct commands
+- [ ] Forge config is valid for 7.x
+
+### Task 1.6.3: Commit changes
+- [ ] Stage all changes
+- [ ] Write descriptive commit message
+- [ ] Push to branch -->
 
 ## Estimated Effort
 
