@@ -1,9 +1,8 @@
-import Room from 'ipfs-pubsub-room'
 import { createLibp2p } from 'libp2p'
 import { tcp } from '@libp2p/tcp'
-import { mplex } from '@libp2p/mplex'
+import { yamux } from '@chainsafe/libp2p-yamux'
 import { noise } from '@chainsafe/libp2p-noise'
-import { floodsub } from '@libp2p/floodsub'
+import { gossipsub } from '@libp2p/gossipsub'
 import { Discv5Discovery } from '@chainsafe/discv5'
 import { SignableENR } from '@chainsafe/enr'
 import { relay } from '@libp2p/circuit-relay-v2'
@@ -13,7 +12,13 @@ import { upnpNat } from '@libp2p/upnp-nat'
 
 import globalConfig from '../../config'
 
+// Topic constants
+const BLOCKCHAIN_TOPIC = globalConfig.CHANNELS.BLOCKCHAIN
+const TRANSACTION_TOPIC = globalConfig.CHANNELS.TRANSACTION
 
+// Peer count tracking for broadcast-on-join
+let blockchainPeerCount = 0
+let transactionPeerCount = 0
 
 // express app
 class PubSub {
@@ -58,9 +63,9 @@ class PubSub {
         listen: ['/ip4/0.0.0.0/tcp/0'],
       },
       transports: [tcp(), relay()],
-      streamMuxers: [mplex()],
+      streamMuxers: [yamux()],
       connectionEncrypters: [noise()],
-      pubsub: floodsub(),
+      pubsub: gossipsub(),
       peerDiscovery: [
         () => new Discv5Discovery({
           enabled: bootstrapEnrs.length > 0,
@@ -77,65 +82,89 @@ class PubSub {
         upnpNat: upnpNat(),
       },
     })
+
     // Log relay status
     const hasRelay = relayEndpoints.length > 0
     if (hasRelay) {
       console.log(`[discv5] Relay enabled: ${relayEndpoints.length} endpoint(s)`) // eslint-disable-line no-console
     } else {
-      console.log('[discv5] Relay not configured — direct connections only') // eslint-disable-line no-console
+      console.log('[discv5] Relay not configured - direct connections only') // eslint-disable-line no-console
     }
-    // Create rooms immediately after node starts (before peer discovery)
-    // so they exist even if peer discovery fails
+
+    // Subscribe to topics (replaces ipfs-pubsub-room)
     try {
-      this.blockChainRoom = new Room(node, globalConfig.CHANNELS.BLOCKCHAIN)
-      this.transactionRoom = new Room(node, globalConfig.CHANNELS.TRANSACTION)
+      await node.pubsub.subscribe(BLOCKCHAIN_TOPIC)
+      await node.pubsub.subscribe(TRANSACTION_TOPIC)
 
-      this.blockChainRoom.on('message', async message => {
-        console.log('blockChainRoom received:', message) // eslint-disable-line no-console
-        const parsedMessage = JSON.parse(message.data.toString('utf8'))
-        // console.log('message.data:', parsedMessage)
-        await this.blockchain.replaceChain(parsedMessage, true, () => {
-          this.transactionPool.clearBlockchainTransactions({
-            chain: parsedMessage,
+      // Store node reference for broadcast methods
+      this._node = node
+
+      // Listen for messages on both topics
+      node.pubsub.addEventListener('message', async event => {
+        if (event.detail.topic === BLOCKCHAIN_TOPIC) {
+          const parsedMessage = JSON.parse(new TextDecoder().decode(event.detail.data))
+          // console.log('blockchain message:', parsedMessage)
+          await this.blockchain.replaceChain(parsedMessage, true, () => {
+            this.transactionPool.clearBlockchainTransactions({
+              chain: parsedMessage,
+            })
           })
-        })
+        } else if (event.detail.topic === TRANSACTION_TOPIC) {
+          const parsedMessage = JSON.parse(new TextDecoder().decode(event.detail.data))
+          // console.log('transaction message:', parsedMessage)
+          this.transactionPool.setTransaction(parsedMessage)
+        }
       })
 
-      this.transactionRoom.on('message', message => {
-        console.log('transactionRoom received:', message) // eslint-disable-line no-console
-        const parsedMessage = JSON.parse(message.data.toString('utf8'))
-        // console.log('message.data:', parsedMessage)
-        this.transactionPool.setTransaction(parsedMessage)
-      })
+      // Check for peer changes periodically (replaces peer joined/left events)
+      const checkPeerChanges = () => {
+        const blockchainPeers = node.pubsub.getPeers(BLOCKCHAIN_TOPIC)
+        const transactionPeers = node.pubsub.getPeers(TRANSACTION_TOPIC)
 
-      this.blockChainRoom.on('peer joined', peer => {
-        console.log(`Peer joined ${globalConfig.CHANNELS.BLOCKCHAIN} room ${new Date()}`, peer) // eslint-disable-line no-console
-        this.broadcastChain()
-      })
-      this.transactionRoom.on('peer joined', peer => {
-        console.log(`Peer joined ${globalConfig.CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
-      })
+        // Detect new peers joining blockchain room
+        if (blockchainPeers.length > blockchainPeerCount) {
+          const newPeers = blockchainPeers.filter(p =>
+            !this._peerIdsIncluded(blockchainPeerCount, blockchainPeers),
+          )
+          console.log(`[discv5] Peer joined ${BLOCKCHAIN_TOPIC} room ${new Date()}`, newPeers) // eslint-disable-line no-console
+          this.broadcastChain()
+        }
+        blockchainPeerCount = blockchainPeers.length
 
-      this.blockChainRoom.on('peer left', peer => {
-        console.log(`Peer left ${globalConfig.CHANNELS.BLOCKCHAIN} room      ${new Date()}`, peer) // eslint-disable-line no-console
-      })
-      this.transactionRoom.on('peer left', peer => {
-        console.log(`Peer left ${globalConfig.CHANNELS.TRANSACTION} room ${new Date()}`, peer) // eslint-disable-line no-console
-      })
+        // Detect new peers joining transaction room
+        if (transactionPeers.length > transactionPeerCount) {
+          const newPeers = transactionPeers.filter(p =>
+            !this._peerIdsIncluded(transactionPeerCount, transactionPeers),
+          )
+          console.log(`[discv5] Peer joined ${TRANSACTION_TOPIC} room ${new Date()}`, newPeers) // eslint-disable-line no-console
+        }
+        transactionPeerCount = transactionPeers.length
+      }
+
+      // Initial check and periodic polling
+      checkPeerChanges()
+      setInterval(checkPeerChanges, 5000)
     } catch (roomError) {
-      console.error('Failed to create pubsub rooms:', roomError.message) // eslint-disable-line no-console
+      console.error('Failed to subscribe to pubsub topics:', roomError.message) // eslint-disable-line no-console
     }
   }
 
+  // Helper to check if peer count has increased
+  _peerIdsIncluded(count, peerList) {
+    return peerList.length <= count
+  }
+
   broadcastChain() {
-    if (this.blockChainRoom) {
-      this.blockChainRoom.broadcast(JSON.stringify(this.blockchain.chain))
+    if (this._node && this._node.pubsub) {
+      const encoded = new TextEncoder().encode(JSON.stringify(this.blockchain.chain))
+      this._node.pubsub.publish(BLOCKCHAIN_TOPIC, encoded)
     }
   }
 
   broadcastTransaction(transaction) {
-    if (this.transactionRoom) {
-      this.transactionRoom.broadcast(JSON.stringify(transaction))
+    if (this._node && this._node.pubsub) {
+      const encoded = new TextEncoder().encode(JSON.stringify(transaction))
+      this._node.pubsub.publish(TRANSACTION_TOPIC, encoded)
     }
   }
 }

@@ -2,7 +2,11 @@ schema: spec-driven
 
 context: |
   Project: SuccinctCoin - a minimalistic cryptocurrency built as an Electron desktop app.
-  
+  Language: JavaScript (ES6+), no TypeScript
+  Key conventions: Kebab-case file names, PascalCase class names, functional React components with hooks, JSDoc for type hints 
+  Dependencies: Always use exact versions in package.json (no ^ or ~ prefixes)
+  Package manager: npm
+
   Tech stack:
        - Electron 42 + Electron Forge 7.x for desktop packaging
        - React 19 with hooks for renderer UI
