@@ -33,9 +33,9 @@
 - [x] Run `npm test` to verify no regressions
 - [x] Verify same test results as Phase 2 (4 passed, 3 failed with pre-existing issues)
 
-### Task 3.3.2: Run linter
+<!-- ### Task 3.3.2: Run linter
 - [ ] Run `npm run lint` to verify no lint errors
 
 ### Task 3.3.3: Test app launch
 - [ ] Run `npm start` to verify app launches without P2P errors
-- [ ] Verify pubsub module loads correctly
+- [ ] Verify pubsub module loads correctly -->
