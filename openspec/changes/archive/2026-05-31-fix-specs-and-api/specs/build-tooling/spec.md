@@ -1,8 +1,4 @@
-## Purpose
-
-Defines the build tooling, dependency versions, and configuration for the SuccinctCoin Electron application.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Electron version
 The system SHALL run on Electron 42.x or later.
@@ -10,10 +6,6 @@ The system SHALL run on Electron 42.x or later.
 #### Scenario: Electron version is 42.x
 - **WHEN** the package.json is read
 - **THEN** the `electron` dependency SHALL be set to version `42.x` or higher
-
-#### Scenario: Electron app launches
-- **WHEN** `npm start` is executed
-- **THEN** the Electron app SHALL launch without errors
 
 ### Requirement: Electron Forge version
 The system SHALL use Electron Forge 7.x stable (not beta).
@@ -110,78 +102,3 @@ The system SHALL use exact versions in package.json (no `^` or `~` prefixes).
 #### Scenario: Dependencies use exact versions
 - **WHEN** the package.json is read
 - **THEN** dependency versions SHALL NOT contain `^` or `~` prefixes
-
-### Requirement: Removed dependencies
-The system SHALL NOT depend on packages that are no longer needed.
-
-#### Scenario: electron-fetch removed
-- **WHEN** the package.json is read
-- **THEN** `electron-fetch` SHALL NOT be listed as a dependency
-
-#### Scenario: body-parser removed
-- **WHEN** the package.json is read
-- **THEN** `body-parser` SHALL NOT be listed as a dependency
-
-#### Scenario: @vercel/webpack-asset-relocator-loader removed
-- **WHEN** the package.json is read
-- **THEN** `@vercel/webpack-asset-relocator-loader` SHALL NOT be listed as a dependency
-
-### Requirement: Native fetch available
-The system SHALL use native `fetch` instead of `electron-fetch`.
-
-#### Scenario: Main process uses native fetch
-- **WHEN** the main process code runs (Electron 28)
-- **THEN** `fetch` SHALL be available globally without importing `electron-fetch`
-
-### Requirement: Express body-parser not needed
-The system SHALL use built-in Express body parsing.
-
-#### Scenario: Express uses built-in JSON parser
-- **WHEN** the Express API is configured
-- **THEN** `express.json()` SHALL be used instead of `bodyParser.json()`
-
-### Requirement: Preload uses contextBridge
-The system SHALL use the secure `contextBridge` pattern in the preload script.
-
-#### Scenario: preload.js uses contextBridge
-- **WHEN** the preload script is read
-- **THEN** it SHALL use `contextBridge.exposeInMainWorld` instead of directly assigning to `window`
-
-### Requirement: electron-is-dev migration
-The system SHALL use `app.isPackaged` instead of `electron-is-dev`.
-
-#### Scenario: Main process uses app.isPackaged
-- **WHEN** the main process code is read
-- **THEN** it SHALL use `app.isPackaged` from the `electron` module instead of `electron-is-dev`
-
-### Requirement: React testing library updated
-The system SHALL use a compatible version of React Testing Library.
-
-#### Scenario: @testing-library/react is updated
-- **WHEN** the package.json is read
-- **THEN** `@testing-library/react` SHALL be version `16.x` or higher
-
-### Requirement: Bootstrap and React Bootstrap updated
-The system SHALL use compatible versions of Bootstrap and React Bootstrap.
-
-#### Scenario: Bootstrap is 5.3.x
-- **WHEN** the package.json is read
-- **THEN** `bootstrap` SHALL be version `5.3.x`
-
-#### Scenario: React Bootstrap is 2.x latest
-- **WHEN** the package.json is read
-- **THEN** `react-bootstrap` SHALL be version `2.x` (latest compatible)
-
-### Requirement: React Router updated
-The system SHALL use the latest compatible version of React Router 6.
-
-#### Scenario: react-router-dom is 6.x latest
-- **WHEN** the package.json is read
-- **THEN** `react-router-dom` SHALL be version `6.x` (latest compatible)
-
-### Requirement: Concurrently updated
-The system SHALL use the latest version of concurrently.
-
-#### Scenario: concurrently is latest
-- **WHEN** the package.json is read
-- **THEN** `concurrently` SHALL be the latest version
