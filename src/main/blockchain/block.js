@@ -33,10 +33,10 @@ class Block {
 
     // add reward transaction and
     // make blocks timestamp to be equal the timestamp of reward transaction
-    const rewardTrasaction = wallet.createRewardTransaction()
-    this.timestamp = rewardTrasaction.timestamp
+    const rewardTransaction = await wallet.createRewardTransaction()
+    this.timestamp = rewardTransaction.timestamp
 
-    this.data.push(rewardTrasaction)
+    this.data.push(rewardTransaction)
     // order transactions
     this.data.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
 
@@ -48,7 +48,7 @@ class Block {
       this.lastHash,
       this.data,
     )
-    this.signature = wallet.sign(this.hash)
+    this.signature = await wallet.sign(this.hash)
     return this
   }
 
@@ -120,7 +120,7 @@ class Block {
       throw new Error('Invalid hash')
     }
 
-    if (!Crypto.verifySignature({
+    if (!await Crypto.verifySignature({
       publicKey: this.miner,
       data: this.hash,
       signature: this.signature,

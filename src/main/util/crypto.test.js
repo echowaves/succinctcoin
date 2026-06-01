@@ -4,7 +4,7 @@ import Crypto from './crypto'
 
 describe('Crypto', () => {
   describe('Crypto.hash()', () => {
-    it('generates a SHA-256 hashed output', () => {
+    it('generates a SHA-512 hashed output', () => {
       expect(Crypto.hash('foo'))
         .toEqual('7822850fecc31ad84d42bc4dfad785dc1ba286202e19271979763f9c39aba48156a3374d8f483b0a7f0dd5d1b044d4452fba5d8495501f7bcf526db1ad1691f3')
     })
@@ -25,23 +25,26 @@ describe('Crypto', () => {
 
   describe('Crypto.isPublicKey()', () => {
     let wallet
-    beforeEach(() => {
+    beforeEach(async () => {
       wallet = new Wallet()
+      await wallet.retrieveThrough()
     })
-    it('returns `true` when key is valid', () => {
+    it('returns `true` when key is valid hex', () => {
       expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(true)
     })
     it('returns `false` when length is not correct', () => {
-      wallet.publicKey += '.'
-      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: 'ab' })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: 'ab'.repeat(31) })).toBe(false)
     })
-    it('returns `false` when starts with wrong string', () => {
-      wallet.publicKey = wallet.publicKey.replace("BEGIN", "begin")
-      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(false)
+    it('returns `false` when key contains non-hex characters', () => {
+      expect(Crypto.isPublicKey({ publicKey: 'gg' + wallet.publicKey.substring(2) })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey + 'zz' })).toBe(false)
     })
-    it('returns `false` when ends with wrong string', () => {
-      wallet.publicKey = wallet.publicKey.replace("END", "end")
-      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(false)
+    it('returns `false` for empty or null values', () => {
+      expect(Crypto.isPublicKey({ publicKey: '' })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: null })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: undefined })).toBe(false)
+      expect(Crypto.isPublicKey({})).toBe(false)
     })
   })
 })

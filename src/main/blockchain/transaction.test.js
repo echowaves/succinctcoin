@@ -24,12 +24,12 @@ describe('Transaction', () => {
     amount,
     fee
 
-  beforeEach(() => {
+beforeEach(async () => {
     wallet = new Wallet()
     recipient = new Wallet().publicKey
     amount = '49'
     fee = '1'
-    transaction = wallet.createTransaction({ recipient, amount, fee })
+    transaction = await wallet.createTransaction({ recipient, amount, fee })
   })
 
   describe('properties', () => {
@@ -61,8 +61,8 @@ describe('Transaction', () => {
       })
 
       describe('for reward `transaction`', () => {
-        beforeEach(() => {
-          transaction = wallet.createRewardTransaction()
+        beforeEach(async () => {
+          transaction = await wallet.createRewardTransaction()
         })
         it('returns true', async () => {
           expect(await transaction.validate()).toBe(true)
@@ -70,8 +70,8 @@ describe('Transaction', () => {
       })
 
       describe('for stake `transaction`', () => {
-        beforeEach(() => {
-          transaction = wallet.createStakeTransaction({ amount: 5, fee })
+        beforeEach(async () => {
+          transaction = await wallet.createStakeTransaction({ amount: 5, fee })
         })
         it('returns true', async () => {
           expect(await transaction.validate()).toBe(true)
@@ -254,8 +254,8 @@ describe('Transaction', () => {
       })
 
       describe('when reward `amount` is invalid', () => {
-        beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT - 1, fee })
+        beforeEach(async () => {
+          transaction = await wallet.createTransaction({ recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT - 1, fee })
         })
         it('throws an error', async () => {
           await expect(transaction.validate())
@@ -265,8 +265,8 @@ describe('Transaction', () => {
       })
 
       describe('when reward `fee` is invalid', () => {
-        beforeEach(() => {
-          transaction = wallet.createTransaction({ recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT, fee: 1 })
+        beforeEach(async () => {
+          transaction = await wallet.createTransaction({ recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT, fee: 1 })
         })
         it('throws an error', async () => {
           await expect(transaction.validate())
@@ -276,8 +276,8 @@ describe('Transaction', () => {
       })
 
       describe('when stake `amount` is invalid', () => {
-        beforeEach(() => {
-          transaction = wallet.createStakeTransaction({ amount: 0, fee })
+        beforeEach(async () => {
+          transaction = await wallet.createStakeTransaction({ amount: 0, fee })
         })
         it('throws an error', async () => {
           await expect(transaction.validate())
@@ -296,16 +296,16 @@ describe('Transaction', () => {
       })
 
       describe('when trying to stake less or equals than 1/10 of the account value', () => {
-        beforeEach(() => {
-          transaction = wallet.createStakeTransaction({ amount: 5, fee: 1 })
+        beforeEach(async () => {
+          transaction = await wallet.createStakeTransaction({ amount: 5, fee: 1 })
         })
         it('should succeed', async () => {
           expect(await transaction.validate()).toBe(true)
         })
       })
       describe('when trying to stake more than 1/10 of the account value', () => {
-        beforeEach(() => {
-          transaction = wallet.createStakeTransaction({ amount: 6, fee: 1 })
+        beforeEach(async () => {
+          transaction = await wallet.createStakeTransaction({ amount: 6, fee: 1 })
         })
         it('should fail', async () => {
           await expect(transaction.validate())
@@ -314,16 +314,16 @@ describe('Transaction', () => {
         })
       })
       describe('when trying to release less than currently staked', () => {
-        beforeEach(() => {
-          transaction = wallet.createStakeTransaction({ amount: -4, fee: 1 })
+        beforeEach(async () => {
+          transaction = await wallet.createStakeTransaction({ amount: -4, fee: 1 })
         })
         it('should succeed', async () => {
           expect(await transaction.validate()).toBe(true)
         })
       })
       describe('when trying to release more than currently staked', () => {
-        beforeEach(() => {
-          transaction = wallet.createStakeTransaction({ amount: -6, fee: 1 })
+        beforeEach(async () => {
+          transaction = await wallet.createStakeTransaction({ amount: -6, fee: 1 })
         })
         it('should fail', async () => {
           await expect(transaction.validate())

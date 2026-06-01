@@ -95,7 +95,7 @@ api.post('/api/transact', async (req, res) => {
   const { amount, recipient } = req.body
 
   try {
-    const transaction = wallet.createTransaction({
+    const transaction = await wallet.createTransaction({
       recipient,
       amount,
       fee: Big(amount).div(1000), // automatically calculate fee

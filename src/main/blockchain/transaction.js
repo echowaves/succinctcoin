@@ -82,7 +82,7 @@ class Transaction {
       throw new Error('Invalid reward fee')
     }
 
-    if (!this.verifySignature()) {
+    if (!await this.verifySignature()) {
       // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
       throw new Error('Invalid transaction signature')
     }

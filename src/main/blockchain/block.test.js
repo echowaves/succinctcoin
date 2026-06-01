@@ -132,9 +132,11 @@ describe('Block', () => {
 
       transactions2 = []
 
-      transactions2.push(wallet.createStakeTransaction({ amount: 5, fee: 1 }))
+      const stakeTx = await wallet.createStakeTransaction({ amount: 5, fee: 1 })
+      transactions2.push(stakeTx)
       await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
-      transactions2.push(wallet.createTransaction(wallet.createTransaction({ recipient, amount: 10, fee: 1 })))
+      const nestedTx = await wallet.createTransaction({ recipient, amount: 10, fee: 1 })
+      transactions2.push(nestedTx)
       await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
       // this will also generate reward transaction
       minedBlock2 = await (new Block({ lastBlock: minedBlock1, data: transactions2 })).mineBlock({ wallet })
@@ -260,8 +262,8 @@ describe('Block', () => {
           .toThrow('Invalid number of rewards')
       })
       it('should contain more than 1 reward `transaction`', async () => {
-        const rewardTrasaction = wallet.createRewardTransaction()
-        minedBlock2.data.push(rewardTrasaction) // add dup rewardTrasaction
+        const rewardTransaction = await wallet.createRewardTransaction()
+        minedBlock2.data.push(rewardTransaction) // add dup rewardTrasaction
         await expect(minedBlock2.validate())
           .rejects
           .toThrow('Invalid number of rewards')
@@ -280,7 +282,7 @@ describe('Block', () => {
           .toThrow('Invalid miner')
       })
       it('should be signed by someone other than `miner`', async () => {
-        minedBlock2.signature = new Wallet().sign(minedBlock2.hash)
+        minedBlock2.signature = await new Wallet().sign(minedBlock2.hash)
         await expect(minedBlock2.validate())
           .rejects
           .toThrow('Invalid block signature')

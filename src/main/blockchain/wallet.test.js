@@ -31,8 +31,8 @@ describe('Wallet', () => {
       })
 
       it('has `privateKey`, `publicKey` that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(237)
-        expect(wallet.publicKey).toHaveLength(174)
+        expect(wallet.privateKey).toHaveLength(64)
+        expect(wallet.publicKey).toHaveLength(130)
       })
     })
     describe('loading from storage', () => {
@@ -40,8 +40,8 @@ describe('Wallet', () => {
         await wallet.retrieveThrough()
       })
       it('has `privateKey` and `publicKey` that are not empty', () => {
-        expect(wallet.privateKey).toHaveLength(237)
-        expect(wallet.publicKey).toHaveLength(174)
+        expect(wallet.privateKey).toHaveLength(64)
+        expect(wallet.publicKey).toHaveLength(130)
       })
       it('reloads the same wallet when called again', async () => {
         const wallet2 = await new Wallet().retrieveThrough()
@@ -56,22 +56,22 @@ describe('Wallet', () => {
     let fee
     let transaction
 
-    beforeEach(() => {
+    beforeEach(async () => {
       recipient = new Wallet().publicKey
       amount = '49'
       fee = '1'
-      transaction = wallet.createTransaction({ recipient, amount, fee })
-    })
+      transaction = await wallet.createTransaction({ recipient, amount, fee })
+       })
 
-    it('does not verify an invalid signature', () => {
+    it('does not verify an invalid signature', async () => {
       transaction.signature = 'invalid signature'
       expect(
-        transaction.verifySignature(),
-      ).toBe(false)
-    })
-    it('verifies a signature', () => {
+        await transaction.verifySignature(),
+       ).toBe(false)
+        })
+    it('verifies a signature', async () => {
       expect(
-        transaction.verifySignature(),
+        await await transaction.verifySignature(),
       ).toBe(true)
     })
   })
@@ -92,11 +92,11 @@ describe('Wallet', () => {
         fee,
         recipient
 
-      beforeEach(() => {
-        amount = 49
-        fee = amount / 1000
-        recipient = new Wallet().publicKey
-        transaction = wallet.createTransaction({ recipient, amount, fee })
+beforeEach(async () => {
+          amount = 49
+          fee = amount / 1000
+          recipient = new Wallet().publicKey
+          transaction = await wallet.createTransaction({ recipient, amount, fee })
       })
 
       it('matches the transaction sender with the wallet address', async () => {

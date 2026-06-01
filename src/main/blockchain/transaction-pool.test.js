@@ -35,7 +35,7 @@ describe('TransactionPool', () => {
     amount = '49'
     fee = '1'
 
-    transaction = senderWallet.createTransaction({ recipient, amount, fee })
+transaction = await senderWallet.createTransaction({ recipient, amount, fee })
   })
 
   describe('setTransaction()', () => {
@@ -76,7 +76,7 @@ describe('TransactionPool', () => {
 
         amount = '29'
         fee = '1'
-        const transaction = senderWallet.createTransaction({ recipient, amount, fee })
+        const transaction = await senderWallet.createTransaction({ recipient, amount, fee })
 
         if (i % 3 === 0) {
           transaction.amount = 999999
@@ -124,7 +124,7 @@ describe('TransactionPool', () => {
 
       amount = '29'
       fee = '1'
-      const transaction = senderWallet.createTransaction({ recipient, amount, fee })
+      const transaction = await senderWallet.createTransaction({ recipient, amount, fee })
 
       transactionPool.setTransaction(transaction)
       expect(Object.values(transactionPool.transactionMap)).toHaveLength(1)
