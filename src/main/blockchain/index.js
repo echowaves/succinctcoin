@@ -19,7 +19,7 @@ class Blockchain {
 
       this.chain.push(newBlock)
     } catch (error) {
-      // console.error(error)
+      process.stderr.write('addBlock error: ' + error.message + '\n')
       newBlock = null
     }
     return newBlock

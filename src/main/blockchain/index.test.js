@@ -1,7 +1,8 @@
 import Account from './account'
 import Wallet from './wallet'
-import Blockchain from './index'
 import Block from './block'
+
+import Blockchain from './index'
 // import config from '../config'
 //
 // const path = require('path')
@@ -54,7 +55,7 @@ describe('Blockchain', () => {
 
     await (new Account({ publicKey: recipient })).store()
 
-    const transaction = senderWallet.createTransaction({ recipient, amount: '29', fee: '1' })
+    const transaction = await senderWallet.createTransaction({ recipient, amount: '29', fee: '1' })
 
     const block = await blockchain.addBlock({ data: [transaction], wallet: senderWallet })
 
@@ -82,9 +83,9 @@ describe('Blockchain', () => {
 
         await account.store()
 
-        const transaction1 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '29', fee: '1' })
-        const transaction2 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '28', fee: '1' })
-        const transaction3 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '27', fee: '1' })
+        const transaction1 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '29', fee: '1' })
+        const transaction2 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '28', fee: '1' })
+        const transaction3 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '27', fee: '1' })
 
         await blockchain.addBlock({ data: [transaction1], wallet: senderWallet })
         await blockchain.addBlock({ data: [transaction2], wallet: senderWallet })
@@ -148,10 +149,10 @@ describe('Blockchain', () => {
         account.balance = '10000'
         await account.store()
 
-        const transaction1 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '29', fee: '1' })
-        const transaction2 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '28', fee: '1' })
-        const transaction3 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '27', fee: '1' })
-        const transaction4 = senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '26', fee: '1' })
+        const transaction1 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '29', fee: '1' })
+        const transaction2 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '28', fee: '1' })
+        const transaction3 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '27', fee: '1' })
+        const transaction4 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '26', fee: '1' })
 
         await newChain.addBlock({ data: [transaction1], wallet: senderWallet })
         await newChain.addBlock({ data: [transaction2], wallet: senderWallet })
@@ -165,13 +166,15 @@ describe('Blockchain', () => {
 
           await blockchain.replaceChain(newChain.chain)
         })
-      })
+
+        it('does not replace the chain', () => {
+          expect(blockchain.chain).not.toEqual(newChain.chain)
+        }) })
 
       describe('and the chain is valid', () => {
         beforeEach(async () => {
           await blockchain.replaceChain(newChain.chain)
         })
-
         it('replaces the chain', () => {
           expect(blockchain.chain).toEqual(newChain.chain)
         })

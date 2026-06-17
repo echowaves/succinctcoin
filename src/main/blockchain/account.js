@@ -1,11 +1,14 @@
 import Obj2fsHOC from 'obj2fs-hoc'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 
-import moment from 'moment'
+dayjs.extend(utc)
+
 import Crypto from '../util/crypto'
-
 import config from '../config'
 
 const path = require('path')
+
 const Big = require('big.js')
 
 class Account {
@@ -14,7 +17,7 @@ class Account {
     this.publicKey = publicKey
     this.balance = '0'
     this.stake = '0'
-    this.stakeTimestamp = moment.utc().valueOf()
+    this.stakeTimestamp = dayjs().utc().valueOf()
 
     // the key is derived from the publicKey when constructor is called, no need to expicitely set it
     this.key = path.join(config.STORE.ACCOUNTS, Crypto.hash(this.publicKey))
@@ -34,23 +37,21 @@ class Account {
   addStake({ amount }) {
     this.subtractBalance({ amount })
     this.stake = Big(this.stake).plus(amount).valueOf()
-    this.stakeTimestamp = moment.utc().valueOf()
+    this.stakeTimestamp = dayjs().utc().valueOf()
   }
 
   subtractStake({ amount }) {
-    if (Big(amount).gt(this.stake)) {
-      throw new Error('trying to substract bigger amount than possible')
-    }
+    if (Big(amount).gt(this.stake)) throw new Error('trying to substract bigger amount than possible')
     this.addBalance({ amount })
     this.stake = Big(this.stake).minus(amount).valueOf()
-    this.stakeTimestamp = moment.utc().valueOf()
+    this.stakeTimestamp = dayjs().utc().valueOf()
   }
 
   calculateBalance() {
     // TODO: to implement
+    return this
   }
 
-  // TODO: TOTEST
   setHash({ hash }) {
     this.setKey(path.join(config.STORE.ACCOUNTS, hash))
     return this

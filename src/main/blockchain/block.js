@@ -1,10 +1,9 @@
-import Obj2fsHOC from 'obj2fs-hoc'
+import { randomUUID } from 'crypto'
 
-import { v4 as uuidv4 } from 'uuid'
+import Obj2fsHOC from 'obj2fs-hoc'
 // import moment from 'moment'
 
 import Crypto from '../util/crypto'
-
 import config from '../config'
 
 const path = require('path')
@@ -12,7 +11,7 @@ const path = require('path')
 class Block {
   constructor({ lastBlock, data } = { lastBlock: null, data: [] }) {
     this.height = lastBlock ? lastBlock.height + 1 : 0
-    this.uuid = uuidv4()
+    this.uuid = randomUUID()
     // this.timestamp = moment.utc().valueOf() // assigned when block is created
     this.lastHash = lastBlock ? lastBlock.hash : ''
     this.hash = ''
@@ -34,10 +33,10 @@ class Block {
 
     // add reward transaction and
     // make blocks timestamp to be equal the timestamp of reward transaction
-    const rewardTrasaction = wallet.createRewardTransaction()
-    this.timestamp = rewardTrasaction.timestamp
+    const rewardTransaction = await wallet.createRewardTransaction()
+    this.timestamp = rewardTransaction.timestamp
 
-    this.data.push(rewardTrasaction)
+    this.data.push(rewardTransaction)
     // order transactions
     this.data.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
 
@@ -49,7 +48,7 @@ class Block {
       this.lastHash,
       this.data,
     )
-    this.signature = wallet.sign(this.hash)
+    this.signature = await wallet.sign(this.hash)
     return this
   }
 
@@ -59,11 +58,9 @@ class Block {
       return true
     }
 
-    if (this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}' || this.data.length === 0) {
+    if ((this.data === undefined || this.data === null || JSON.stringify(this.data) === '{}') || (this.data.length === 0 && this.height > 3)) {
       throw new Error('Bad data')
     }
-
-    // check the the data contains non empty array, height > 3 allows the first 3 miners to mine empty blocks, to be able to bootstrap initial balance
     if (this.data.length === 1 && this.data[0].recipient === config.REWARD_ADDRESS && this.height > 3) {
       throw new Error('Empty data')
     }
@@ -84,9 +81,9 @@ class Block {
       throw new Error('Invalid height')
     }
 
-    // timestamp of each transaction must be less than timestamp of block
+    // timestamp of each transaction must be less than or equal to timestamp of block
     this.data.forEach(transaction => {
-      if (this.timestamp <= transaction.timestamp && transaction.recipient !== config.REWARD_ADDRESS) {
+      if (this.timestamp < transaction.timestamp && transaction.recipient !== config.REWARD_ADDRESS) {
         throw new Error('Invalid transaction timestamp')
       }
       if (this.timestamp !== transaction.timestamp && transaction.recipient === config.REWARD_ADDRESS) {
@@ -123,7 +120,7 @@ class Block {
       throw new Error('Invalid hash')
     }
 
-    if (!Crypto.verifySignature({
+    if (!await Crypto.verifySignature({
       publicKey: this.miner,
       data: this.hash,
       signature: this.signature,

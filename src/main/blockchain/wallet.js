@@ -1,52 +1,70 @@
 import Obj2fsHOC from 'obj2fs-hoc'
 
 import Crypto from '../util/crypto'
+import config from '../config'
+
 import Transaction from './transaction'
 import Account from './account'
 
-import config from '../config'
+// Use dynamic imports for ESM-only packages to work with Jest's CJS environment
+// Babel transforms these into Promise-based require() calls
+const libp2pCryptoKeys = () => import('@libp2p/crypto/keys')
+const libp2pPeerId = () => import('@libp2p/peer-id')
 
-const Big = require('big.js')
-
-const crypto = require('crypto')
+// Use @noble/secp256k1 (externalized in webpack, mocked in Jest)
+// v3.1.0 exports: keygen(), signAsync(), verify(), getPublicKey()
+const ecrypto = require('@noble/secp256k1')
 
 const path = require('path')
+const Big = require('big.js')
 
 class Wallet {
   constructor() {
     // this is only one wallet per running application, so it's OK to hard code it here
     this.key = path.resolve(config.STORE.WALLET)
 
-    const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
-      namedCurve: 'prime256v1',
-      publicKeyEncoding: {
-        type: 'spki',
-        format: 'pem',
-      },
-      privateKeyEncoding: {
-        type: 'pkcs8',
-        format: 'pem',
-      },
-    })
-
-    this.publicKey = publicKey
-    this.privateKey = privateKey
+    // Use secp256k1 for both signing and libp2p peer identity
+    const { secretKey, publicKey } = ecrypto.keygen()
+    this.privateKey = Crypto.bytesToHex(secretKey)
+    this.publicKey = Crypto.bytesToHex(publicKey.length === 33
+      ? ecrypto.getPublicKey(secretKey, false)
+      : publicKey)
   }
 
-  sign(data) {
-    const sign = crypto.createSign('SHA512')
-    sign.write(Crypto.hash(data))
-    sign.end()
-    return sign.sign(this.privateKey, 'hex')
+  /**
+   * Returns the libp2p PeerId derived from this wallet's public key.
+   * Used for ENR generation and discv5 peer discovery.
+   * @returns {Promise<import('@libp2p/interface').PeerId>}
+   */
+  async getPeerId() {
+    const { publicKeyFromRaw } = await libp2pCryptoKeys()
+    const { peerIdFromPublicKey } = await libp2pPeerId()
+    // Convert hex public key to raw bytes
+    const raw = Crypto.hexToBytes(this.publicKey)
+    const libp2pPubKey = publicKeyFromRaw(raw, 'secp256k1')
+    return peerIdFromPublicKey(libp2pPubKey)
   }
 
-  transactionSignature({ transaction }) {
-    const signature = this.sign([
+  /**
+   * Sign data using secp256k1 ECDSA with SHA-512.
+   * @param {*} data
+   * @returns {Promise<string>} hex-encoded signature
+   */
+  async sign(data) {
+    const hash = Crypto.hash(data)
+    const msgBytes = Crypto.hexToBytes(hash)
+    const privBytes = Crypto.hexToBytes(this.privateKey)
+    const sig = await ecrypto.signAsync(msgBytes, privBytes)
+    return Crypto.bytesToHex(sig)
+  }
+
+  async transactionSignature({ transaction }) {
+    const signature = await this.sign([
       transaction.uuid,
       transaction.timestamp,
       transaction.sender,
       transaction.recipient,
-      Big(transaction.ammount).valueOf(),
+      Big(transaction.amount).valueOf(),
       Big(transaction.fee).valueOf(),
     ])
     return signature
@@ -56,29 +74,29 @@ class Wallet {
   // there is no other place to create new transaction,
   // at this point the transaction should be signed and never modified.
   // This should be the only way to create transaction
-  createTransaction({ recipient, amount, fee }) {
+  async createTransaction({ recipient, amount, fee }) {
     const transaction = new Transaction({
       sender: this.publicKey, recipient, amount, fee,
     })
-    transaction.signature = this.transactionSignature({ transaction })
+    transaction.signature = await this.transactionSignature({ transaction })
     return transaction
   }
 
   // this creates a reward transaction for this wallet.
   // This transaction does not have to be added to the pool
-  createRewardTransaction() {
+  async createRewardTransaction() {
     const transaction = new Transaction({
       sender: this.publicKey, recipient: config.REWARD_ADDRESS, amount: config.REWARD_AMOUNT, fee: 0,
     })
-    transaction.signature = this.transactionSignature({ transaction })
+    transaction.signature = await this.transactionSignature({ transaction })
     return transaction
   }
 
-  createStakeTransaction({ amount, fee }) {
+  async createStakeTransaction({ amount, fee }) {
     const transaction = new Transaction({
       sender: this.publicKey, recipient: config.STAKE_ADDRESS, amount, fee,
     })
-    transaction.signature = this.transactionSignature({ transaction })
+    transaction.signature = await this.transactionSignature({ transaction })
     return transaction
   }
 

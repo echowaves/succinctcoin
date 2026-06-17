@@ -35,14 +35,22 @@ The system SHALL verify ECDSA signatures over SHA512-hashed data using a public 
 - **THEN** it SHALL return false
 
 ### Requirement: Public key validation
-The system SHALL validate that a string is a properly formatted ECDSA public key in SPKI PEM format.
+The system SHALL validate that a string is a properly formatted secp256k1 public key in hex format.
 
-#### Scenario: Valid public key accepted
-- **WHEN** Crypto.isPublicKey() is called with a 178-character PEM string starting with "-----BEGIN PUBLIC KEY-----\n" and ending with "\n-----END PUBLIC KEY-----\n"
+#### Scenario: Valid uncompressed public key accepted
+- **WHEN** Crypto.isPublicKey() is called with a 130-character hex string starting with "04"
+- **THEN** it SHALL return true
+
+#### Scenario: Valid compressed public key accepted
+- **WHEN** Crypto.isPublicKey() is called with a 66-character hex string starting with "02" or "03"
+- **THEN** it SHALL return true
+
+#### Scenario: Valid raw public key accepted
+- **WHEN** Crypto.isPublicKey() is called with a 64-character hex string (raw x,y coordinates)
 - **THEN** it SHALL return true
 
 #### Scenario: Invalid public key rejected
-- **WHEN** Crypto.isPublicKey() is called with a string that is not 178 characters or lacks proper PEM headers
+- **WHEN** Crypto.isPublicKey() is called with a string that is not 64, 66, or 130 hex characters
 - **THEN** it SHALL return false
 
 #### Scenario: Null public key rejected

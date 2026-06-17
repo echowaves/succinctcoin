@@ -29,6 +29,7 @@ class TransactionPool {
         const valid = await value.validate()
         return valid
       } catch (error) {
+        console.error(`Invalid transaction ${value.uuid}: ${error.message}`)
         return false
       }
     }))

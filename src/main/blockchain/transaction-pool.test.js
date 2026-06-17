@@ -1,6 +1,5 @@
 import Wallet from './wallet'
 import Account from './account'
-
 import TransactionPool from './transaction-pool'
 
 import Blockchain from './index'
@@ -36,7 +35,7 @@ describe('TransactionPool', () => {
     amount = '49'
     fee = '1'
 
-    transaction = senderWallet.createTransaction({ recipient, amount, fee })
+transaction = await senderWallet.createTransaction({ recipient, amount, fee })
   })
 
   describe('setTransaction()', () => {
@@ -53,7 +52,7 @@ describe('TransactionPool', () => {
       transactionPool.setTransaction(transaction)
 
       expect(
-        transactionPool.existingTransaction({ sender: senderWallet.publicKey })
+        transactionPool.existingTransaction({ sender: senderWallet.publicKey }),
       ).toBe(transaction)
     })
   })
@@ -73,11 +72,11 @@ describe('TransactionPool', () => {
         // create account associated with wallet (sender's account)
         account = new Account({ publicKey: senderWallet.publicKey })
         account.balance = '50'
-        await account.store() // eslint-disable-line no-await-in-loop
+        await account.store()
 
         amount = '29'
         fee = '1'
-        const transaction = senderWallet.createTransaction({ recipient, amount, fee })
+        const transaction = await senderWallet.createTransaction({ recipient, amount, fee })
 
         if (i % 3 === 0) {
           transaction.amount = 999999
@@ -94,9 +93,10 @@ describe('TransactionPool', () => {
       expect(await transactionPool.validTransactions()).toEqual(validTransactions)
     })
 
-    // it('logs errors for the invalid transactions', () => {
-    //   transactionPool.validTransactions()
-    //   expect(errorMock).toHaveBeenCalled()
+    it('logs errors for the invalid transactions', async () => {
+      await transactionPool.validTransactions()
+      expect(errorMock).toHaveBeenCalled()
+    })
     // })
   })
 
@@ -124,7 +124,7 @@ describe('TransactionPool', () => {
 
       amount = '29'
       fee = '1'
-      const transaction = senderWallet.createTransaction({ recipient, amount, fee })
+      const transaction = await senderWallet.createTransaction({ recipient, amount, fee })
 
       transactionPool.setTransaction(transaction)
       expect(Object.values(transactionPool.transactionMap)).toHaveLength(1)

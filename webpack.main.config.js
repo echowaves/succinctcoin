@@ -8,4 +8,9 @@ module.exports = {
   module: {
     rules: require('./webpack.rules'),
   },
-};
+   // Externalize @noble/secp256k1 so it's loaded at runtime via require()
+   // instead of being bundled (ESM modules can't be bundled by webpack)
+  externals: {
+    '@noble/secp256k1': 'commonjs @noble/secp256k1',
+  },
+}

@@ -1,7 +1,12 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+
 import Crypto from '../../main/util/crypto'
 
+/**
+ * @param {Object} props
+ * @param {Object} props.transaction
+ * @returns {JSX.Element}
+ */
 const Transaction = ({ transaction }) => {
   const {
     sender, recipient, amount, fee,
@@ -15,9 +20,3 @@ const Transaction = ({ transaction }) => {
     </div>
   )
 }
-
-Transaction.propTypes = {
-  transaction: PropTypes.object.isRequired,
-}
-
-export default Transaction

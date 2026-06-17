@@ -1,12 +1,13 @@
-import Obj2fsHOC from 'obj2fs-hoc'
+import { randomUUID } from 'crypto'
 
-import moment from 'moment'
-import { v4 as uuidv4 } from 'uuid'
+import Obj2fsHOC from 'obj2fs-hoc'
+import dayjs from 'dayjs'
 
 import Crypto from '../util/crypto'
+import config from '../config'
+
 import Account from './account'
 
-import config from '../config'
 
 const Big = require('big.js')
 
@@ -18,8 +19,8 @@ class Transaction {
     sender: '', recipient: '', amount: '0', fee: '0',
   }) {
     // transaction should not be stored on disk as a separate file, as such there is no need to define KEY
-    this.uuid = uuidv4()
-    this.timestamp = moment.utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
+    this.uuid = randomUUID()
+    this.timestamp = dayjs().utc().valueOf() // assigned when transaction is created, should be less then the block timestamp
     this.sender = sender
     this.recipient = recipient
     this.amount = amount
@@ -81,7 +82,7 @@ class Transaction {
       throw new Error('Invalid reward fee')
     }
 
-    if (!this.verifySignature()) {
+    if (!await this.verifySignature()) {
       // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
       throw new Error('Invalid transaction signature')
     }
@@ -96,7 +97,7 @@ class Transaction {
         this.timestamp,
         this.sender,
         this.recipient,
-        Big(this.ammount).valueOf(),
+        Big(this.amount).valueOf(),
         Big(this.fee).valueOf(),
       ],
       signature: this.signature,

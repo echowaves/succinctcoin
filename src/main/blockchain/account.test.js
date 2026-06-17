@@ -1,9 +1,9 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
+
+import Crypto from '../util/crypto'
+import config from '../config'
 
 import Account from './account'
-import Crypto from '../util/crypto'
-
-import config from '../config'
 
 const path = require('path')
 
@@ -86,7 +86,7 @@ describe('Account', () => {
       it('should fail subtracting amount bigger than `balance`', () => {
         expect(() => {
           account.subtractBalance({ amount: Big(amount).times(3).valueOf() })
-        }).toThrowError('trying to substract bigger amount than possible')
+        }).toThrow('trying to substract bigger amount than possible')
       })
     })
 
@@ -105,7 +105,7 @@ describe('Account', () => {
       it('should fail to add stake bigger than the `balance`', () => {
         expect(() => {
           account.addStake({ amount: Big(amount).times(3).valueOf() })
-        }).toThrowError('trying to substract bigger amount than possible')
+        }).toThrow('trying to substract bigger amount than possible')
       })
 
       it('should add increment `stakeTimestamp`', async () => {
@@ -113,7 +113,7 @@ describe('Account', () => {
         await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
         account.addStake({ amount })
         expect(account.stakeTimestamp).toBeGreaterThan(stakeTimestamp)
-        expect(account.stakeTimestamp).toBeLessThan(moment.utc(stakeTimestamp).add(1, 'second').valueOf())
+        expect(account.stakeTimestamp).toBeLessThan(dayjs(stakeTimestamp).utc().add(1, 'second').valueOf())
       })
     })
 
@@ -132,15 +132,15 @@ describe('Account', () => {
       })
       it('should add increment stakeTimestamp', async () => {
         const { stakeTimestamp } = account
-        await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
+        await new Promise(resolve => setTimeout(resolve, 10)) // ensure millisecond-level timestamp changes
         account.subtractStake({ amount })
         expect(account.stakeTimestamp).toBeGreaterThan(stakeTimestamp)
-        expect(account.stakeTimestamp).toBeLessThan(moment.utc(stakeTimestamp).add(1, 'second').valueOf())
+        expect(account.stakeTimestamp).toBeLessThan(dayjs(stakeTimestamp).utc().add(1, 'second').valueOf())
       })
       it('should fail subtracting amount bigger than `stake`', () => {
         expect(() => {
           account.subtractStake({ amount: Big(amount).times(3).valueOf() })
-        }).toThrowError('trying to substract bigger amount than possible')
+        }).toThrow('trying to substract bigger amount than possible')
       })
     })
 
@@ -164,13 +164,9 @@ describe('Account', () => {
       it('should fail to generate an `Account` object from wrong JSON', () => {
         expect(() => {
           account.parse('{ some: json }')
-        }).toThrowError('Unexpected token s in JSON at position 2')
+        }).toThrow(/Expected property name/)
       })
     })
 
-    // describe('calculateBalance()', () => {
-    //   xit('should walk the chain and calculate the balance', () => {
-    //   })
-    // })
   })
 })
