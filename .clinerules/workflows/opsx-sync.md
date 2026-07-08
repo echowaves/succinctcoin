@@ -1,6 +1,6 @@
----
-description: Sync delta specs from a change to main specs
----
+# OPSX: Sync
+
+Sync delta specs from a change to main specs
 
 Sync delta specs from a change to main specs.
 
