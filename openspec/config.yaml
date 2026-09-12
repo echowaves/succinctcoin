@@ -20,7 +20,7 @@ context: |
        - big.js for arbitrary-precision arithmetic
        - obj2fs-hoc for persistence to ~/.succinctcoin/
        - contextIsolation: true for security
-  
+
   Architecture:
        - src/main/ - Electron main process (blockchain, wallet, networking, API)
        - src/main/blockchain/ - Core domain: Block, Transaction, Wallet, Account, TransactionPool
@@ -28,7 +28,7 @@ context: |
        - src/main/util/ - Crypto utilities
        - src/renderer/ - React UI with React Router + React Bootstrap
        - src/renderer/components/ - Blocks, Wallet, ConductTransaction, TransactionPool
-  
+
   Conventions:
        - ES6 modules (import/export)
        - Class-based OOP for domain entities
@@ -38,7 +38,7 @@ context: |
        - async/await for I/O, Promise.all() for parallelism
        - JSDoc annotations for type hints (no PropTypes)
        - contextBridge for secure IPC between renderer and main
-  
+
   proposal:
        - Keep proposals focused on one capability area
        - Consider impact on P2P message format for any blockchain changes
@@ -74,3 +74,5 @@ context: |
        - All new code MUST be written in JavaScript (ES6+)
        - No .ts or .tsx files should be created
        - JSDoc annotations are preferred over TypeScript for type hints
+githubCopilot:
+  cloudAgent: false
