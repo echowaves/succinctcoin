@@ -6,7 +6,7 @@ All work is spec-documentation only. No `src/` edits, no `package.json` changes,
 Dependencies: none.
 - [x] Update `specs/configuration/spec.md` — keep the richer genesis definition as authoritative and require all other specs to cross-reference it here.
 - [x] Update `specs/configuration/spec.md` — add P2P discovery config: `DISCV5_BOOTSTRAP_ENRs` (empty => relay-only), `RELAY_ENDPOINTS` (empty => no relay), and the 30s search-interval default.
-- [ ] Verify the genesis definition matches any on-disk block files (or note the migration risk in proposal.md). (Note: proposal already flags the on-disk-legacy risk; project never shipped.)
+- [x] Verify the genesis definition matches any on-disk block files (or note the migration risk in proposal.md). (Note: proposal already flags the on-disk-legacy risk; project never shipped. Verified 2026-09-19: `~/.succinctcoin/blocks/` is empty and no `.test/blocks/` exists — no on-disk blocks can conflict with the canonical genesis.)
 
 ## Task 2: Reconcile blockchain-core genesis and empty-block rules
 Dependencies: Task 1.
@@ -40,7 +40,7 @@ Dependencies: Tasks 4–5 (after conflicts resolved).
 - [x] Fix "(Electron 28)" → "(Electron 42)" in `specs/build-tooling/spec.md`.
 
 ## Task 7: Verify
-- [ ] Confirm no requirement contains `(implementation pending)` or similar placeholders.
-- [ ] Confirm no two specs assert incompatible behavior for the same scenario.
-- [ ] Confirm every requirement has testable WHEN/THEN scenarios guarded for negative/zero/empty/null/out-of-range inputs.
-- [ ] Run `npm test` and `npm run lint` to confirm the spec-only change has no effect on the suite.
+- [x] Confirm no requirement contains `(implementation pending)` or similar placeholders. (Verified 2026-09-19: `grep -rn "implementation pending\|TODO\|FIXME" openspec/specs/` returns nothing.)
+- [x] Confirm no two specs assert incompatible behavior for the same scenario. (Verified 2026-09-19: single canonical genesis in configuration + blockchain-core cross-reference; reward-only-on-empty-pool consistent across blockchain-core / transaction-system / transaction-miner; single fee and pagination contracts.)
+- [x] Confirm every requirement has testable WHEN/THEN scenarios guarded for negative/zero/empty/null/out-of-range inputs. (Verified 2026-09-19: guards present in all 12 capability specs; `openspec validate` passes — every requirement carries a scenario.)
+- [x] Run `npm test` and `npm run lint` to confirm the spec-only change has no effect on the suite. (Verified 2026-09-19: 118/118 tests pass; all lint findings are pre-existing source-file issues, none in `openspec/`.)
