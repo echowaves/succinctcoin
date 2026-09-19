@@ -63,15 +63,11 @@ If the user says something like "explore this and fix the bug" or "let's look at
 
 ## Project Context
 
-- **Tech stack**: React Native 0.81.5, Expo 54.0.25, Expo Router 6.0.15, React 19.1.0
-- **State management**: Jotai 2.15.0
-- **API**: Apollo Client 4.0.2, GraphQL with WebSocket subscriptions
-- **Architecture**: File-based routing (Expo Router), modular screens with reducers and custom hooks
-- **Package manager**: npm
-- **Dependencies**: Always use exact versions (no `^` or `~` prefixes)
-- **Backend repo**: `/Users/dmitry/hacks/wisaw/Wisaw.cdk`
-- **API schema**: Refer to GraphQL schema at `https://github.com/echowaves/WiSaw.cdk/blob/main/graphql/schema.graphql` using the GitHub MCP server
-- **Complexity limit**: Maximum cyclomatic complexity of 8. Refactor by extracting helpers, using early returns, and breaking down conditionals.
-- **Image caching**: Always use `expo-cached-image`
-- **Key-value storage**: Always use `expo-storage`
-- **Security**: `.env` must never be committed. Secrets must never be hardcoded.
+- **Tech stack**: Electron 42 (Electron Forge + Webpack), Node 24, React 19, `react-bootstrap`, `react-router-dom`. Blockchain + P2P core is JavaScript in `src/main/` (no Rust/Cargo).
+- **Money**: `big.js`, integer units, never floats.
+- **Crypto**: `@noble/secp256k1` (webpack-externalized), sha512 hashing in `src/main/util/crypto.js`.
+- **State**: renderer is stateless UI (`useState`); no external store.
+- **Package manager**: npm; dependencies pinned to exact versions (no `^`/`~`).
+- **Complexity**: maximum cyclomatic complexity 8 — refactor via helpers, early returns, decomposed conditionals.
+- **Security**: no secrets or config files. Wallet keys are generated at runtime in `~/.succinctcoin/`; `.env`/`.env.test` are gitignored — never commit them.
+- **Testing**: `npm test` (jest). Never `npm run test:ci` — it is `jest --watch` and hangs CI.
