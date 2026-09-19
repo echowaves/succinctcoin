@@ -13,6 +13,7 @@ exclude_paths:
   - ".clinerules/**"
   - "_bmad/**"
   - "_bmad-output/**"
+  - ".agents/**"
 
 
 exclude_patterns:
