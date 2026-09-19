@@ -4,28 +4,12 @@ Defines the Electron desktop application shell, Express API server, React render
 
 ## Requirements
 
-### Requirement: Express API server
-The system SHALL run an Express API server in the Electron main process exposing blockchain operations via HTTP endpoints.
+### Requirement: Express API server integration
+The system SHALL host the Express API server in the Electron main process and start it during api.init(). The endpoint contracts (GET /api/blocks, GET /api/transaction-pool-map, POST /api/transact, GET /api/mine-transactions, GET /api/wallet-info) are defined in api-endpoints/spec.md and SHALL be referenced here, not restated.
 
-#### Scenario: Get blockchain
-- **WHEN** GET /api/blocks is called with optional pagination (offset, limit)
-- **THEN** the system SHALL return the requested slice of the blockchain
-
-#### Scenario: Get transaction pool
-- **WHEN** GET /api/transaction-pool-map is called
-- **THEN** the system SHALL return all pending transactions in the pool
-
-#### Scenario: Create transaction
-- **WHEN** POST /api/transact is called with recipient, amount, and fee
-- **THEN** the system SHALL create a signed transaction, add it to the pool, and broadcast it to peers
-
-#### Scenario: Mine transactions
-- **WHEN** GET /api/mine-transactions is called
-- **THEN** the system SHALL mine a new block with valid pool transactions and broadcast the updated chain
-
-#### Scenario: Get wallet info
-- **WHEN** GET /api/wallet-info is called
-- **THEN** the system SHALL return the wallet's public key (address) and account balance
+#### Scenario: API server integration
+- **WHEN** the Electron main process initializes the API server
+- **THEN** the server SHALL expose the endpoints defined in api-endpoints/spec.md and the electron-app spec SHALL reference (not restate) them
 
 ### Requirement: Electron window management
 The system SHALL create a BrowserWindow loading the webpack-bundled renderer and manage the application lifecycle. The BrowserWindow MUST use secure webPreferences: `nodeIntegration` SHALL be `false`, `contextIsolation` SHALL be `true`, and `webSecurity` SHALL be `true`. The renderer process MUST NOT have direct access to Node.js APIs and SHALL communicate with the main process exclusively through the `contextBridge` exposed in the preload script.

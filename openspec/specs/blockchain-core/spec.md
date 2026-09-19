@@ -5,14 +5,14 @@ Defines the core blockchain data structure, block mining, validation rules, and 
 ## Requirements
 
 ### Requirement: Genesis block initialization
-The system SHALL initialize the blockchain with a single genesis block containing predefined values (height 0, lastHash "none", hash "hash-one", data []).
+The system SHALL initialize the blockchain with a single genesis block containing the canonical predefined values (height 0, uuid="GENESIS", timestamp=0, validator="GENESIS", lastHash="GENESIS", hash="GENESIS", data=["GENESIS"], signature="GENESIS"). The genesis definition in configuration/spec.md is authoritative.
 
 #### Scenario: New blockchain starts with genesis
 - **WHEN** a new Blockchain instance is created
-- **THEN** the chain SHALL contain exactly one block (the genesis block) with height 0
+- **THEN** the chain SHALL contain exactly one block (the genesis block) with height 0, uuid="GENESIS", and the canonical genesis values
 
 #### Scenario: Genesis block is immutable
-- **WHEN** a block claims to be at height 0 with different data than the canonical genesis
+- **WHEN** a block claims to be at height 0 with any field (uuid, validator, lastHash, hash, data, signature) different from the canonical genesis
 - **THEN** chain validation SHALL reject the chain as invalid
 
 ### Requirement: Block mining
@@ -58,8 +58,12 @@ The system SHALL validate each block by checking hash integrity, signature valid
 - **THEN** validation SHALL reject the block
 
 #### Scenario: Empty block rejected after bootstrap
-- **WHEN** a block at height > 3 contains only a reward transaction (no user transactions)
+- **WHEN** a block at height > 3 contains only a reward transaction (no user transactions) AND was not mined with an empty pool
 - **THEN** validation SHALL reject the block as empty data
+
+#### Scenario: Reward-only block on empty pool accepted
+- **WHEN** a block at height > 3 contains only a reward transaction AND was mined because the transaction pool had no valid transactions
+- **THEN** validation SHALL accept the block as a valid empty-pool block
 
 #### Scenario: Invalid miner rejected
 - **WHEN** a block's miner field is not a valid public key

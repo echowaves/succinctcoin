@@ -46,11 +46,11 @@ The system SHALL allow adding and subtracting from account stakes, with correspo
 - **THEN** it SHALL throw an error: "trying to substract bigger amount than possible"
 
 ### Requirement: Total balance calculation
-The system SHALL provide a method to calculate the total balance including staked funds.
+The system SHALL provide a method to calculate the total balance including staked funds. The result is the big.js sum of balance and stake.
 
 #### Scenario: Calculate total balance
 - **WHEN** calculateBalance() is called
-- **THEN** it SHALL return the sum of balance and stake (implementation pending)
+- **THEN** it SHALL return the sum of balance and stake as a big.js value (balance + stake)
 
 ### Requirement: Account persistence
 The system SHALL persist account data to disk and restore it on retrieval.

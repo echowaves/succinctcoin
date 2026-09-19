@@ -130,7 +130,7 @@ The system SHALL NOT depend on packages that are no longer needed.
 The system SHALL use native `fetch` instead of `electron-fetch`.
 
 #### Scenario: Main process uses native fetch
-- **WHEN** the main process code runs (Electron 28)
+- **WHEN** the main process code runs (Electron 42)
 - **THEN** `fetch` SHALL be available globally without importing `electron-fetch`
 
 ### Requirement: Express body-parser not needed

@@ -19,8 +19,16 @@ The system SHALL compute SHA512 hashes of arbitrary inputs by JSON-stringifying 
 - **WHEN** Crypto.hash() is called with the same inputs in different orders
 - **THEN** the result SHALL be identical (inputs are sorted before hashing)
 
+#### Scenario: Hash object inputs deterministically
+- **WHEN** Crypto.hash() is called with object inputs whose keys are in different insertion order
+- **THEN** the result SHALL be identical (object keys are sorted recursively before hashing)
+
+#### Scenario: Hash with no arguments
+- **WHEN** Crypto.hash() is called with no arguments
+- **THEN** it SHALL hash the empty input deterministically and return a defined digest
+
 ### Requirement: Signature verification
-The system SHALL verify ECDSA signatures over SHA512-hashed data using a public key.
+The system SHALL verify ECDSA signatures over SHA512-hashed data using a public key. Malformed, null, or undefined signatures SHALL be handled without throwing.
 
 #### Scenario: Valid signature verified
 - **WHEN** Crypto.verifySignature() is called with a public key, data, and a valid signature
@@ -33,6 +41,10 @@ The system SHALL verify ECDSA signatures over SHA512-hashed data using a public 
 #### Scenario: Wrong public key fails
 - **WHEN** Crypto.verifySignature() is called with a public key that does not correspond to the signing key
 - **THEN** it SHALL return false
+
+#### Scenario: Malformed signature rejected
+- **WHEN** Crypto.verifySignature() is called with a malformed, null, or undefined signature
+- **THEN** it SHALL return false rather than throwing an exception
 
 ### Requirement: Public key validation
 The system SHALL validate that a string is a properly formatted secp256k1 public key in hex format.
