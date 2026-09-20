@@ -1,0 +1,92 @@
+# Story breakdown for SPEC-launch-readiness.
+# Rendered from .memlog.md (decision entries, 2026-09-20). Stories run top to bottom.
+
+- id: "1"
+  title: Canonical hashing
+  description: >-
+    CAP-11: Crypto.hash sorts object keys recursively and pins the
+    documented scalar-argument behavior, with unit tests for nested key
+    order invariance.
+  spec_checkpoint: true
+
+- id: "2"
+  title: Chain-derived state-transition
+  description: >-
+    CAP-1: exactly one core state-transition function applies accepted
+    blocks to account state computed purely from chain contents; validation
+    never reads local disk.
+
+- id: "3"
+  title: User transactions end-to-end
+  description: >-
+    CAP-2: a transaction from a funded account is accepted into the pool,
+    mined, and reflected in the recipient balance on every node, with the
+    chain growing past height 3 in a two-node test.
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Create transactions only via Wallet.createTransaction; signed txs are
+    immutable. Money via big.js integer units, fee = amount/1000. Do not
+    reintroduce local-disk balance reads into validation (AD-10).
+
+- id: "4"
+  title: Miner lottery + autonomous mining
+  description: >-
+    CAP-3 + CAP-4: miner selection by the pinned self-evaluated threshold
+    lottery, and mining driven by a fixed re-check interval with the HTTP
+    endpoint reduced to a dev-only convenience.
+  spec_checkpoint: true
+  invoke_dev_with: >-
+    Lottery family is pinned (AD-11): Crypto.hash(prevBlockHash hex,
+    publicKey hex) < threshold, both inputs hex strings, self-evaluated;
+    argmin-over-peers is excluded. The re-check interval is a new
+    app-semantic config value, distinct from VALIDATION_RATE.
+
+- id: "5"
+  title: Canonical block contents + pool sync
+  description: >-
+    CAP-5 + CAP-6 + CAP-8: one canonical block content form (exact hash
+    field set, total data order, hard-fork flag) and empty-gated, additive
+    uuid merge for pool sync with the root setMap full-replace removed.
+  done_checkpoint: true
+  invoke_dev_with: >-
+    data order is timestamp ASC, uuid ASC - fix the existing inconsistent
+    comparator. Field-set/order change = hard fork (AD-12). Remove the
+    setMap full-replace path entirely; no partial fix.
+
+- id: "6"
+  title: Deterministic fork resolution
+  description: >-
+    CAP-7: on equal-length chains the system builds on the lower block hash
+    at the divergence point and rejects incoming equal-length chains.
+
+- id: "7"
+  title: Typed error flow
+  description: >-
+    CAP-9: the core throws typed errors and the app layer maps them to the
+    HTTP envelope with the documented status map; no HTTP status logic in
+    the core.
+
+- id: "8"
+  title: Configuration ownership split
+  description: >-
+    CAP-10: one owner per config value - chain semantics in
+    src/main/config.js, network in src/config.js, renderer values via the
+    preload bridge exposing getApiPort.
+
+- id: "9"
+  title: Key custody
+  description: >-
+    CAP-12: encrypted wallet backup export and restore yielding the same
+    public key, plus corruption detection that errors instead of silently
+    generating a new identity.
+
+- id: "10"
+  title: OpenSpec reconciliation + convergence demo
+  description: >-
+    CAP-13: the six affected OpenSpec specs are rewritten to the target
+    state with openspec verify passing; the two-node convergence
+    demonstration (the spec success signal) is added as the closing test.
+  done_checkpoint: true
+  invoke_dev_with: >-
+    Two-node convergence test must run as two isolated cores with separate
+    storage dirs (use the JEST_WORKER_ID .test/ convention).
