@@ -7,7 +7,7 @@ import config from '../config'
 
 import Block from './block'
 import Wallet from './wallet'
-import Account from './account'
+import deriveState from './state'
 
 //
 // const path = require('path')
@@ -112,16 +112,11 @@ describe('Block', () => {
 
     let transactions2
     let minedBlock2 // this will be a correct block
+    let chainState // the derived state of the chain up to (excluding) minedBlock2
 
     beforeEach(async () => {
       wallet = new Wallet()
       await wallet.store()
-      // sender account should contain balance
-      const account = new Account({
-        publicKey: wallet.publicKey,
-      })
-      account.balance = 50
-      await account.store()
 
       recipient = new Wallet().publicKey
 
@@ -140,13 +135,17 @@ describe('Block', () => {
       await new Promise(resolve => setTimeout(resolve, 1)) // otherwise it works too fast
       // this will also generate reward transaction
       minedBlock2 = await (new Block({ lastBlock: minedBlock1, data: transactions2 })).mineBlock({ wallet })
+
+      // the sender is funded via the reward chain; block validation checks
+      // balances against the derived chain state (AD-10), never disk
+      chainState = deriveState([genesisBlock, minedBlock1])
     })
 
     describe('when block is valid', () => {
       // every tedt in this group should start with foloowing line
       // expect(minedBlock2.validate()).toBe(true)
       it('should have `height`that is greater by 1 than the previous block `height`', async () => {
-        expect(await minedBlock2.validate()).toBe(true)
+        expect(await minedBlock2.validate({ state: chainState })).toBe(true)
         expect(minedBlock2.height).toEqual(minedBlock1.height + 1)
       })
       it('should contain `uuid` that is unique across all blocks', () => {
@@ -157,7 +156,7 @@ describe('Block', () => {
         expect(await minedBlock2.lastHash).toEqual(minedBlock1.hash)
       })
       it('should contain verifiable `hash`', async () => {
-        expect(await minedBlock2.validate()).toBe(true)
+        expect(await minedBlock2.validate({ state: chainState })).toBe(true)
         expect(Crypto.hash(
           minedBlock2.height,
           minedBlock2.uuid,
@@ -168,7 +167,7 @@ describe('Block', () => {
         )).toBe(minedBlock2.hash)
       })
       it('should contain non empty `data`', async () => {
-        expect(await minedBlock2.validate()).toBe(true)
+        expect(await minedBlock2.validate({ state: chainState })).toBe(true)
         expect(minedBlock2.data).toBeDefined()
         expect(minedBlock2.data).not.toBeNull()
         expect(minedBlock2.data).not.toHaveLength(0)
@@ -194,8 +193,8 @@ describe('Block', () => {
       })
       it('should contain only valid transactions', async () => {
         // the impementatino is a bit smelly
-        minedBlock2.data.forEach(async transaction => { await transaction.validate() })
-        expect(await minedBlock2.validate()).toBe(true)
+        minedBlock2.data.forEach(async transaction => { await transaction.validate({ state: chainState }) })
+        expect(await minedBlock2.validate({ state: chainState })).toBe(true)
       })
       it('should have the `timestamp` equal to the `timestamp` of the reward `transaction`', () => {
         const transactions = minedBlock2.data
@@ -215,7 +214,7 @@ describe('Block', () => {
       it('should have `height`that is not greater by 1 than the previous block `height`', async () => {
         minedBlock2.height += 1
         expect(minedBlock2.height).toEqual(minedBlock1.height + 2)
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid height')
       })
@@ -228,14 +227,14 @@ describe('Block', () => {
       it('should have `lastHash` that does not point to previous block', async () => {
         minedBlock2.lastHash = 'lastHash'
         expect(minedBlock2.lastHash).toEqual('lastHash')
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid hash')
       })
       it('should contain non verifiable `hash`', async () => {
         minedBlock2.hash = 'hash'
         expect(minedBlock2.hash).toEqual('hash')
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid hash')
       })
@@ -243,7 +242,7 @@ describe('Block', () => {
         const minedBlock3 = await (new Block({ lastBlock: minedBlock2, data: [] })).mineBlock({ wallet })
         const minedBlock4 = await (new Block({ lastBlock: minedBlock3, data: [] })).mineBlock({ wallet })
         minedBlock4.data = []
-        await expect(minedBlock4.validate())
+        await expect(minedBlock4.validate({ state: chainState }))
           .rejects
           .toThrow('Bad data')
       })
@@ -251,39 +250,39 @@ describe('Block', () => {
         // blocks below 4 are exception from this rule
         const minedBlock3 = await (new Block({ lastBlock: minedBlock2, data: [] })).mineBlock({ wallet })
         const minedBlock4 = await (new Block({ lastBlock: minedBlock3, data: [] })).mineBlock({ wallet })
-        await expect(minedBlock4.validate())
+        await expect(minedBlock4.validate({ state: chainState }))
           .rejects
           .toThrow('Empty data')
       })
       it('should contain 0 reward `transaction`', async () => {
         minedBlock2.data = minedBlock2.data.filter(transaction => transaction.recipient !== config.REWARD_ADDRESS)
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid number of rewards')
       })
       it('should contain more than 1 reward `transaction`', async () => {
         const rewardTransaction = await wallet.createRewardTransaction()
         minedBlock2.data.push(rewardTransaction) // add dup rewardTrasaction
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid number of rewards')
       })
 
       it('should have transactions that are not ordered ASC by `timestamp`', async () => {
         minedBlock2.data.sort((a, b) => (a.timestamp <= b.timestamp ? 1 : -1))
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid sort order')
       })
       it('should contain `miner` that is not valid public key of an existing `account`', async () => {
         minedBlock2.miner = 'invalid miner'
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid miner')
       })
       it('should be signed by someone other than `miner`', async () => {
         minedBlock2.signature = await new Wallet().sign(minedBlock2.hash)
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid block signature')
       })
@@ -306,26 +305,26 @@ describe('Block', () => {
       it('should contain not only valid transactions', async () => {
         minedBlock2.data[0].uuid = randomUUID()
         // this will invalidate transaction hash
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid transaction signature')
       })
       it('should have the `timestamp` not equal to the `timestamp` of the reward `transaction`', async () => {
         minedBlock2.timestamp = dayjs().utc().add(1, 'second').valueOf()
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid reward transaction timestamp')
       })
       it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', async () => {
         minedBlock2.data[1].timestamp = dayjs().utc().add(1, 'second').valueOf()
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Invalid transaction timestamp')
       })
 
       it('should contain duplicate transactions', async () => {
         minedBlock2.data.push(minedBlock2.data[1])
-        await expect(minedBlock2.validate())
+        await expect(minedBlock2.validate({ state: chainState }))
           .rejects
           .toThrow('Duplicate transactions')
       })

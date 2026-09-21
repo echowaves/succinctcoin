@@ -21,12 +21,12 @@ class TransactionPool {
     return transactions.find(transaction => transaction.sender === sender)
   }
 
-  async validTransactions() {
+  async validTransactions({ state } = { state: {} }) {
     const values = Object.values(this.transactionMap)
 
     const shouldFilter = await Promise.all(values.map(async value => {
       try {
-        const valid = await value.validate()
+        const valid = await value.validate({ state })
         return valid
       } catch (error) {
         console.error(`Invalid transaction ${value.uuid}: ${error.message}`)

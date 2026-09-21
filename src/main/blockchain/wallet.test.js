@@ -1,5 +1,6 @@
 import Wallet from './wallet'
-import Account from './account'
+import Block from './block'
+import deriveState from './state'
 
 // const path = require('path')
 //
@@ -77,13 +78,13 @@ describe('Wallet', () => {
   })
 
   describe('wallet.createTransaction()', () => {
-    let account
+    let state
     beforeEach(async () => {
-      // create account associated with wallet
-      account = await (new Account({ publicKey: wallet.publicKey })).retrieveThrough()
+      // fund the sender via a mined reward block; validation checks the
+      // balance against the derived chain state (AD-10), never disk
+      const block = await new Block({ lastBlock: Block.genesis(), data: [] }).mineBlock({ wallet })
 
-      account.balance = 50
-      await account.store()
+      state = deriveState([Block.genesis(), block])
     })
 
     describe('and the amount and fee are valid', () => {
@@ -101,7 +102,7 @@ beforeEach(async () => {
 
       it('matches the transaction sender with the wallet address', async () => {
         expect(transaction.sender).toEqual(wallet.publicKey)
-        expect(await transaction.validate()).toBe(true)
+        expect(await transaction.validate({ state })).toBe(true)
       })
     })
   })

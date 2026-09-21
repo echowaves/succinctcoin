@@ -1,5 +1,6 @@
 // import Crypto from '../util/crypto'
 import Block from './block'
+import deriveState, { applyBlock } from './state'
 
 class Blockchain {
   constructor() {
@@ -15,7 +16,8 @@ class Blockchain {
       // console.log(newBlock)
       await newBlock.mineBlock({ wallet })
 
-      await newBlock.validate()
+      const prefix = deriveState(this.chain)
+      await newBlock.validate({ state: prefix })
 
       this.chain.push(newBlock)
     } catch (error) {
@@ -46,15 +48,23 @@ class Blockchain {
       return false
     }
 
-    let isChainValid = true
-    try {
-      await Promise.all(chain.map(async block => {
-        await block.validate()
-      }))
-    } catch (error) {
-      isChainValid = false
+    // SEQUENTIAL fold (AD-10): the running state must carry across blocks,
+    // so blocks are validated one at a time and the state advances only
+    // when a block validates.
+    let state = {}
+    for (const block of chain) {
+      let ok = true
+      try {
+        ok = await block.validate({ state })
+      } catch {
+        ok = false
+      }
+      if (!ok) {
+        return false
+      }
+      state = applyBlock(state, block)
     }
-    return isChainValid
+    return true
   }
 }
 

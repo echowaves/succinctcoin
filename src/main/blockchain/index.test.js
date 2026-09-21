@@ -1,4 +1,3 @@
-import Account from './account'
 import Wallet from './wallet'
 import Block from './block'
 
@@ -21,9 +20,8 @@ describe('Blockchain', () => {
     blockchain = new Blockchain()
     const wallet = new Wallet()
 
-    await (new Account({ publicKey: wallet.publicKey })).store()
-
-    // add first 3 empty blocks
+    // the wallet is funded purely by the reward blocks below (AD-10):
+    // no disk account files in the validation path
     await blockchain.addBlock({ data: [], wallet })
     await blockchain.addBlock({ data: [], wallet })
     await blockchain.addBlock({ data: [], wallet })
@@ -45,19 +43,16 @@ describe('Blockchain', () => {
 
   it('adds a new block to the chain', async () => {
     const senderWallet = new Wallet()
-    // create account associated with wallet (sender's account)
-    const account = new Account({ publicKey: senderWallet.publicKey })
-    account.balance = '50'
 
-    await account.store()
+    // fund the sender with a reward block (100, fee-free)
+    const chain = new Blockchain()
+    await chain.addBlock({ data: [], wallet: senderWallet })
 
     const recipient = new Wallet().publicKey
 
-    await (new Account({ publicKey: recipient })).store()
-
     const transaction = await senderWallet.createTransaction({ recipient, amount: '29', fee: '1' })
 
-    const block = await blockchain.addBlock({ data: [transaction], wallet: senderWallet })
+    const block = await chain.addBlock({ data: [transaction], wallet: senderWallet })
 
     const blockData = block.data
     expect(blockData.slice(0, blockData.length - 1)).toEqual([transaction])
@@ -77,11 +72,9 @@ describe('Blockchain', () => {
         blockchain = new Blockchain()
         const senderWallet = new Wallet()
 
-        // create account associated with wallet (sender's account)
-        const account = new Account({ publicKey: senderWallet.publicKey })
-        account.balance = '1000'
-
-        await account.store()
+        // fund the sender with a reward block (100, fee-free) — the
+        // sender can then cover the three transfers below (AD-10)
+        await blockchain.addBlock({ data: [], wallet: senderWallet })
 
         const transaction1 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '29', fee: '1' })
         const transaction2 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '28', fee: '1' })
@@ -144,10 +137,9 @@ describe('Blockchain', () => {
       beforeEach(async () => {
         const senderWallet = new Wallet()
 
-        // create account associated with wallet (sender's account)
-        const account = new Account({ publicKey: senderWallet.publicKey })
-        account.balance = '10000'
-        await account.store()
+        // fund the sender with a reward block (100, fee-free) — the
+        // sender can then cover the four transfers below (AD-10)
+        await newChain.addBlock({ data: [], wallet: senderWallet })
 
         const transaction1 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '29', fee: '1' })
         const transaction2 = await senderWallet.createTransaction({ recipient: new Wallet().publicKey, amount: '28', fee: '1' })

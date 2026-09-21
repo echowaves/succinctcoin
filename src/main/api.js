@@ -5,6 +5,7 @@ import Blockchain from './blockchain'
 import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
 import TransactionMiner from './app/transaction-miner'
+import deriveState from './blockchain/state'
 import config from './config'
 import PubSub from './app/pubsub'
 
@@ -100,7 +101,8 @@ api.post('/api/transact', async (req, res) => {
       amount,
       fee: Big(amount).div(1000), // automatically calculate fee
     })
-    await transaction.validate()
+    const state = deriveState(blockchain.chain)
+    await transaction.validate({ state })
     transactionPool.setTransaction(transaction)
     pubsub.broadcastTransaction(transaction)
     res.json({ type: 'success', transaction })

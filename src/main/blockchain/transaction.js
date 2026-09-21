@@ -6,9 +6,6 @@ import dayjs from 'dayjs'
 import Crypto from '../util/crypto'
 import config from '../config'
 
-import Account from './account'
-
-
 const Big = require('big.js')
 
 class Transaction {
@@ -27,8 +24,9 @@ class Transaction {
     this.fee = fee
   }
 
-  // TODO: do a better grouping of related validation logic blocks
-  async validate() {
+  // AD-10: state-free structure/crypto checks. No disk access, no balance
+  // knowledge — those come from the derived chain state passed to validate().
+  validateStructure() {
     if (!Crypto.isPublicKey({ publicKey: this.sender })) {
       throw new Error('Sender invalid')
     }
@@ -51,21 +49,6 @@ class Transaction {
       throw new Error('Sender and Recipient are the same')
     }
 
-    // expected the sender senderAccount already in the system -- simply retreive it
-    // this will throw 'No such key or file name found on disk' if the senderAccount does not exist on disk
-    const senderAccount = await new Account({ publicKey: this.sender }).retrieve()
-
-    if (this.recipient === config.STAKE_ADDRESS
-      && (Big(this.amount).plus(senderAccount.stake)).gt(Big(senderAccount.balance).div(10))) {
-      // console.log(`(${this.amount} + ${senderAccount.stake}) > ${senderAccount.balance} / 10)`)
-      throw new Error('Stake too high')
-    }
-    if (this.recipient === config.STAKE_ADDRESS
-      && (Big(senderAccount.stake).plus(this.amount).lt(0))) {
-      // console.log(`(${this.amount} + ${senderAccount.stake}) > ${senderAccount.balance} / 10)`)
-      throw new Error('Not enough stake')
-    }
-
     if (Big(this.amount).lte(0) && this.recipient !== config.STAKE_ADDRESS) {
       throw new Error('Amount invalid')
     }
@@ -74,18 +57,46 @@ class Transaction {
       if (Big(this.fee).lt(Big(this.amount).div(1000))) {
         throw new Error('Fee invalid')
       }
-      // console.log(`${amount + fee} > ${account.balance}`)
-      if (Big(this.amount).plus(this.fee).gt(senderAccount.balance) && this.recipient !== config.REWARD_ADDRESS) {
-        throw new Error('Amount exceeds balance')
-      }
     } else if (!Big(this.fee).eq(0)) { // this.recipient === REWARD_ADDRESS
       throw new Error('Invalid reward fee')
     }
 
+    return true
+  }
+
+  // Balance sufficiency is checked against the derived chain state
+  // (AD-10). An account absent from `state` has balance '0' and stake '0'.
+  validateState({ state } = { state: {} }) {
+    const sender = state[this.sender]
+    const balance = sender ? Big(sender.balance) : Big(0)
+    const stake = sender ? Big(sender.stake) : Big(0)
+
+    if (this.recipient === config.STAKE_ADDRESS) {
+      if (Big(this.amount).plus(stake).gt(balance.div(10))) {
+        throw new Error('Stake too high')
+      }
+      if (stake.plus(this.amount).lt(0)) {
+        throw new Error('Not enough stake')
+      }
+      if (Big(this.amount).plus(this.fee).gt(balance)) {
+        throw new Error('Amount exceeds balance')
+      }
+    }
+
+    if (this.recipient !== config.REWARD_ADDRESS
+      && Big(this.amount).plus(this.fee).gt(balance)) {
+      throw new Error('Amount exceeds balance')
+    }
+    return true
+  }
+
+  async validate({ state } = { state: {} }) {
+    this.validateStructure()
     if (!await this.verifySignature()) {
       // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
       throw new Error('Invalid transaction signature')
     }
+    this.validateState({ state })
     return true
   }
 

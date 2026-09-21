@@ -6,6 +6,8 @@ import Obj2fsHOC from 'obj2fs-hoc'
 import Crypto from '../util/crypto'
 import config from '../config'
 
+import { applyTransaction } from './state'
+
 const path = require('path')
 
 class Block {
@@ -52,7 +54,7 @@ class Block {
     return this
   }
 
-  async validate() {
+  async validate({ state } = { state: {} }) {
     // genesis blocl is always valid
     if (JSON.stringify(this) === JSON.stringify(Block.genesis())) {
       return true
@@ -104,8 +106,13 @@ class Block {
     if (!Crypto.isPublicKey({ publicKey: this.miner })) {
       throw new Error('Invalid miner')
     }
-    // every transaction must be valid
-    await Promise.all(this.data.map(async transaction => transaction.validate()))
+    // every transaction must be valid against the running chain-derived
+    // state, advancing the state as each transaction is applied (AD-10)
+    const runningState = { ...state }
+    for (const transaction of this.data) {
+      await transaction.validate({ state: runningState })
+      applyTransaction(runningState, transaction, this.miner)
+    }
 
     if (
       Crypto.hash(
