@@ -11,6 +11,9 @@ import { dcutr } from '@libp2p/dcutr'
 import { upnpNat } from '@libp2p/upnp-nat'
 
 import globalConfig from '../../config'
+import Block from '../blockchain/block'
+import Transaction from '../blockchain/transaction'
+import deriveState from '../blockchain/state'
 
 // Topic constants
 const BLOCKCHAIN_TOPIC = globalConfig.CHANNELS.BLOCKCHAIN
@@ -19,6 +22,39 @@ const TRANSACTION_TOPIC = globalConfig.CHANNELS.TRANSACTION
 // Peer count tracking for broadcast-on-join
 let blockchainPeerCount = 0
 let transactionPeerCount = 0
+
+const decodeMessage = data => JSON.parse(new TextDecoder().decode(data))
+
+const deserializeTransaction = serializedTransaction => Object.assign(
+  new Transaction(serializedTransaction),
+  serializedTransaction,
+)
+
+const deserializeChain = serializedChain => {
+  const chain = []
+
+  serializedChain.forEach((serializedBlock, index) => {
+    const lastBlock = index === 0 ? null : chain[index - 1]
+    const data = index === 0
+      ? serializedBlock.data
+      : serializedBlock.data.map(deserializeTransaction)
+    const block = index === 0
+      ? Block.genesis()
+      : new Block({ lastBlock, data })
+
+    // keep the locally computed storage `key` so the deserialized genesis
+    // still matches the local Block.genesis() JSON comparison even when
+    // the peer runs under a different storage root
+    chain.push(Object.assign(block, {
+      ...serializedBlock,
+      data,
+      lastBlock,
+      key: block.key,
+    }))
+  })
+
+  return chain
+}
 
 // express app
 class PubSub {
@@ -101,18 +137,14 @@ class PubSub {
 
       // Listen for messages on both topics
       node.pubsub.addEventListener('message', async event => {
-        if (event.detail.topic === BLOCKCHAIN_TOPIC) {
-          const parsedMessage = JSON.parse(new TextDecoder().decode(event.detail.data))
-          // console.log('blockchain message:', parsedMessage)
-          await this.blockchain.replaceChain(parsedMessage, true, () => {
-            this.transactionPool.clearBlockchainTransactions({
-              chain: parsedMessage,
-            })
-          })
-        } else if (event.detail.topic === TRANSACTION_TOPIC) {
-          const parsedMessage = JSON.parse(new TextDecoder().decode(event.detail.data))
-          // console.log('transaction message:', parsedMessage)
-          this.transactionPool.setTransaction(parsedMessage)
+        try {
+          if (event.detail.topic === BLOCKCHAIN_TOPIC) {
+            await this.handleBlockchainMessage(event.detail.data)
+          } else if (event.detail.topic === TRANSACTION_TOPIC) {
+            await this.handleTransactionMessage(event.detail.data)
+          }
+        } catch (error) {
+          console.error(`Invalid pubsub message: ${error.message}`) // eslint-disable-line no-console
         }
       })
 
@@ -147,6 +179,22 @@ class PubSub {
     } catch (roomError) {
       console.error('Failed to subscribe to pubsub topics:', roomError.message) // eslint-disable-line no-console
     }
+  }
+
+  async handleTransactionMessage(data) {
+    const transaction = deserializeTransaction(decodeMessage(data))
+    const state = deriveState(this.blockchain.chain)
+    await transaction.validate({ state })
+    this.transactionPool.setTransaction(transaction)
+  }
+
+  async handleBlockchainMessage(data) {
+    const chain = deserializeChain(decodeMessage(data))
+    await this.blockchain.replaceChain(chain, () => {
+      chain.forEach(block => {
+        this.transactionPool.clearBlockchainTransactions({ block })
+      })
+    })
   }
 
   // Helper to check if peer count has increased
