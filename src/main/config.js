@@ -45,6 +45,10 @@ const CREDIT_ADDRESS = '*authorized-credit*'
 const REWARD_AMOUNT = 100
 const MINIMUM_STAKE_AMOUNT = 200
 
+// AD-11: the single free lottery parameter. p = 1 / LOTTERY_ODDS; the win
+// threshold is the exact integer 2^512 / LOTTERY_ODDS (no floats).
+const LOTTERY_ODDS = 1000
+
 export default {
   GENESIS_DATA,
   VALIDATION_RATE,
@@ -55,4 +59,5 @@ export default {
   CREDIT_ADDRESS,
   REWARD_AMOUNT,
   MINIMUM_STAKE_AMOUNT,
+  LOTTERY_ODDS,
 }

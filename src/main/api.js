@@ -16,6 +16,7 @@ const Big = require('big.js')
 const express = require('express')
 const { ipcMain } = require('electron')
 const cors = require('cors')
+const isDev = require('electron-is-dev')
 
 const api = express()
 const blockchain = new Blockchain()
@@ -41,6 +42,8 @@ const init = async () => {
   transactionMiner = new TransactionMiner({
     blockchain, transactionPool, wallet, pubsub,
   })
+  // AD-4: mining is autonomous; the HTTP endpoint below is a dev convenience
+  transactionMiner.start()
 }
 
 api.use(express.json())
@@ -86,11 +89,14 @@ api.get('/api/blocks/:id', (req, res) => {
 //   res.redirect('/api/blocks')
 // })
 
-api.get('/api/mine-transactions', async (req, res) => {
-  await transactionMiner.mineTransactions()
+// dev-only convenience (AD-4): autonomous mining is the mining path
+if (isDev) {
+  api.get('/api/mine-transactions', async (req, res) => {
+    await transactionMiner.mineTransactions()
 
-  res.redirect('/api/blocks')
-})
+    res.redirect('/api/blocks')
+  })
+}
 
 api.post('/api/transact', async (req, res) => {
   const { amount, recipient } = req.body

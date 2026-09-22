@@ -1,3 +1,7 @@
+// transaction-miner imports the app config, which imports electron-is-dev
+// (ESM, requires an Electron runtime); the flow under test never reads it.
+jest.mock('electron-is-dev', () => false)
+
 import Blockchain from '../blockchain'
 import deriveState from '../blockchain/state'
 import TransactionPool from '../blockchain/transaction-pool'

@@ -1,4 +1,7 @@
+import globalConfig from '../../config'
+import coreConfig from '../config'
 import deriveState from '../blockchain/state'
+import isLotteryWinner from '../blockchain/lottery'
 
 class TransactionMiner {
   constructor({
@@ -8,6 +11,47 @@ class TransactionMiner {
     this.transactionPool = transactionPool
     this.wallet = wallet
     this.pubsub = pubsub
+    this.intervalId = null
+    this.mining = false
+    this.tick = this.tick.bind(this)
+  }
+
+  // AD-4: autonomous mining. Each re-check (app-semantic interval, distinct
+  // from the core's VALIDATION_RATE) the node self-evaluates the pinned
+  // lottery (AD-11) against the local chain head; only a winner mines.
+  start() {
+    if (this.intervalId === null) {
+      this.intervalId = setInterval(this.tick, globalConfig.MINING_RECHECK_INTERVAL)
+    }
+    return this
+  }
+
+  stop() {
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId)
+      this.intervalId = null
+    }
+    return this
+  }
+
+  async tick() {
+    if (this.mining) {
+      return
+    }
+    this.mining = true
+    try {
+      const head = this.blockchain.chain[this.blockchain.chain.length - 1]
+      const winner = isLotteryWinner({
+        prevBlockHash: head.hash,
+        publicKey: this.wallet.publicKey,
+        odds: coreConfig.LOTTERY_ODDS,
+      })
+      if (winner) {
+        await this.mineTransactions()
+      }
+    } finally {
+      this.mining = false
+    }
   }
 
   async mineTransactions() {
