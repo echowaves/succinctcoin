@@ -5,6 +5,7 @@ import Blockchain from './blockchain'
 import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
 import TransactionMiner from './app/transaction-miner'
+import syncRootState from './app/root-sync'
 import deriveState from './blockchain/state'
 import config from './config'
 import PubSub from './app/pubsub'
@@ -135,25 +136,14 @@ ipcMain.on('/api/wallet-info', (event, arg) => {
   event.returnValue = walletInfo
 })
 
-const syncWithRootState = () => {
-  fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks`)
-    .then(response => response.json())
-    .then(json => {
-      const rootChain = json
-
-      console.log('replace chain on a sync with', rootChain) // eslint-disable-line no-console
-      blockchain.replaceChain(rootChain)
-    })
-
-  fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
-    .then(response => response.json())
-    .then(json => {
-      const rootTransactionPoolMap = json
-
-      console.log('replace transaction pool map on a sync with', rootTransactionPoolMap) // eslint-disable-line no-console
-      transactionPool.setMap(rootTransactionPoolMap)
-    })
-}
+// AD-5/AD-13: root sync is bootstrap-only; the empty-chain gate and the
+// additive pool merge live in the root-sync module (one owner)
+const syncWithRootState = () => syncRootState({
+  blockchain,
+  transactionPool,
+  fetchRootChain: async () => (await fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks`)).json(),
+  fetchRootPool: async () => (await fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)).json(),
+})
 
 
 export default { api, syncWithRootState, init }

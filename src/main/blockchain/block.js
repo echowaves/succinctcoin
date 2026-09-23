@@ -10,6 +10,16 @@ import { applyTransaction } from './state'
 
 const path = require('path')
 
+// AD-12: the single canonical total order on block `data` — timestamp ASC,
+// then uuid ASC. One shared function used by both `mineBlock` (sorts before
+// hashing) and `validate` (rejects blocks that violate the order), so
+// identical logical contents always yield identical `data` order and hash.
+const sortTransactions = data => data.slice().sort((a, b) =>
+  a.timestamp !== b.timestamp
+    ? (a.timestamp < b.timestamp ? -1 : 1)
+    : (a.uuid < b.uuid ? -1 : 1),
+)
+
 class Block {
   constructor({ lastBlock, data } = { lastBlock: null, data: [] }) {
     this.height = lastBlock ? lastBlock.height + 1 : 0
@@ -39,8 +49,8 @@ class Block {
     this.timestamp = rewardTransaction.timestamp
 
     this.data.push(rewardTransaction)
-    // order transactions
-    this.data.sort((a, b) => (a.timestamp >= b.timestamp ? 1 : -1))
+    // order transactions canonically (AD-12): timestamp ASC, then uuid ASC
+    this.data = sortTransactions(this.data)
 
     this.hash = Crypto.hash(
       this.height,
@@ -93,14 +103,16 @@ class Block {
       }
     })
 
-    // transaction must be ordered by timestamp ASC (reward transaction always last)
-    let currentIteratorTimestamp = 0
-    this.data.forEach(transaction => {
-      if (currentIteratorTimestamp > transaction.timestamp) {
-        throw new Error('Invalid sort order')
-      }
-      currentIteratorTimestamp = transaction.timestamp
-    })
+    // AD-12: data must already be in the canonical total order
+    // (timestamp ASC, then uuid ASC) — the same order `mineBlock` applies
+    const canonicalData = sortTransactions(this.data)
+    if (canonicalData.length !== this.data.length
+      || canonicalData.some((transaction, index) => (
+        transaction.uuid !== this.data[index].uuid
+        || transaction.timestamp !== this.data[index].timestamp
+      ))) {
+      throw new Error('Invalid sort order')
+    }
 
     // miner should be a valid publicKey
     if (!Crypto.isPublicKey({ publicKey: this.miner })) {
@@ -138,4 +150,5 @@ class Block {
   }
 }
 
+export { sortTransactions }
 export default Obj2fsHOC(Block)

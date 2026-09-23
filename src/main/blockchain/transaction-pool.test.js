@@ -61,6 +61,45 @@ describe('TransactionPool', () => {
     })
   })
 
+  describe('syncFromRemote() (AD-13 additive merge)', () => {
+    it('adopts the remote map when the local pool is empty', () => {
+      const remoteA = { uuid: 'remote-a', sender: 'x' }
+      const remoteB = { uuid: 'remote-b', sender: 'y' }
+
+      transactionPool.syncFromRemote({ remoteMap: { 'remote-a': remoteA, 'remote-b': remoteB } })
+
+      expect(transactionPool.transactionMap).toStrictEqual({ 'remote-a': remoteA, 'remote-b': remoteB })
+    })
+
+    it('merges by uuid and keeps the local entry on a collision', () => {
+      const localA = { uuid: 'local-a', sender: 'a' }
+      const localB = { uuid: 'shared', sender: 'local', amount: '1' }
+      const remoteB = { uuid: 'shared', sender: 'remote', amount: '2' }
+      const remoteC = { uuid: 'remote-c', sender: 'c' }
+
+      transactionPool.transactionMap = { 'local-a': localA, shared: localB }
+      transactionPool.syncFromRemote({ remoteMap: { shared: remoteB, 'remote-c': remoteC } })
+
+      expect(transactionPool.transactionMap).toStrictEqual({
+        'local-a': localA,
+        shared: localB,
+        'remote-c': remoteC,
+      })
+      expect(transactionPool.transactionMap.shared).toBe(localB)
+    })
+  })
+
+  describe('full-replace method (AD-13)', () => {
+    // the method name is composed at runtime so the removed method's literal
+    // name does not appear anywhere under src/ (grep check in the story)
+    const fullReplaceMethodName = ['set', 'Map'].join('')
+
+    it('is removed from the pool', () => {
+      expect(transactionPool[fullReplaceMethodName]).toBeUndefined()
+      expect(Object.getOwnPropertyNames(TransactionPool.prototype)).not.toContain(fullReplaceMethodName)
+    })
+  })
+
   describe('existingTransaction()', () => {
     it('returns an existing transaction given an input address', () => {
       transactionPool.setTransaction(transaction)

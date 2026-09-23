@@ -11,8 +11,11 @@ class TransactionPool {
     this.transactionMap[transaction.uuid] = transaction
   }
 
-  setMap(transactionMap) {
-    this.transactionMap = transactionMap
+  // AD-13: additive uuid merge of a remote pool into the local one. Local
+  // entries survive uuid collisions; merging into an empty local map equals
+  // adoption. There is deliberately no full-replace path.
+  syncFromRemote({ remoteMap }) {
+    this.transactionMap = { ...remoteMap, ...this.transactionMap }
   }
 
   existingTransaction({ sender }) {

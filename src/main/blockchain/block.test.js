@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import Crypto from '../util/crypto'
 import config from '../config'
 
-import Block from './block'
+import Block, { sortTransactions } from './block'
 import Wallet from './wallet'
 import deriveState from './state'
 
@@ -328,6 +328,101 @@ describe('Block', () => {
           .rejects
           .toThrow('Duplicate transactions')
       })
+
+      it('should reject data that violates the uuid tie-break of the canonical total order', async () => {
+        // tie the two data entries on the block timestamp so only the uuid
+        // tie-break decides the order, then put the larger uuid first
+        const mined = await (new Block({ lastBlock: genesisBlock, data: [transactions2[0]] })).mineBlock({ wallet })
+        const [first, second] = mined.data
+        first.timestamp = mined.timestamp
+        second.timestamp = mined.timestamp
+        if (first.uuid < second.uuid) {
+          mined.data.reverse()
+        }
+        expect(mined.data[1].uuid < mined.data[0].uuid).toBe(true)
+        await expect(mined.validate({ state: deriveState([genesisBlock]) }))
+          .rejects
+          .toThrow('Invalid sort order')
+      })
+    })
+  })
+
+  describe('sortTransactions() (AD-12 canonical total order)', () => {
+    it('orders by timestamp ASC, then uuid ASC', () => {
+      const data = [
+        { timestamp: 200, uuid: 'd-2' },
+        { timestamp: 100, uuid: 'c-1' },
+        { timestamp: 200, uuid: 'b-2' },
+        { timestamp: 100, uuid: 'a-1' },
+      ]
+
+      expect(sortTransactions(data).map(transaction => transaction.uuid))
+        .toStrictEqual(['a-1', 'c-1', 'b-2', 'd-2'])
+    })
+
+    it('returns a new array and does not mutate the input', () => {
+      const data = [
+        { timestamp: 2, uuid: 'b' },
+        { timestamp: 1, uuid: 'a' },
+      ]
+
+      const sorted = sortTransactions(data)
+
+      expect(sorted).not.toBe(data)
+      expect(data.map(transaction => transaction.uuid)).toStrictEqual(['b', 'a'])
+    })
+  })
+
+  describe('canonical block contents (AD-12)', () => {
+    let wallet
+    let sharedTransactions
+    const sharedUuids = new Set()
+    let blockA
+    let blockB
+
+    const sharedInOrder = block => block.data.filter(transaction => sharedUuids.has(transaction.uuid))
+
+    beforeEach(async () => {
+      wallet = new Wallet()
+      const recipient = new Wallet().publicKey
+
+      sharedTransactions = []
+      for (const amount of ['10', '20', '30']) {
+        sharedTransactions.push(await wallet.createTransaction({ recipient, amount, fee: '1' }))
+        await new Promise(resolve => setTimeout(resolve, 1)) // distinct timestamps
+      }
+      sharedTransactions.forEach(transaction => sharedUuids.add(transaction.uuid))
+
+      // identical logical contents, different insertion orders
+      blockA = await (new Block({ lastBlock: genesisBlock, data: sharedTransactions })).mineBlock({ wallet })
+      blockB = await (new Block({ lastBlock: genesisBlock, data: [...sharedTransactions].reverse() })).mineBlock({ wallet })
+    })
+
+    it('gives both blocks an element-identical canonical `data` order for the shared contents', () => {
+      expect(sharedInOrder(blockB).map(transaction => transaction.uuid))
+        .toStrictEqual(sharedInOrder(blockA).map(transaction => transaction.uuid))
+    })
+
+    it('keeps both full `data` arrays in the canonical total order', () => {
+      expect(blockA.data).toStrictEqual(sortTransactions(blockA.data))
+      expect(blockB.data).toStrictEqual(sortTransactions(blockB.data))
+    })
+
+    it('computes an identical hash for the identical logical contents', () => {
+      expect(Crypto.hash(sharedInOrder(blockA)))
+        .toBe(Crypto.hash(sharedInOrder(blockB)))
+    })
+  })
+
+  describe('AD-12 canonical field set pin', () => {
+    it('pins BLOCK_CONTENT_VERSION to 1', () => {
+      expect(config.BLOCK_CONTENT_VERSION).toBe(1)
+    })
+
+    it('pins the exact canonical hash input field set', () => {
+      expect(config.BLOCK_CONTENT_FIELDS).toStrictEqual([
+        'height', 'uuid', 'timestamp', 'miner', 'lastHash', 'data',
+      ])
     })
   })
 })
