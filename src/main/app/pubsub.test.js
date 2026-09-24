@@ -87,7 +87,7 @@ describe('PubSub receive handlers', () => {
       expect(pool.transactionMap[transaction.uuid]).toBeUndefined()
     })
 
-    it('leaves the chain untouched when the incoming chain is not longer', async () => {
+    it('leaves the chain untouched when the incoming chain is identical', async () => {
       const originalLength = blockchain.chain.length
 
       await pubsub.handleBlockchainMessage(encodeMessage(blockchain.chain))

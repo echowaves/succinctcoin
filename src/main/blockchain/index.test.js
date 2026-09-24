@@ -1,8 +1,9 @@
+import config from '../config'
+
 import Wallet from './wallet'
 import Block from './block'
 
 import Blockchain from './index'
-// import config from '../config'
 //
 // const path = require('path')
 
@@ -54,8 +55,14 @@ describe('Blockchain', () => {
 
     const block = await chain.addBlock({ data: [transaction], wallet: senderWallet })
 
+    // AD-12 canonical order places the transfer and the reward by
+    // (timestamp ASC, uuid ASC); the reward shares the block timestamp, so
+    // their relative position is decided by uuid (nondeterministic). Assert
+    // membership, not position.
     const blockData = block.data
-    expect(blockData.slice(0, blockData.length - 1)).toEqual([transaction])
+    expect(blockData).toHaveLength(2)
+    expect(blockData.some(tx => tx.uuid === transaction.uuid)).toBe(true)
+    expect(blockData.filter(tx => tx.recipient === config.REWARD_ADDRESS)).toHaveLength(1)
   })
 
   describe('isValidChain()', () => {
@@ -117,7 +124,7 @@ describe('Blockchain', () => {
       global.console.log = logMock
     })
 
-    describe('when the new chain is not longer', () => {
+    describe('when the new chain is shorter', () => {
       beforeEach(async () => {
         newChain.chain[0] = { new: 'chain' }
 
@@ -174,6 +181,178 @@ describe('Blockchain', () => {
         it('logs about the chain replacement', async () => {
           expect(logMock).toHaveBeenCalled()
         })
+      })
+    })
+
+    describe('when the new chain is equal length', () => {
+      // Two valid forks: a shared two-block prefix (funded by the first
+      // reward block, so the second is a valid reward-only block) and a
+      // diverging third block mined by a different wallet. Different miner /
+      // uuid / timestamp ⇒ different hash at the first (and only) divergence
+      // point.
+      let forkA
+      let forkB
+      let lowerFork
+      let higherFork
+      let onSuccess
+
+      const buildForks = async () => {
+        const chain = new Blockchain()
+        const miner1 = new Wallet()
+
+        await chain.addBlock({ data: [], wallet: miner1 })
+        await chain.addBlock({ data: [], wallet: miner1 })
+
+        const shared = chain.chain
+
+        const forkAChain = new Blockchain()
+        forkAChain.chain = [...shared]
+        await forkAChain.addBlock({ data: [], wallet: miner1 })
+
+        const forkBChain = new Blockchain()
+        forkBChain.chain = [...shared]
+        await forkBChain.addBlock({ data: [], wallet: new Wallet() })
+
+        forkA = forkAChain.chain
+        forkB = forkBChain.chain
+
+        lowerFork = Blockchain.compareForks(forkA, forkB) < 0 ? forkA : forkB
+        higherFork = lowerFork === forkA ? forkB : forkA
+      }
+
+      beforeEach(async () => {
+        onSuccess = jest.fn()
+
+        await buildForks()
+
+        expect(lowerFork).not.toBe(higherFork)
+        expect(await Blockchain.isValidChain(forkA)).toBe(true)
+        expect(await Blockchain.isValidChain(forkB)).toBe(true)
+      })
+
+      describe('and the incoming chain has the lower hash at the divergence point', () => {
+        beforeEach(async () => {
+          blockchain.chain = [...higherFork]
+
+          await blockchain.replaceChain([...lowerFork], onSuccess)
+        })
+
+        it('replaces the chain with the lower-hash fork', () => {
+          expect(blockchain.chain).toEqual(lowerFork)
+        })
+
+        it('fires onSuccess', () => {
+          expect(onSuccess).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('and the incoming chain has the higher hash at the divergence point', () => {
+        beforeEach(async () => {
+          blockchain.chain = [...lowerFork]
+
+          await blockchain.replaceChain([...higherFork], onSuccess)
+        })
+
+        it('does not replace the chain', () => {
+          expect(blockchain.chain).toEqual(lowerFork)
+        })
+
+        it('does not fire onSuccess', () => {
+          expect(onSuccess).not.toHaveBeenCalled()
+        })
+
+        it('logs a rejection', () => {
+          expect(errorMock).toHaveBeenCalled()
+        })
+      })
+
+      describe('and the incoming chain is identical to the local chain', () => {
+        beforeEach(async () => {
+          blockchain.chain = [...lowerFork]
+
+          await blockchain.replaceChain([...lowerFork], onSuccess)
+        })
+
+        it('does not replace the chain', () => {
+          expect(blockchain.chain).toEqual(lowerFork)
+        })
+
+        it('does not fire onSuccess', () => {
+          expect(onSuccess).not.toHaveBeenCalled()
+        })
+      })
+
+      describe('and the incoming chain is invalid', () => {
+        beforeEach(async () => {
+          blockchain.chain = [...higherFork]
+
+          // corrupt the tip hash so isValidChain fails — the validity gate
+          // must dominate the equal-length tie-break (an invalid lower-hash
+          // fork is rejected, never adopted)
+          const invalidFork = [...lowerFork]
+          invalidFork[invalidFork.length - 1].hash = 'corrupt'
+
+          await blockchain.replaceChain(invalidFork, onSuccess)
+        })
+
+        it('does not replace the chain', () => {
+          expect(blockchain.chain).toEqual(higherFork)
+        })
+
+        it('does not fire onSuccess', () => {
+          expect(onSuccess).not.toHaveBeenCalled()
+        })
+
+        it('logs a rejection', () => {
+          expect(errorMock).toHaveBeenCalled()
+        })
+      })
+
+      describe('when two nodes each hold a different fork and exchange chains', () => {
+        beforeEach(async () => {
+          const nodeA = new Blockchain()
+          nodeA.chain = [...forkA]
+
+          const nodeB = new Blockchain()
+          nodeB.chain = [...forkB]
+
+          await nodeA.replaceChain([...forkB])
+          await nodeB.replaceChain([...forkA])
+
+          nodeAChain = nodeA.chain
+          nodeBChain = nodeB.chain
+        })
+
+        let nodeAChain
+        let nodeBChain
+
+        it('converges both nodes on the lower-hash fork', () => {
+          expect(nodeAChain).toEqual(lowerFork)
+          expect(nodeBChain).toEqual(lowerFork)
+        })
+      })
+    })
+
+    describe('compareForks()', () => {
+      it('returns -1 when the first chain has the lower hash at the first divergence point', () => {
+        const a = [{ hash: '00' }, { hash: '11' }]
+        const b = [{ hash: '00' }, { hash: '22' }]
+
+        expect(Blockchain.compareForks(a, b)).toBe(-1)
+      })
+
+      it('returns 1 when the first chain has the higher hash at the first divergence point', () => {
+        const a = [{ hash: '22' }]
+        const b = [{ hash: '00' }]
+
+        expect(Blockchain.compareForks(a, b)).toBe(1)
+      })
+
+      it('returns 0 when the chains are identical', () => {
+        const a = [{ hash: '00' }, { hash: '11' }]
+        const b = [{ hash: '00' }, { hash: '11' }]
+
+        expect(Blockchain.compareForks(a, b)).toBe(0)
       })
     })
   })
