@@ -201,11 +201,14 @@ describe('Block', () => {
         const rewardTrasaction = transactions.filter(transaction => transaction.recipient === config.REWARD_ADDRESS)[0]
         expect(minedBlock2.timestamp).toBe(rewardTrasaction.timestamp)
       })
-      it('should have the `timestamp` of each `transaction` to be less than the block\'s `timestamp`', () => {
-        // timestamp of each transaction must be less than timestamp of block
+      it('should have the `timestamp` of each `transaction` to be less than or equal to the block\'s `timestamp`', () => {
+        // validate() rules: a non-reward tx may equal the block timestamp (only
+        // strictly-less is rejected); the reward tx must equal it exactly. The
+        // guard below skips reward txs, which the sibling "reward timestamp"
+        // test pins for equality — do not remove it.
         minedBlock2.data.forEach(transaction => {
           if (transaction.recipient !== config.REWARD_ADDRESS) {
-            expect(minedBlock2.timestamp).toBeGreaterThan(transaction.timestamp)
+            expect(minedBlock2.timestamp).toBeGreaterThanOrEqual(transaction.timestamp)
           }
         })
       })

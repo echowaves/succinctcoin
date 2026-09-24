@@ -6,6 +6,8 @@ import dayjs from 'dayjs'
 import Crypto from '../util/crypto'
 import config from '../config'
 
+import BlockchainError, { ERROR_CODES } from './errors'
+
 const Big = require('big.js')
 
 class Transaction {
@@ -28,37 +30,37 @@ class Transaction {
   // knowledge — those come from the derived chain state passed to validate().
   validateStructure() {
     if (!Crypto.isPublicKey({ publicKey: this.sender })) {
-      throw new Error('Sender invalid')
+      throw new BlockchainError('Sender invalid', ERROR_CODES.INVALID_TRANSACTION)
     }
 
     if (!Crypto.isPublicKey({ publicKey: this.recipient })
         && this.recipient !== config.REWARD_ADDRESS
         && this.recipient !== config.STAKE_ADDRESS) {
-      throw new Error('Recipient invalid')
+      throw new BlockchainError('Recipient invalid', ERROR_CODES.INVALID_TRANSACTION)
     }
 
     if (this.recipient === config.REWARD_ADDRESS && !Big(this.amount).eq(config.REWARD_AMOUNT)) {
-      throw new Error('Invalid reward amount')
+      throw new BlockchainError('Invalid reward amount', ERROR_CODES.INVALID_TRANSACTION)
     }
 
     if (this.recipient === config.STAKE_ADDRESS && Big(this.amount).eq(0)) {
-      throw new Error('Invalid stake amount')
+      throw new BlockchainError('Invalid stake amount', ERROR_CODES.INVALID_TRANSACTION)
     }
 
     if (this.sender === this.recipient) {
-      throw new Error('Sender and Recipient are the same')
+      throw new BlockchainError('Sender and Recipient are the same', ERROR_CODES.INVALID_TRANSACTION)
     }
 
     if (Big(this.amount).lte(0) && this.recipient !== config.STAKE_ADDRESS) {
-      throw new Error('Amount invalid')
+      throw new BlockchainError('Amount invalid', ERROR_CODES.INVALID_TRANSACTION)
     }
 
     if (this.recipient !== config.REWARD_ADDRESS) {
       if (Big(this.fee).lt(Big(this.amount).div(1000))) {
-        throw new Error('Fee invalid')
+        throw new BlockchainError('Fee invalid', ERROR_CODES.INVALID_TRANSACTION)
       }
     } else if (!Big(this.fee).eq(0)) { // this.recipient === REWARD_ADDRESS
-      throw new Error('Invalid reward fee')
+      throw new BlockchainError('Invalid reward fee', ERROR_CODES.INVALID_TRANSACTION)
     }
 
     return true
@@ -73,19 +75,19 @@ class Transaction {
 
     if (this.recipient === config.STAKE_ADDRESS) {
       if (Big(this.amount).plus(stake).gt(balance.div(10))) {
-        throw new Error('Stake too high')
+        throw new BlockchainError('Stake too high', ERROR_CODES.INVALID_TRANSACTION)
       }
       if (stake.plus(this.amount).lt(0)) {
-        throw new Error('Not enough stake')
+        throw new BlockchainError('Not enough stake', ERROR_CODES.INVALID_TRANSACTION)
       }
       if (Big(this.amount).plus(this.fee).gt(balance)) {
-        throw new Error('Amount exceeds balance')
+        throw new BlockchainError('Amount exceeds balance', ERROR_CODES.INSUFFICIENT_BALANCE)
       }
     }
 
     if (this.recipient !== config.REWARD_ADDRESS
       && Big(this.amount).plus(this.fee).gt(balance)) {
-      throw new Error('Amount exceeds balance')
+      throw new BlockchainError('Amount exceeds balance', ERROR_CODES.INSUFFICIENT_BALANCE)
     }
     return true
   }
@@ -94,7 +96,7 @@ class Transaction {
     this.validateStructure()
     if (!await this.verifySignature()) {
       // console.error(`Invalid signature from ${this.sender}`) // eslint-disable-line no-console
-      throw new Error('Invalid transaction signature')
+      throw new BlockchainError('Invalid transaction signature', ERROR_CODES.INVALID_SIGNATURE)
     }
     this.validateState({ state })
     return true

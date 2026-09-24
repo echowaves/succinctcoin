@@ -7,8 +7,10 @@ import TransactionPool from './blockchain/transaction-pool'
 import TransactionMiner from './app/transaction-miner'
 import syncRootState from './app/root-sync'
 import deriveState from './blockchain/state'
+import BlockchainError, { ERROR_CODES } from './blockchain/errors'
 import config from './config'
 import PubSub from './app/pubsub'
+import mapErrorToResponse from './app/error-mapper'
 
 const path = require('path')
 const fs1 = require('fs') // TODO: remove
@@ -99,10 +101,23 @@ if (isDev) {
   })
 }
 
-api.post('/api/transact', async (req, res) => {
+// AD-9: the app layer owns the HTTP envelope. `transact` takes every
+// collaborator as a parameter (dependency-injected) so the endpoint logic is
+// testable without a server; it is not side-effect-free — it mutates the pool,
+// broadcasts, and writes the response.
+const transact = async ({ blockchain, wallet, transactionPool, pubsub, req, res }) => {
   const { amount, recipient } = req.body
 
   try {
+    // Pre-check: a malformed amount is rejected before any transaction is
+    // created. Normalize the Big error to the typed 400 (a raw Big throw in
+    // the catch would map to 500).
+    try {
+      new Big(amount)
+    } catch {
+      throw new BlockchainError('Amount invalid', ERROR_CODES.INVALID_TRANSACTION)
+    }
+
     const transaction = await wallet.createTransaction({
       recipient,
       amount,
@@ -110,12 +125,28 @@ api.post('/api/transact', async (req, res) => {
     })
     const state = deriveState(blockchain.chain)
     await transaction.validate({ state })
+
+    // A second pending transaction from a sender that already has one in
+    // the pool is a double-spend candidate: reject it (409) before the pool
+    // is mutated. Validation runs against the derived chain state, which
+    // ignores pending pool transactions, so this check is what keeps the
+    // miner from putting both spends in one block.
+    if (transactionPool.existingTransaction({ sender: transaction.sender })) {
+      throw new BlockchainError('Duplicate transactions', ERROR_CODES.DUPLICATE_TRANSACTION)
+    }
+
     transactionPool.setTransaction(transaction)
     pubsub.broadcastTransaction(transaction)
     res.json({ type: 'success', transaction })
   } catch (error) {
-    res.status(400).json({ type: 'error', message: error.message })
+    const { status, body } = mapErrorToResponse(error)
+
+    res.status(status).json(body)
   }
+}
+
+api.post('/api/transact', async (req, res) => {
+  await transact({ blockchain, wallet, transactionPool, pubsub, req, res })
 })
 
 
@@ -146,4 +177,5 @@ const syncWithRootState = () => syncRootState({
 })
 
 
+export { transact }
 export default { api, syncWithRootState, init }
