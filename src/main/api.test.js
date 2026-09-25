@@ -10,6 +10,12 @@ import api from './api'
 import Blockchain from './blockchain'
 import TransactionPool from './blockchain/transaction-pool'
 
+// Captured at module scope (before any beforeEach): importing ./api
+// registers the ipcMain handlers, and beforeEach's jest.clearAllMocks()
+// would otherwise erase the registration history.
+const { ipcMain } = require('electron')
+const portRegistration = ipcMain.on.mock.calls.find(([channel]) => channel === '/api/port')
+
 describe('api.syncWithRootState (AD-5/AD-13 root-sync wiring)', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -37,5 +43,16 @@ describe('api.syncWithRootState (AD-5/AD-13 root-sync wiring)', () => {
       .toHaveBeenNthCalledWith(1, `${globalConfig.ROOT_NODE_ADDRESS}/api/blocks`)
     expect(global.fetch)
       .toHaveBeenNthCalledWith(2, `${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
+  })
+
+  it('PORT_HANDLER: the /api/port ipcMain handler answers the synchronous pull with the app-config DEFAULT_PORT', () => {
+    expect(portRegistration).toBeDefined()
+    expect(portRegistration[0]).toBe('/api/port')
+
+    const event = {}
+    portRegistration[1](event)
+
+    expect(event.returnValue).toBe(3333)
+    expect(event.returnValue).toBe(globalConfig.DEFAULT_PORT)
   })
 })

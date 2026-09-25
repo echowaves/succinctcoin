@@ -167,6 +167,12 @@ ipcMain.on('/api/wallet-info', (event, arg) => {
   event.returnValue = walletInfo
 })
 
+// CAP-10/AD-8: the renderer's sole app-config surface is a synchronous pull
+// of the API port; the owner of the value stays src/config.js (main process)
+ipcMain.on('/api/port', event => {
+  event.returnValue = globalConfig.DEFAULT_PORT
+})
+
 // AD-5/AD-13: root sync is bootstrap-only; the empty-chain gate and the
 // additive pool merge live in the root-sync module (one owner)
 const syncWithRootState = () => syncRootState({
