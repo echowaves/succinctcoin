@@ -32,7 +32,10 @@ let pubsub
 let transactionMiner
 
 const init = async () => {
-  wallet = await (new Wallet()).retrieveThrough()
+  // Strict load (CAP-12): first run persists the generated keys; a present
+  // but corrupt wallet file throws a typed `corrupted-wallet` and propagates
+  // out of startup (fail-fast — no fresh identity, no catch-and-continue)
+  wallet = await (new Wallet()).load()
   account = await wallet.getAccount() // ensure that the account is created and stored on disk
   pubsub = new PubSub({ blockchain, transactionPool, wallet })
   try {
@@ -167,6 +170,36 @@ ipcMain.on('/api/wallet-info', (event, arg) => {
   event.returnValue = walletInfo
 })
 
+// CAP-12: encrypted key custody. The passphrase crosses only via the
+// synchronous IPC argument (never an HTTP body); the helpers are
+// dependency-injected in the `transact` pattern so the logic is testable
+// without running init(). A failed operation answers with the typed
+// `{ code, message }` shape; a success answers with the backup string or
+// the restored public key.
+const walletExport = ({ wallet, password }) => {
+  try {
+    return { backup: wallet.exportBackup(password) }
+  } catch (error) {
+    return { code: error.code, message: error.message }
+  }
+}
+
+const walletRestore = ({ wallet, backup, password }) => {
+  try {
+    return { publicKey: wallet.restoreBackup(backup, password).publicKey }
+  } catch (error) {
+    return { code: error.code, message: error.message }
+  }
+}
+
+ipcMain.on('/api/wallet-export', (event, arg) => {
+  event.returnValue = walletExport({ wallet, password: arg && arg.password })
+})
+
+ipcMain.on('/api/wallet-restore', (event, arg) => {
+  event.returnValue = walletRestore({ wallet, backup: arg && arg.backup, password: arg && arg.password })
+})
+
 // CAP-10/AD-8: the renderer's sole app-config surface is a synchronous pull
 // of the API port; the owner of the value stays src/config.js (main process)
 ipcMain.on('/api/port', event => {
@@ -183,5 +216,5 @@ const syncWithRootState = () => syncRootState({
 })
 
 
-export { transact }
+export { transact, walletExport, walletRestore }
 export default { api, syncWithRootState, init }

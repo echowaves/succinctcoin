@@ -116,7 +116,10 @@ describe('Block', () => {
 
     beforeEach(async () => {
       wallet = new Wallet()
-      await wallet.store()
+      // No wallet.store() here: the block/validate rows never read the wallet
+      // file (validation is against derived chain state, AD-10), and persisting
+      // the identity co-wrote the shared .test/wallet fixture, racing the
+      // wallet suite's file-state rows under parallel jest workers.
 
       recipient = new Wallet().publicKey
 

@@ -1,6 +1,11 @@
-import Wallet from '../blockchain/wallet'
-
 import Crypto from './crypto'
+
+// rli-1: a pure constant instead of a Wallet-built fixture — a file-missing
+// `retrieveThrough()` would otherwise persist a fresh identity into the
+// shared `.test/wallet` and add a second cross-suite writer of that file.
+// 130 lowercase hex chars with the 04 prefix — it satisfies every
+// `isPublicKey` length/charset check without ever being derived from disk.
+const VALID_PUBLIC_KEY = '04' + 'ab'.repeat(64)
 
 describe('Crypto', () => {
   describe('Crypto.hash()', () => {
@@ -66,21 +71,16 @@ describe('Crypto', () => {
   })
 
   describe('Crypto.isPublicKey()', () => {
-    let wallet
-    beforeEach(async () => {
-      wallet = new Wallet()
-      await wallet.retrieveThrough()
-    })
     it('returns `true` when key is valid hex', () => {
-      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(true)
+      expect(Crypto.isPublicKey({ publicKey: VALID_PUBLIC_KEY })).toBe(true)
     })
     it('returns `false` when length is not correct', () => {
       expect(Crypto.isPublicKey({ publicKey: 'ab' })).toBe(false)
       expect(Crypto.isPublicKey({ publicKey: 'ab'.repeat(31) })).toBe(false)
     })
     it('returns `false` when key contains non-hex characters', () => {
-      expect(Crypto.isPublicKey({ publicKey: 'gg' + wallet.publicKey.substring(2) })).toBe(false)
-      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey + 'zz' })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: 'gg' + VALID_PUBLIC_KEY.substring(2) })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: VALID_PUBLIC_KEY + 'zz' })).toBe(false)
     })
     it('returns `false` for empty or null values', () => {
       expect(Crypto.isPublicKey({ publicKey: '' })).toBe(false)

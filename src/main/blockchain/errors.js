@@ -11,6 +11,8 @@ const ERROR_CODES = {
   INVALID_TRANSACTION: 'invalid-transaction',
   INVALID_SIGNATURE: 'invalid-signature',
   INVALID_HASH: 'invalid-hash',
+  CORRUPTED_WALLET: 'corrupted-wallet',
+  INVALID_BACKUP: 'invalid-backup',
 }
 
 class BlockchainError extends Error {

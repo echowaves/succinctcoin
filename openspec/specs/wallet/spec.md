@@ -53,19 +53,19 @@ The system SHALL persist wallet key pairs to disk and restore them across applic
 - **THEN** it SHALL be stored at ~/.succinctcoin/wallet (or .test/wallet in dev mode)
 
 ### Requirement: Wallet backup and recovery
-The system SHALL support backing up and restoring wallet keys so that key loss does not result in irreversible fund loss.
+The system SHALL encrypt the wallet key pair for backup and restore it, so that key loss does not result in irreversible fund loss.
 
-#### Scenario: Encrypted seed backup
-- **WHEN** the user creates a backup
-- **THEN** the wallet SHALL produce an encrypted seed/backup that can restore the wallet
+#### Scenario: Encrypted backup
+- **WHEN** the user creates a backup with a non-empty password
+- **THEN** the wallet SHALL produce a `succinctcoin-backup-v1:`-prefixed string that is base64 of salt ‖ iv ‖ ciphertext ‖ 16-byte auth tag, where the `{ v: 1, privateKey, publicKey }` payload is encrypted with aes-256-gcm under a key derived from the password with scrypt
 
 #### Scenario: Restore from backup
-- **WHEN** a backup is restored
-- **THEN** the restored wallet SHALL have the same public and private keys
+- **WHEN** a backup is restored with the password it was exported with
+- **THEN** the restored wallet SHALL have the same public and private keys, the restored identity SHALL be written to the wallet file (so it survives a restart), and a wrong password, a tampered backup, or a malformed backup SHALL yield a typed `invalid-backup` error without changing the wallet's identity
 
 #### Scenario: Corrupted wallet file
-- **WHEN** the wallet file at ~/.succinctcoin/wallet is corrupted or partially written
-- **THEN** the application SHALL detect the corruption, avoid crashing, and report a recoverable error (and continue running if a backup is available)
+- **WHEN** the wallet file at ~/.succinctcoin/wallet is corrupted (non-JSON, badly shaped, or a key pair that fails cross-derivation)
+- **THEN** loading the wallet SHALL fail fast with a typed `corrupted-wallet` error and SHALL NOT use a fresh identity, and recovery SHALL be an explicit restore of a previously created backup
 
 ### Requirement: Account association
 The system SHALL retrieve or create an account associated with the wallet's public key.
