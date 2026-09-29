@@ -1,0 +1,389 @@
+]633;E;git diff dc259e6 -- src/ 2> /dev/null;178d7258-90d3-4ed8-9057-6b1ab82b9baf]633;Cdiff --git a/src/main/api.js b/src/main/api.js
+index 4f17f1b..2adfa22 100644
+--- a/src/main/api.js
++++ b/src/main/api.js
+@@ -167,6 +167,13 @@ ipcMain.on('/api/wallet-info', (event, arg) => {
+   event.returnValue = walletInfo
+ })
+ 
++// AD-8: the main process answers the renderer's synchronous port pull with
++// the app-config DEFAULT_PORT (single owner: src/config.js). Same
++// event.returnValue pattern as /api/wallet-info above.
++ipcMain.on('/api/port', event => {
++  event.returnValue = globalConfig.DEFAULT_PORT
++})
++
+ // AD-5/AD-13: root sync is bootstrap-only; the empty-chain gate and the
+ // additive pool merge live in the root-sync module (one owner)
+ const syncWithRootState = () => syncRootState({
+diff --git a/src/main/api.test.js b/src/main/api.test.js
+index 1666ac8..ceb4555 100644
+--- a/src/main/api.test.js
++++ b/src/main/api.test.js
+@@ -10,6 +10,14 @@ import api from './api'
+ import Blockchain from './blockchain'
+ import TransactionPool from './blockchain/transaction-pool'
+ 
++// Captured at module scope: the ipcMain registrations are recorded when
++// './api' is imported, and the beforeEach jest.clearAllMocks() below wipes
++// ipcMain.on.mock.calls before any test runs.
++const { ipcMain } = require('electron')
++const registeredChannels = ipcMain.on.mock.calls.map(([channel]) => channel)
++const portHandler = ipcMain.on.mock.calls
++  .find(([channel]) => channel === '/api/port')?.[1]
++
+ describe('api.syncWithRootState (AD-5/AD-13 root-sync wiring)', () => {
+   beforeEach(() => {
+     jest.clearAllMocks()
+@@ -38,4 +46,15 @@ describe('api.syncWithRootState (AD-5/AD-13 root-sync wiring)', () => {
+     expect(global.fetch)
+       .toHaveBeenNthCalledWith(2, `${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
+   })
++
++  it('PORT_HANDLER: registers \'/api/port\' and answers the synchronous pull with the app-config DEFAULT_PORT', () => {
++    expect(registeredChannels).toContain('/api/port')
++    expect(typeof portHandler).toBe('function')
++
++    const event = { returnValue: undefined }
++
++    portHandler(event)
++
++    expect(event.returnValue).toBe(3333)
++  })
+ })
+diff --git a/src/renderer/components/Blocks.js b/src/renderer/components/Blocks.js
+index fb45f9f..4457f46 100644
+--- a/src/renderer/components/Blocks.js
++++ b/src/renderer/components/Blocks.js
+@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
+ import { Button } from 'react-bootstrap'
+ import { Link } from 'react-router-dom'
+ 
+-import globalConfig from '../../config'
++import getApiBase from '../lib/api-base'
+ 
+ import Block from './Block'
+ 
+@@ -11,13 +11,13 @@ function Blocks() {
+   const [blocksLength, setBlocksLength] = useState(0)
+ 
+   const fetchPaginatedBlocks = useCallback(id => {
+-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks/${id}`)
++    fetch(`${getApiBase()}/api/blocks/${id}`)
+       .then(response => response.json())
+       .then(json => setBlocks(json))
+   }, [])
+ 
+   useEffect(() => {
+-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks/length`)
++    fetch(`${getApiBase()}/api/blocks/length`)
+       .then(response => response.json())
+       .then(json => {
+         console.log(`retrieved json: ${JSON.stringify(json)}`) // eslint-disable-line no-console
+diff --git a/src/renderer/components/ConductTransaction.js b/src/renderer/components/ConductTransaction.js
+index c55b1ca..85e5196 100644
+--- a/src/renderer/components/ConductTransaction.js
++++ b/src/renderer/components/ConductTransaction.js
+@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Button } from 'react-bootstrap'
+ import { Link } from 'react-router-dom'
+ 
+ import Account from '../../main/blockchain/account'
+-import globalConfig from '../../config'
++import getApiBase from '../lib/api-base'
+ 
+ function ConductTransaction() {
+   const [recipient, setRecipient] = useState('')
+@@ -11,7 +11,7 @@ function ConductTransaction() {
+   const [knownAddresses, setKnownAddresses] = useState([])
+ 
+   useEffect(() => {
+-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/known-addresses`)
++    fetch(`${getApiBase()}/api/known-addresses`)
+       .then(response => response.json())
+       .then(json => setKnownAddresses(json))
+   }, [])
+@@ -19,7 +19,7 @@ function ConductTransaction() {
+   const conductTransaction = useCallback(() => {
+     const account = async () => new Account({ publicKey: '' }).setHash({ hash: recipient }).retrieve()
+ 
+-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transact`, {
++    fetch(`${getApiBase()}/api/transact`, {
+       method: 'POST',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ recipient: account.publicKey, amount }),
+diff --git a/src/renderer/components/TransactionPool.js b/src/renderer/components/TransactionPool.js
+index c4a4596..8d3bbcc 100644
+--- a/src/renderer/components/TransactionPool.js
++++ b/src/renderer/components/TransactionPool.js
+@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
+ import { Button } from 'react-bootstrap'
+ import { Link } from 'react-router-dom'
+ 
+-import globalConfig from '../../config'
++import getApiBase from '../lib/api-base'
+ 
+ import Transaction from './Transaction'
+ 
+@@ -13,13 +13,13 @@ function TransactionPool() {
+   const intervalRef = useRef(null)
+ 
+   const fetchTransactionPoolMap = useCallback(() => {
+-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
++    fetch(`${getApiBase()}/api/transaction-pool-map`)
+       .then(response => response.json())
+       .then(json => setTransactionPoolMap(json))
+   }, [])
+ 
+   const fetchMineTransactions = useCallback(() => {
+-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/mine-transactions`)
++    fetch(`${getApiBase()}/api/mine-transactions`)
+       .then(response => {
+         if (response.status === 200) {
+           alert('success')
+diff --git a/src/renderer/preload.js b/src/renderer/preload.js
+index 2758342..77ba174 100644
+--- a/src/renderer/preload.js
++++ b/src/renderer/preload.js
+@@ -12,11 +12,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
+     }
+   },
+   sendSync: (channel, data) => {
+-    const validChannels = ['api/wallet-info']
++    const validChannels = ['api/wallet-info', 'api-port']
+     if (validChannels.includes(channel)) {
+       return ipcRenderer.sendSync(channel, data)
+     }
+   },
++  // AD-8: the sole renderer→app config surface. The port is pulled
++  // synchronously from the main process (src/main/api.js '/api/port' answers
++  // with the app-config DEFAULT_PORT) — the preload imports no config module:
++  // its isolated world lacks electron.app, which electron-is-dev reads at
++  // module scope.
++  getApiPort: () => ipcRenderer.sendSync('api-port'),
+   receive: (channel, func) => {
+     const validChannels = ['api/blocks']
+     if (validChannels.includes(channel)) {
+=== UNTRACKED SINCE BASELINE ===
+diff --git a/src/renderer/config-boundary.test.js b/src/renderer/config-boundary.test.js
+new file mode 100644
+index 0000000..b23dd97
+--- /dev/null
++++ b/src/renderer/config-boundary.test.js
+@@ -0,0 +1,76 @@
++// Story 8 (configuration-ownership-split): the renderer→app config boundary.
++//
++// src/config.js reads electron-is-dev at module scope; the real package is
++// untransformed ESM under the CJS transform, so it is mocked before any
++// config import below (same pattern as the main-process tests).
++jest.mock('electron-is-dev', () => false)
++
++import globalConfig from '../config'
++import coreConfig from '../main/config'
++
++const fs = require('fs')
++const path = require('path')
++
++const RENDERER_DIR = __dirname
++const CONFIG_MODULE_PATH = path.resolve(RENDERER_DIR, '../config.js')
++
++// The three import-specifier forms the boundary must close: static
++// `from '…'`, CJS `require('…')`, and dynamic `import('…')`.
++const SPECIFIER_PATTERNS = [
++  /\bfrom\s+['"]([^'"]+)['"]/g,
++  /\brequire\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
++  /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g,
++]
++
++function collectRendererJsFiles(dir) {
++  return fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
++    const fullPath = path.join(dir, entry.name)
++    if (entry.isDirectory()) return collectRendererJsFiles(fullPath)
++    if (entry.name.endsWith('.js') && !entry.name.endsWith('.test.js')) return [fullPath]
++    return []
++  })
++}
++
++function specifiersIn(source) {
++  return SPECIFIER_PATTERNS.flatMap(pattern => {
++    const specifiers = []
++    let match
++    while ((match = pattern.exec(source)) !== null) {
++      specifiers.push(match[1])
++    }
++    return specifiers
++  })
++}
++
++function resolvesToAppConfig(specifier, file) {
++  const resolved = path.resolve(path.dirname(file), specifier)
++  return resolved === CONFIG_MODULE_PATH || `${resolved}.js` === CONFIG_MODULE_PATH
++}
++
++describe('RENDERER_NO_CONFIG_IMPORT', () => {
++  it('no renderer file (except tests) imports the app config module', () => {
++    const offenders = []
++    for (const file of collectRendererJsFiles(RENDERER_DIR)) {
++      const source = fs.readFileSync(file, 'utf8')
++      for (const specifier of specifiersIn(source)) {
++        if (resolvesToAppConfig(specifier, file)) {
++          offenders.push(`${path.relative(RENDERER_DIR, file)} -> ${specifier}`)
++        }
++      }
++    }
++
++    expect(offenders).toEqual([])
++  })
++})
++
++describe('INTERVAL_OWNERSHIP', () => {
++  it('MINING_RECHECK_INTERVAL and VALIDATION_RATE are single-owned numbers', () => {
++    expect(typeof globalConfig.MINING_RECHECK_INTERVAL).toBe('number')
++    expect(typeof coreConfig.VALIDATION_RATE).toBe('number')
++
++    // Neither module exports the other's key: the shared default number is a
++    // coincidence, not an alias (AD-8: one owner per value).
++    expect(globalConfig.VALIDATION_RATE).toBeUndefined()
++    expect(coreConfig.MINING_RECHECK_INTERVAL).toBeUndefined()
++  })
++})
+diff --git a/src/renderer/lib/api-base.js b/src/renderer/lib/api-base.js
+new file mode 100644
+index 0000000..95866b2
+--- /dev/null
++++ b/src/renderer/lib/api-base.js
+@@ -0,0 +1,8 @@
++// AD-8: the renderer reads no config file directly. The API port comes from
++// the preload bridge (window.electronAPI.getApiPort), which the main process
++// answers from the app config (src/config.js DEFAULT_PORT). The bridge is
++// read at call time, never at module scope, so renderer modules stay
++// importable outside Electron (e.g. under jest).
++const getApiBase = () => `http://localhost:${window.electronAPI.getApiPort()}`
++
++export default getApiBase
+diff --git a/src/renderer/lib/api-base.test.js b/src/renderer/lib/api-base.test.js
+new file mode 100644
+index 0000000..3baa12e
+--- /dev/null
++++ b/src/renderer/lib/api-base.test.js
+@@ -0,0 +1,12 @@
++// API_BASE_FORMAT: pins the API base URL format at the helper surface.
++import getApiBase from './api-base'
++
++// The import above succeeded with no `window` defined at all: the helper
++// reads the bridge at call time, never at module scope.
++global.window = { electronAPI: { getApiPort: () => 4242 } }
++
++describe('getApiBase (API_BASE_FORMAT)', () => {
++  it('builds the base from the bridge port: http://localhost:<port>', () => {
++    expect(getApiBase()).toBe(`http://localhost:4242`)
++  })
++})
+diff --git a/src/renderer/preload.test.js b/src/renderer/preload.test.js
+new file mode 100644
+index 0000000..dba6f9e
+--- /dev/null
++++ b/src/renderer/preload.test.js
+@@ -0,0 +1,103 @@
++// AD-8 bridge rows (spec-launch-readiness, story 8): the port crosses the
++// renderer boundary via a synchronous IPC pull, never via a config import.
++//
++// The electron mock mirrors the isolated-world preload surface:
++// contextBridge + ipcRenderer only — no `app`. A real sandboxed preload's
++// require('electron') exposes no `app`, so if the preload (or anything it
++// loads, e.g. src/config.js via electron-is-dev) ever depended on
++// `electron.app`, it would fail here instead of in the packaged app.
++
++let mockIsDev = false
++
++jest.mock('electron', () => ({
++  contextBridge: { exposeInMainWorld: jest.fn() },
++  ipcRenderer: {
++    send: jest.fn(),
++    sendSync: jest.fn(),
++    on: jest.fn(),
++  },
++}))
++
++jest.mock('electron-is-dev', () => mockIsDev)
++
++// Loads a fresh module registry under the given dev flag. The mocked
++// ipcRenderer.sendSync answers 'api-port' with the real app-config
++// DEFAULT_PORT evaluated under that flag — the value the main process sends
++// (src/main/api.js '/api/port' handler).
++function loadBridge(isDev) {
++  mockIsDev = isDev
++  jest.resetModules()
++
++  const electron = require('electron')
++  const { DEFAULT_PORT } = require('../config').default
++  electron.ipcRenderer.sendSync.mockImplementation(
++    channel => (channel === 'api-port' ? DEFAULT_PORT : undefined),
++  )
++
++  require('./preload')
++
++  const [, api] = electron.contextBridge.exposeInMainWorld.mock.calls[0]
++  return { api, electron, DEFAULT_PORT }
++}
++
++describe('preload bridge (AD-8 synchronous port pull)', () => {
++  it('BRIDGE_PROD_PORT: getApiPort synchronously returns the prod DEFAULT_PORT', () => {
++    const { api, electron, DEFAULT_PORT } = loadBridge(false)
++
++    expect(DEFAULT_PORT).toBe(3333)
++    expect(electron.contextBridge.exposeInMainWorld)
++      .toHaveBeenCalledWith('electronAPI', expect.anything())
++    expect(typeof api.getApiPort).toBe('function')
++
++    const port = api.getApiPort()
++
++    expect(typeof port).toBe('number')
++    expect(port).toBe(3333)
++    expect(electron.ipcRenderer.sendSync).toHaveBeenCalledWith('api-port')
++  })
++
++  it('BRIDGE_DEV_PORT: getApiPort synchronously returns the dev DEFAULT_PORT', () => {
++    const { api, electron, DEFAULT_PORT } = loadBridge(true)
++
++    expect(DEFAULT_PORT).toBe(3001)
++    expect(typeof api.getApiPort).toBe('function')
++
++    const port = api.getApiPort()
++
++    expect(typeof port).toBe('number')
++    expect(port).toBe(3001)
++    expect(electron.ipcRenderer.sendSync).toHaveBeenCalledWith('api-port')
++  })
++
++  describe('pre-existing methods still route their whitelisted channels', () => {
++    let api
++    let electron
++
++    beforeEach(() => {
++      ({ api, electron } = loadBridge(false))
++    })
++
++    it('send(api/blocks) routes to ipcRenderer.send', () => {
++      const payload = { id: 1 }
++
++      api.send('api/blocks', payload)
++
++      expect(electron.ipcRenderer.send).toHaveBeenCalledWith('api/blocks', payload)
++    })
++
++    it('sendSync(api/wallet-info) routes to ipcRenderer.sendSync', () => {
++      api.sendSync('api/wallet-info')
++
++      expect(electron.ipcRenderer.sendSync)
++        .toHaveBeenCalledWith('api/wallet-info', undefined)
++    })
++
++    it('channels outside the whitelist are not routed', () => {
++      api.send('not-whitelisted')
++      api.sendSync('not-whitelisted')
++
++      expect(electron.ipcRenderer.send).not.toHaveBeenCalled()
++      expect(electron.ipcRenderer.sendSync).not.toHaveBeenCalled()
++    })
++  })
++})

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
-import globalConfig from '../../config'
+import getApiBase from '../lib/api-base'
 
 import Transaction from './Transaction'
 
@@ -13,13 +13,13 @@ function TransactionPool() {
   const intervalRef = useRef(null)
 
   const fetchTransactionPoolMap = useCallback(() => {
-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
+    fetch(`${getApiBase()}/api/transaction-pool-map`)
       .then(response => response.json())
       .then(json => setTransactionPoolMap(json))
   }, [])
 
   const fetchMineTransactions = useCallback(() => {
-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/mine-transactions`)
+    fetch(`${getApiBase()}/api/mine-transactions`)
       .then(response => {
         if (response.status === 200) {
           alert('success')

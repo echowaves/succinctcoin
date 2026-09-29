@@ -1,6 +1,11 @@
-import Wallet from '../blockchain/wallet'
-
 import Crypto from './crypto'
+
+// rli-1: a pure constant instead of a Wallet-built fixture — a file-missing
+// `retrieveThrough()` would otherwise persist a fresh identity into the
+// shared `.test/wallet` and add a second cross-suite writer of that file.
+// 130 lowercase hex chars with the 04 prefix — it satisfies every
+// `isPublicKey` length/charset check without ever being derived from disk.
+const VALID_PUBLIC_KEY = '04' + 'ab'.repeat(64)
 
 describe('Crypto', () => {
   describe('Crypto.hash()', () => {
@@ -21,24 +26,61 @@ describe('Crypto', () => {
 
       expect(Crypto.hash(foo)).not.toEqual(originalHash)
     })
+
+    it('produces the same hash for objects differing only in nested key order', () => {
+      expect(Crypto.hash({ a: 1, b: { c: 2, d: 3 } }))
+        .toEqual(Crypto.hash({ b: { d: 3, c: 2 }, a: 1 }))
+    })
+
+    it('produces the same hash for arrays of objects differing only in key order', () => {
+      expect(Crypto.hash([{ z: 1, a: 2 }]))
+        .toEqual(Crypto.hash([{ a: 2, z: 1 }]))
+    })
+
+    it('produces different hashes when array element order differs', () => {
+      expect(Crypto.hash([1, 2])).not.toEqual(Crypto.hash([2, 1]))
+    })
+
+    it('respects toJSON so Date inputs hash like their ISO string form', () => {
+      const x = 1700000000000
+      expect(Crypto.hash({ d: new Date(x) }))
+        .toEqual(Crypto.hash({ d: new Date(x).toISOString() }))
+    })
+
+    it('drops undefined properties as JSON.stringify does', () => {
+      expect(Crypto.hash({ a: 1, b: undefined }))
+        .toEqual(Crypto.hash({ a: 1 }))
+    })
+
+    it('pins the canonical hash of an object input (byte-identical for already-canonical objects)', () => {
+      expect(Crypto.hash({ a: 1, b: { c: 2, d: 3 } }))
+        .toEqual('1d327edd068e091991684a8f4493dcf7c56dfcfcb7a5bee3eadedcacdb5058374964b6d7d734998fc012b49adbe67c6c7945eeab84251c9c7bc2c5fa5c18a338')
+    })
+
+    it('pins the canonical hash of a block-shaped multi-input call (locks the space-join)', () => {
+      expect(Crypto.hash(0, 'u', 0, 'm', 'l', [{ a: 1 }]))
+        .toEqual('dc83dc8c45860940dbff2938c7c87866c539a1183e4c43fc8302d407805411cb45786734be97464ff1f2ebf62e8cde3fb98e40e350256dff478935d367eaf9d0')
+    })
+
+    it('composes key-order invariance and element-order sensitivity in arrays of objects', () => {
+      expect(Crypto.hash([{ z: 1, a: 2 }, { y: 3, b: 4 }]))
+        .toEqual(Crypto.hash([{ a: 2, z: 1 }, { b: 4, y: 3 }]))
+      expect(Crypto.hash([{ z: 1, a: 2 }, { y: 3, b: 4 }]))
+        .not.toEqual(Crypto.hash([{ y: 3, b: 4 }, { z: 1, a: 2 }]))
+    })
   })
 
   describe('Crypto.isPublicKey()', () => {
-    let wallet
-    beforeEach(async () => {
-      wallet = new Wallet()
-      await wallet.retrieveThrough()
-    })
     it('returns `true` when key is valid hex', () => {
-      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey })).toBe(true)
+      expect(Crypto.isPublicKey({ publicKey: VALID_PUBLIC_KEY })).toBe(true)
     })
     it('returns `false` when length is not correct', () => {
       expect(Crypto.isPublicKey({ publicKey: 'ab' })).toBe(false)
       expect(Crypto.isPublicKey({ publicKey: 'ab'.repeat(31) })).toBe(false)
     })
     it('returns `false` when key contains non-hex characters', () => {
-      expect(Crypto.isPublicKey({ publicKey: 'gg' + wallet.publicKey.substring(2) })).toBe(false)
-      expect(Crypto.isPublicKey({ publicKey: wallet.publicKey + 'zz' })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: 'gg' + VALID_PUBLIC_KEY.substring(2) })).toBe(false)
+      expect(Crypto.isPublicKey({ publicKey: VALID_PUBLIC_KEY + 'zz' })).toBe(false)
     })
     it('returns `false` for empty or null values', () => {
       expect(Crypto.isPublicKey({ publicKey: '' })).toBe(false)

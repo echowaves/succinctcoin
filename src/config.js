@@ -30,6 +30,11 @@ const RELAY_ENDPOINTS = [
   // '/ip4/203.0.113.5/tcp/4001/p2p/<VPS_PEER_ID>',
 ]
 
+// AD-4: autonomous mining re-check interval. App-semantic liveness value,
+// owned by app config and deliberately distinct from the core's
+// VALIDATION_RATE (src/main/config.js) — one owner per value (AD-8).
+const MINING_RECHECK_INTERVAL = 1000
+
 export default {
   DEFAULT_PORT,
   ROOT_NODE_ADDRESS,
@@ -38,4 +43,5 @@ export default {
   DISCV5_SEARCH_INTERVAL,
   DISCV5_BOOTSTRAP_ENRS,
   RELAY_ENDPOINTS,
+  MINING_RECHECK_INTERVAL,
 }

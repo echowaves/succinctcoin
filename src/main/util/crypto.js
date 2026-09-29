@@ -3,9 +3,30 @@ const ecrypto = require('@noble/secp256k1')
 
 function Crypto() {}
 
+/**
+ * Canonicalize a value for hashing by sorting the own keys of every plain
+ * object. Used as the JSON.stringify replacer, so it inherits stringify's
+ * serializer semantics (toJSON for Dates, dropping undefined properties) and
+ * lets stringify's recursion handle arrays and nested objects at every depth.
+ * Arrays keep element order; scalars pass through unchanged.
+ * @param {string} key - the current key (unused; required by the replacer signature)
+ * @param {*} value - the current value (post-toJSON)
+ * @returns {*} a NEW object with sorted own-key insertion order for plain
+ *   objects; the value unchanged for arrays, scalars, and null
+ */
+function sortKeysDeep(key, value) {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return Object.keys(value).sort().reduce((acc, k) => {
+      acc[k] = value[k]
+      return acc
+    }, {})
+  }
+  return value
+}
+
 Crypto.hash = function (...inputs) {
   const hash = crypto.createHash('sha512')
-  hash.update(inputs.map(input => JSON.stringify(input)).sort().join(' '))
+  hash.update(inputs.map(input => JSON.stringify(input, sortKeysDeep)).sort().join(' '))
   return hash.digest('hex')
 }
 

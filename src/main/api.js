@@ -5,8 +5,12 @@ import Blockchain from './blockchain'
 import Wallet from './blockchain/wallet'
 import TransactionPool from './blockchain/transaction-pool'
 import TransactionMiner from './app/transaction-miner'
+import syncRootState from './app/root-sync'
+import deriveState from './blockchain/state'
+import BlockchainError, { ERROR_CODES } from './blockchain/errors'
 import config from './config'
 import PubSub from './app/pubsub'
+import mapErrorToResponse from './app/error-mapper'
 
 const path = require('path')
 const fs1 = require('fs') // TODO: remove
@@ -15,6 +19,7 @@ const Big = require('big.js')
 const express = require('express')
 const { ipcMain } = require('electron')
 const cors = require('cors')
+const isDev = require('electron-is-dev')
 
 const api = express()
 const blockchain = new Blockchain()
@@ -27,7 +32,10 @@ let pubsub
 let transactionMiner
 
 const init = async () => {
-  wallet = await (new Wallet()).retrieveThrough()
+  // Strict load (CAP-12): first run persists the generated keys; a present
+  // but corrupt wallet file throws a typed `corrupted-wallet` and propagates
+  // out of startup (fail-fast — no fresh identity, no catch-and-continue)
+  wallet = await (new Wallet()).load()
   account = await wallet.getAccount() // ensure that the account is created and stored on disk
   pubsub = new PubSub({ blockchain, transactionPool, wallet })
   try {
@@ -40,6 +48,8 @@ const init = async () => {
   transactionMiner = new TransactionMiner({
     blockchain, transactionPool, wallet, pubsub,
   })
+  // AD-4: mining is autonomous; the HTTP endpoint below is a dev convenience
+  transactionMiner.start()
 }
 
 api.use(express.json())
@@ -85,28 +95,61 @@ api.get('/api/blocks/:id', (req, res) => {
 //   res.redirect('/api/blocks')
 // })
 
-api.get('/api/mine-transactions', async (req, res) => {
-  await transactionMiner.mineTransactions()
+// dev-only convenience (AD-4): autonomous mining is the mining path
+if (isDev) {
+  api.get('/api/mine-transactions', async (req, res) => {
+    await transactionMiner.mineTransactions()
 
-  res.redirect('/api/blocks')
-})
+    res.redirect('/api/blocks')
+  })
+}
 
-api.post('/api/transact', async (req, res) => {
+// AD-9: the app layer owns the HTTP envelope. `transact` takes every
+// collaborator as a parameter (dependency-injected) so the endpoint logic is
+// testable without a server; it is not side-effect-free — it mutates the pool,
+// broadcasts, and writes the response.
+const transact = async ({ blockchain, wallet, transactionPool, pubsub, req, res }) => {
   const { amount, recipient } = req.body
 
   try {
+    // Pre-check: a malformed amount is rejected before any transaction is
+    // created. Normalize the Big error to the typed 400 (a raw Big throw in
+    // the catch would map to 500).
+    try {
+      new Big(amount)
+    } catch {
+      throw new BlockchainError('Amount invalid', ERROR_CODES.INVALID_TRANSACTION)
+    }
+
     const transaction = await wallet.createTransaction({
       recipient,
       amount,
       fee: Big(amount).div(1000), // automatically calculate fee
     })
-    await transaction.validate()
+    const state = deriveState(blockchain.chain)
+    await transaction.validate({ state })
+
+    // A second pending transaction from a sender that already has one in
+    // the pool is a double-spend candidate: reject it (409) before the pool
+    // is mutated. Validation runs against the derived chain state, which
+    // ignores pending pool transactions, so this check is what keeps the
+    // miner from putting both spends in one block.
+    if (transactionPool.existingTransaction({ sender: transaction.sender })) {
+      throw new BlockchainError('Duplicate transactions', ERROR_CODES.DUPLICATE_TRANSACTION)
+    }
+
     transactionPool.setTransaction(transaction)
     pubsub.broadcastTransaction(transaction)
     res.json({ type: 'success', transaction })
   } catch (error) {
-    res.status(400).json({ type: 'error', message: error.message })
+    const { status, body } = mapErrorToResponse(error)
+
+    res.status(status).json(body)
   }
+}
+
+api.post('/api/transact', async (req, res) => {
+  await transact({ blockchain, wallet, transactionPool, pubsub, req, res })
 })
 
 
@@ -127,25 +170,51 @@ ipcMain.on('/api/wallet-info', (event, arg) => {
   event.returnValue = walletInfo
 })
 
-const syncWithRootState = () => {
-  fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks`)
-    .then(response => response.json())
-    .then(json => {
-      const rootChain = json
-
-      console.log('replace chain on a sync with', rootChain) // eslint-disable-line no-console
-      blockchain.replaceChain(rootChain)
-    })
-
-  fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)
-    .then(response => response.json())
-    .then(json => {
-      const rootTransactionPoolMap = json
-
-      console.log('replace transaction pool map on a sync with', rootTransactionPoolMap) // eslint-disable-line no-console
-      transactionPool.setMap(rootTransactionPoolMap)
-    })
+// CAP-12: encrypted key custody. The passphrase crosses only via the
+// synchronous IPC argument (never an HTTP body); the helpers are
+// dependency-injected in the `transact` pattern so the logic is testable
+// without running init(). A failed operation answers with the typed
+// `{ code, message }` shape; a success answers with the backup string or
+// the restored public key.
+const walletExport = ({ wallet, password }) => {
+  try {
+    return { backup: wallet.exportBackup(password) }
+  } catch (error) {
+    return { code: error.code, message: error.message }
+  }
 }
 
+const walletRestore = ({ wallet, backup, password }) => {
+  try {
+    return { publicKey: wallet.restoreBackup(backup, password).publicKey }
+  } catch (error) {
+    return { code: error.code, message: error.message }
+  }
+}
 
+ipcMain.on('/api/wallet-export', (event, arg) => {
+  event.returnValue = walletExport({ wallet, password: arg && arg.password })
+})
+
+ipcMain.on('/api/wallet-restore', (event, arg) => {
+  event.returnValue = walletRestore({ wallet, backup: arg && arg.backup, password: arg && arg.password })
+})
+
+// CAP-10/AD-8: the renderer's sole app-config surface is a synchronous pull
+// of the API port; the owner of the value stays src/config.js (main process)
+ipcMain.on('/api/port', event => {
+  event.returnValue = globalConfig.DEFAULT_PORT
+})
+
+// AD-5/AD-13: root sync is bootstrap-only; the empty-chain gate and the
+// additive pool merge live in the root-sync module (one owner)
+const syncWithRootState = () => syncRootState({
+  blockchain,
+  transactionPool,
+  fetchRootChain: async () => (await fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks`)).json(),
+  fetchRootPool: async () => (await fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transaction-pool-map`)).json(),
+})
+
+
+export { transact, walletExport, walletRestore }
 export default { api, syncWithRootState, init }

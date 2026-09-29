@@ -23,6 +23,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
       ipcRenderer.on(channel, (event, ...args) => func(...args))
     }
   },
+  // CAP-10/AD-8: the sole renderer->app config surface. Synchronous pull of
+  // the API port — deliberately NOT part of the sendSync whitelist above.
+  getApiPort: () => ipcRenderer.sendSync('/api/port'),
 })
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts

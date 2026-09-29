@@ -114,7 +114,3 @@ The system SHALL maintain a pool of unconfirmed transactions, filtering valid on
 #### Scenario: Clear all transactions
 - **WHEN** clear() is called on the pool
 - **THEN** all transactions SHALL be removed from the pool
-
-#### Scenario: Set pool from external map
-- **WHEN** setMap() is called with a transaction map
-- **THEN** the pool SHALL be replaced with the provided map

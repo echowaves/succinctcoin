@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
-import globalConfig from '../../config'
+import getApiBase from '../lib/api-base'
 
 import Block from './Block'
 
@@ -11,13 +11,13 @@ function Blocks() {
   const [blocksLength, setBlocksLength] = useState(0)
 
   const fetchPaginatedBlocks = useCallback(id => {
-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks/${id}`)
+    fetch(`${getApiBase()}/api/blocks/${id}`)
       .then(response => response.json())
       .then(json => setBlocks(json))
   }, [])
 
   useEffect(() => {
-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/blocks/length`)
+    fetch(`${getApiBase()}/api/blocks/length`)
       .then(response => response.json())
       .then(json => {
         console.log(`retrieved json: ${JSON.stringify(json)}`) // eslint-disable-line no-console

@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 import Account from '../../main/blockchain/account'
-import globalConfig from '../../config'
+import getApiBase from '../lib/api-base'
 
 function ConductTransaction() {
   const [recipient, setRecipient] = useState('')
@@ -11,7 +11,7 @@ function ConductTransaction() {
   const [knownAddresses, setKnownAddresses] = useState([])
 
   useEffect(() => {
-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/known-addresses`)
+    fetch(`${getApiBase()}/api/known-addresses`)
       .then(response => response.json())
       .then(json => setKnownAddresses(json))
   }, [])
@@ -19,7 +19,7 @@ function ConductTransaction() {
   const conductTransaction = useCallback(() => {
     const account = async () => new Account({ publicKey: '' }).setHash({ hash: recipient }).retrieve()
 
-    fetch(`${globalConfig.ROOT_NODE_ADDRESS}/api/transact`, {
+    fetch(`${getApiBase()}/api/transact`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ recipient: account.publicKey, amount }),
