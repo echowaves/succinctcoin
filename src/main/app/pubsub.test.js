@@ -18,8 +18,11 @@ jest.mock('@libp2p/upnp-nat', () => ({ upnpNat: jest.fn() }), { virtual: true })
 import Blockchain from '../blockchain'
 import TransactionPool from '../blockchain/transaction-pool'
 import Wallet from '../blockchain/wallet'
+import deriveState from '../blockchain/state'
 
 import PubSub from './pubsub'
+
+const Big = require('big.js')
 
 const encodeMessage = message => new TextEncoder().encode(JSON.stringify(message))
 
@@ -93,6 +96,132 @@ describe('PubSub receive handlers', () => {
       await pubsub.handleBlockchainMessage(encodeMessage(blockchain.chain))
 
       expect(blockchain.chain).toHaveLength(originalLength)
+    })
+  })
+
+  // AD-14 boundaries exercised at the message boundary (STRICTLY_LONGER_
+  // ADOPTION / EQUAL_LENGTH_LOWER_HASH / EQUAL_LENGTH_IDENTICAL matrix rows):
+  // the wire encoding is encodeMessage, exactly what broadcastChain()
+  // publishes; each node's pool holds a live pending tx so the adoption-only
+  // pool clear is observable.
+  describe('handleBlockchainMessage() chain-replacement boundaries', () => {
+    it('STRICTLY_LONGER_ADOPTION: replaces a shorter local chain, discards the self-mined tip, and the adoption callback clears the pool tx carried by the adopted chain', async () => {
+      // Local node: one self-mined reward block (its tip, later discarded)
+      // and a pending pool tx from the same sender that the arriving chain
+      // already carries (same uuid).
+      const localMiner = new Wallet()
+      const localChain = new Blockchain()
+      const localTip = await localChain.addBlock({ data: [], wallet: localMiner })
+      const localPool = new TransactionPool()
+      const localPubsub = new PubSub({ blockchain: localChain, transactionPool: localPool, wallet: localMiner })
+
+      const source = new Wallet()
+      const sourceChain = new Blockchain()
+      await sourceChain.addBlock({ data: [], wallet: source })
+      const pending = await source.createTransaction({
+        recipient: new Wallet().publicKey, amount: '30', fee: '0.03',
+      })
+      const last = await sourceChain.addBlock({ data: [pending], wallet: source })
+      expect(last).toBeTruthy()
+
+      localPool.setTransaction(pending)
+      expect(localPool.transactionMap[pending.uuid]).toBeDefined()
+
+      await localPubsub.handleBlockchainMessage(encodeMessage(sourceChain.chain))
+
+      expect(localChain.chain.map(block => block.hash))
+        .toEqual(sourceChain.chain.map(block => block.hash))
+      // the self-mined local tip is gone; the adopted chain's balances hold
+      expect(localChain.chain.some(block => block.hash === localTip.hash)).toBe(false)
+      expect(localPool.transactionMap[pending.uuid]).toBeUndefined()
+      const state = deriveState(localChain.chain)
+      const recipient = pending.recipient
+      expect(new Big(state[recipient].balance).eq('30')).toBe(true)
+    })
+
+    it('EQUAL_LENGTH_LOWER_HASH: the higher-hash fork adopts the lower, the lower keeps it and rejects the higher, with pool clearing only on adoption', async () => {
+      // Both forks share one funded first block so their first divergence
+      // is block 2, and the shared pending tx is carried by BOTH chains so
+      // whichever side adopts clears it from its own pool.
+      const fund = new Wallet()
+      const base = new Blockchain()
+      await base.addBlock({ data: [], wallet: fund })
+      const shared = base.chain[1]
+
+      const sharedTx = await fund.createTransaction({
+        recipient: new Wallet().publicKey, amount: '50', fee: '0.05',
+      })
+
+      const xMiner = new Wallet()
+      const xChain = new Blockchain()
+      xChain.chain = [xChain.chain[0], shared]
+      const xBlock = await xChain.addBlock({ data: [sharedTx], wallet: xMiner })
+
+      const yMiner = new Wallet()
+      const yChain = new Blockchain()
+      yChain.chain = [yChain.chain[0], shared]
+      const yBlock = await yChain.addBlock({ data: [sharedTx], wallet: yMiner })
+      expect(xBlock).toBeTruthy()
+      expect(yBlock).toBeTruthy()
+      expect(xChain.chain[2].hash).not.toEqual(yChain.chain[2].hash)
+
+      const nodeX = {
+        chain: xChain,
+        pool: Object.assign(new TransactionPool()),
+      }
+      nodeX.pool.setTransaction(sharedTx)
+      const pubSubX = new PubSub({ blockchain: xChain, transactionPool: nodeX.pool, wallet: xMiner })
+      const nodeY = {
+        chain: yChain,
+        pool: new TransactionPool(),
+      }
+      nodeY.pool.setTransaction(sharedTx)
+      const pubSubY = new PubSub({ blockchain: yChain, transactionPool: nodeY.pool, wallet: yMiner })
+
+      const xLower = xChain.chain[2].hash < yChain.chain[2].hash
+
+      await pubSubX.handleBlockchainMessage(encodeMessage(yChain.chain))
+      await pubSubY.handleBlockchainMessage(encodeMessage(xChain.chain))
+
+      if (xLower) {
+        // X rejects the higher fork it received...
+        expect(xChain.chain.some(block => block.hash === xBlock.hash)).toBe(true)
+        expect(xChain.chain[2].hash).toEqual(xBlock.hash)
+        // ...and its pool survives untouched (no adoption)
+        expect(nodeX.pool.transactionMap[sharedTx.uuid]).toBeDefined()
+        // Y adopts the lower fork and its pool clears the adopted tx
+        expect(yChain.chain.map(block => block.hash))
+          .toEqual([xChain.chain[0].hash, shared.hash, xBlock.hash])
+        expect(nodeY.pool.transactionMap[sharedTx.uuid]).toBeUndefined()
+      } else {
+        expect(yChain.chain.some(block => block.hash === yBlock.hash)).toBe(true)
+        expect(yChain.chain[2].hash).toEqual(yBlock.hash)
+        expect(nodeY.pool.transactionMap[sharedTx.uuid]).toBeDefined()
+        expect(xChain.chain.map(block => block.hash))
+          .toEqual([yChain.chain[0].hash, shared.hash, yBlock.hash])
+        expect(nodeX.pool.transactionMap[sharedTx.uuid]).toBeUndefined()
+      }
+    })
+
+    it('EQUAL_LENGTH_IDENTICAL: delivers an identical chain as a no-op and leaves the pool alone', async () => {
+      const miner = new Wallet()
+      const chain = new Blockchain()
+      await chain.addBlock({ data: [], wallet: miner })
+      const pending = await miner.createTransaction({
+        recipient: new Wallet().publicKey, amount: '40', fee: '0.04',
+      })
+      const block = await chain.addBlock({ data: [pending], wallet: miner })
+      expect(block).toBeTruthy()
+
+      const localPool = new TransactionPool()
+      localPool.setTransaction(pending)
+      const localPubsub = new PubSub({ blockchain: chain, transactionPool: localPool, wallet: miner })
+      const before = chain.chain
+
+      await localPubsub.handleBlockchainMessage(encodeMessage(chain.chain))
+
+      expect(chain.chain).toBe(before)
+      expect(localPool.transactionMap[pending.uuid]).toBeDefined()
     })
   })
 })

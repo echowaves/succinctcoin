@@ -28,7 +28,7 @@ The system SHALL compute SHA512 hashes of arbitrary inputs by JSON-stringifying 
 - **THEN** it SHALL hash the empty input deterministically and return a defined digest
 
 ### Requirement: Signature verification
-The system SHALL verify ECDSA signatures over SHA512-hashed data using a public key. Malformed, null, or undefined signatures SHALL be handled without throwing.
+The system SHALL verify ECDSA signatures over SHA512-hashed data using a public key (secp256k1 ECDSA). No malformed input SHALL ever verify: a signature that converts to the expected 64 bytes — a correct-length hex string or a shorter/longer string whose length the hex conversion still rounds to 64 bytes, including non-hex content that coerces to zero bytes — SHALL resolve to `false`, while a signature whose converted length is not 64 bytes, and a `null` or `undefined` signature, SHALL reject (a signature-length error and a `TypeError` from the hex conversion, respectively). Every production path that reaches `Crypto.verifySignature()` funnels through one of three try/catch-wrapped call sites — the chain-validation fold in `Blockchain.isValidChain`, the `addBlock` self/miner path, and the transaction pool's validity filter — so a rejecting signature surfaces as an invalid-transaction/invalid-block validation failure or a filtered-out pool entry, never as an unhandled rejection.
 
 #### Scenario: Valid signature verified
 - **WHEN** Crypto.verifySignature() is called with a public key, data, and a valid signature
@@ -42,29 +42,41 @@ The system SHALL verify ECDSA signatures over SHA512-hashed data using a public 
 - **WHEN** Crypto.verifySignature() is called with a public key that does not correspond to the signing key
 - **THEN** it SHALL return false
 
-#### Scenario: Malformed signature rejected
-- **WHEN** Crypto.verifySignature() is called with a malformed, null, or undefined signature
-- **THEN** it SHALL return false rather than throwing an exception
+#### Scenario: Sixty-four-byte signature is not verified
+- **WHEN** Crypto.verifySignature() is called with a signature that converts to 64 bytes — a correct-length hexadecimal signature or a non-hex string whose length the hex conversion still rounds to 64 bytes
+- **THEN** it SHALL resolve to false rather than throwing an exception
+
+#### Scenario: Wrong-length and null signatures reject
+- **WHEN** Crypto.verifySignature() is called with a signature whose converted length is not 64 bytes, or with a null or undefined signature
+- **THEN** the returned promise SHALL reject (a signature-length error, or a TypeError from the hex conversion), and every production path that reaches it SHALL contain that rejection in a try/catch (the chain-validation fold, the addBlock self/miner path, or the pool's validity filter)
 
 ### Requirement: Public key validation
-The system SHALL validate that a string is a properly formatted secp256k1 public key in hex format.
+The system SHALL validate that a string is a properly formatted secp256k1 public key in hex format: exactly 64, 66, or 130 hex characters, upper- or lowercase, with no leading-prefix constraint (the wallet itself stores 130-character uncompressed public keys; the validity check is length-and-charset only).
 
 #### Scenario: Valid uncompressed public key accepted
-- **WHEN** Crypto.isPublicKey() is called with a 130-character hex string starting with "04"
+- **WHEN** Crypto.isPublicKey() is called with a 130-character hex string (the 04-prefixed uncompressed form used by the wallet)
 - **THEN** it SHALL return true
 
 #### Scenario: Valid compressed public key accepted
-- **WHEN** Crypto.isPublicKey() is called with a 66-character hex string starting with "02" or "03"
+- **WHEN** Crypto.isPublicKey() is called with a 66-character hex string
 - **THEN** it SHALL return true
 
 #### Scenario: Valid raw public key accepted
 - **WHEN** Crypto.isPublicKey() is called with a 64-character hex string (raw x,y coordinates)
 - **THEN** it SHALL return true
 
-#### Scenario: Invalid public key rejected
-- **WHEN** Crypto.isPublicKey() is called with a string that is not 64, 66, or 130 hex characters
+#### Scenario: Uppercase hex accepted
+- **WHEN** Crypto.isPublicKey() is called with a 64-, 66-, or 130-character uppercase hex string
+- **THEN** it SHALL return true
+
+#### Scenario: Invalid length rejected
+- **WHEN** Crypto.isPublicKey() is called with a hex string whose length is not 64, 66, or 130
 - **THEN** it SHALL return false
 
-#### Scenario: Null public key rejected
+#### Scenario: Non-hex content rejected
+- **WHEN** Crypto.isPublicKey() is called with a 64-, 66-, or 130-character string containing any non-hex character
+- **THEN** it SHALL return false
+
+#### Scenario: Null or undefined public key rejected
 - **WHEN** Crypto.isPublicKey() is called with null or undefined
 - **THEN** it SHALL return false
